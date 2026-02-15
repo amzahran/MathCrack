@@ -1,0 +1,1064 @@
+<?php $__env->startSection('title'); ?>
+    <?php echo e($test->name); ?>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('css'); ?>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <style>
+        .test-hero {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .test-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -100px;
+            width: 200px;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            transform: skewX(-15deg);
+        }
+
+        .test-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+            color: white !important;
+        }
+
+        .test-hero p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+            color: white !important;
+        }
+
+        .test-info-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .card-header-custom {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 20px 25px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .card-header-custom h3 {
+            margin: 0;
+            color: #1f2937;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .card-body-custom {
+            padding: 25px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .info-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .part-section {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .part-section:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.1);
+        }
+
+        .part-header {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+
+        .part-content {
+            padding: 20px;
+        }
+
+        .part-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .part-stat-item {
+            text-align: center;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .part-stat-number {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .part-stat-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .status-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .current-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .status-not-started .status-icon {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+
+        .status-in-progress .status-icon {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .status-completed .status-icon {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .status-info h4 {
+            margin: 0 0 5px 0;
+            color: #1f2937;
+            font-size: 1.2rem;
+        }
+
+        .status-info p {
+            margin: 0;
+            color: #6b7280;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary-action {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+        }
+
+        .btn-primary-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.3);
+            color: white;
+        }
+
+        .btn-success-action {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-success-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+            color: white;
+        }
+
+        .btn-warning-action {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .btn-warning-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+            color: white;
+        }
+
+        .btn-secondary-action {
+            background: white;
+            color: #6b7280;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-secondary-action:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .btn-info-action {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+        }
+
+        .btn-info-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.3);
+            color: white;
+        }
+
+        .attempts-popup {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .attempt-item {
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .attempt-item:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        /* Previous Attempts Table Styles */
+        .previous-attempts {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .attempts-header h5 {
+            color: #1f2937;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .attempts-table-container {
+            overflow-x: auto;
+        }
+
+        .attempts-table {
+            margin-bottom: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .attempts-table thead th {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: none;
+            color: #374151;
+            font-weight: 600;
+            padding: 15px 12px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .attempts-table tbody td {
+            border: none;
+            padding: 15px 12px;
+            text-align: center;
+            vertical-align: middle;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .attempt-row {
+            transition: all 0.3s ease;
+        }
+
+        .attempt-row:hover {
+            background: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .attempt-number-badge {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+            min-width: 35px;
+        }
+
+        .attempt-date {
+            text-align: left;
+        }
+
+        .attempt-date .date {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 0.95rem;
+        }
+
+        .attempt-date .time {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .score-display {
+            font-weight: 600;
+        }
+
+        .score-value {
+            color: #1e40af;
+            font-size: 1.1rem;
+        }
+
+        .score-total {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .percentage-badge {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+            min-width: 60px;
+        }
+
+        .percentage-badge.excellent {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .percentage-badge.good {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+
+        .percentage-badge.needs-improvement {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .view-attempt-btn {
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .view-attempt-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .attempts-table-container {
+                font-size: 0.85rem;
+            }
+
+            .attempts-table thead th,
+            .attempts-table tbody td {
+                padding: 10px 8px;
+            }
+
+            .attempt-number-badge {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+
+            .percentage-badge {
+                padding: 4px 8px;
+                font-size: 0.8rem;
+                min-width: 50px;
+            }
+
+            .view-attempt-btn {
+                padding: 4px 8px;
+                font-size: 0.8rem;
+            }
+
+            .previous-attempts {
+                padding: 15px;
+            }
+        }
+
+        .test-description {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+            margin-bottom: 20px;
+        }
+
+        .test-description h5 {
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .test-description p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .warning-notice {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .warning-notice .notice-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .warning-notice .notice-icon {
+            color: #d97706;
+            font-size: 1.2rem;
+        }
+
+        .warning-notice .notice-title {
+            color: #92400e;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .warning-notice .notice-content {
+            color: #92400e;
+            margin: 0;
+        }
+
+        .course-info {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .course-info h6 {
+            color: #0c4a6e;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .course-info p {
+            color: #0369a1;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .test-hero h1 {
+                font-size: 2rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .part-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                justify-content: center;
+                text-align: center;
+            }
+        }
+    </style>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <div class="main-content">
+        <!-- Test Hero Section -->
+        <div class="test-hero">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1><?php echo e($test->name); ?></h1>
+                        <p><?php echo e($test->course->name ?? ''); ?></p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="d-flex align-items-center justify-content-end gap-3">
+                            <i class="fas fa-clipboard-list fa-3x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Test Information -->
+                <div class="test-info-card">
+                    <div class="card-header-custom">
+                        <h3><?php echo app('translator')->get('l.test_information'); ?></h3>
+                    </div>
+                    <div class="card-body-custom">
+                        <!-- Course Info -->
+                        <div class="course-info">
+                            <h6><?php echo app('translator')->get('l.course'); ?></h6>
+                            <p><?php echo e($test->course->name ?? ''); ?></p>
+                        </div>
+
+                        <!-- Test Description -->
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($test->description): ?>
+                            <div class="test-description">
+                                <h5><?php echo app('translator')->get('l.description'); ?></h5>
+                                <p><?php echo e($test->description); ?></p>
+                            </div>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                        <!-- General Info -->
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label"><?php echo app('translator')->get('l.total_questions'); ?></div>
+                                <div class="info-value"><?php echo e($test->total_questions_count); ?> <?php echo app('translator')->get('l.questions'); ?></div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label"><?php echo app('translator')->get('l.total_time'); ?></div>
+                                <div class="info-value"><?php echo e($test->total_time_minutes); ?> <?php echo app('translator')->get('l.minutes'); ?></div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label"><?php echo app('translator')->get('l.total_score'); ?></div>
+                                <div class="info-value"><?php echo e($test->total_score); ?> <?php echo app('translator')->get('l.points'); ?></div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label"><?php echo app('translator')->get('l.initial_score'); ?></div>
+                                <div class="info-value"><?php echo e($test->initial_score); ?> <?php echo app('translator')->get('l.points'); ?></div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label"><?php echo app('translator')->get('l.max_attempts'); ?></div>
+                                <div class="info-value"><?php echo e($test->max_attempts ?? 1); ?> <?php echo app('translator')->get('l.attempts'); ?></div>
+                            </div>
+                        </div>
+
+                        <!-- Test Parts -->
+                        <h5 class="mb-3"><?php echo app('translator')->get('l.test_parts'); ?></h5>
+
+                        <!-- Part 1 -->
+                        <div class="part-section">
+                            <div class="part-header">
+                                <?php echo app('translator')->get('l.first_part'); ?>
+                            </div>
+                            <div class="part-content">
+                                <div class="part-stats">
+                                    <div class="part-stat-item">
+                                        <span class="part-stat-number"><?php echo e($test->part1_questions_count); ?></span>
+                                        <div class="part-stat-label"><?php echo app('translator')->get('l.questions'); ?></div>
+                                    </div>
+                                    <div class="part-stat-item">
+                                        <span class="part-stat-number"><?php echo e($test->part1_time_minutes); ?></span>
+                                        <div class="part-stat-label"><?php echo app('translator')->get('l.minutes'); ?></div>
+                                    </div>
+                                    <div class="part-stat-item">
+                                        <span class="part-stat-number"><?php echo e($test->part1_questions_count * $test->default_question_score); ?></span>
+                                        <div class="part-stat-label"><?php echo app('translator')->get('l.max_points'); ?></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Break Time -->
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($test->break_time_minutes > 0): ?>
+                            <div class="part-section">
+                                <div class="part-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                    <?php echo app('translator')->get('l.break_time'); ?>
+                                </div>
+                                <div class="part-content">
+                                    <div class="part-stats">
+                                        <div class="part-stat-item">
+                                            <span class="part-stat-number"><?php echo e($test->break_time_minutes); ?></span>
+                                            <div class="part-stat-label"><?php echo app('translator')->get('l.minutes'); ?></div>
+                                        </div>
+                                        <div class="part-stat-item">
+                                            <span class="part-stat-number"><i class="fas fa-coffee text-success"></i></span>
+                                            <div class="part-stat-label"><?php echo app('translator')->get('l.optional'); ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                        <!-- Part 2 -->
+                        <div class="part-section">
+                            <div class="part-header">
+                                <?php echo app('translator')->get('l.second_part'); ?>
+                            </div>
+                            <div class="part-content">
+                                <div class="part-stats">
+                                    <div class="part-stat-item">
+                                        <span class="part-stat-number"><?php echo e($test->part2_questions_count); ?></span>
+                                        <div class="part-stat-label"><?php echo app('translator')->get('l.questions'); ?></div>
+                                    </div>
+                                    <div class="part-stat-item">
+                                        <span class="part-stat-number"><?php echo e($test->part2_time_minutes); ?></span>
+                                        <div class="part-stat-label"><?php echo app('translator')->get('l.minutes'); ?></div>
+                                    </div>
+                                    <div class="part-stat-item">
+                                        <span class="part-stat-number"><?php echo e($test->part2_questions_count * $test->default_question_score); ?></span>
+                                        <div class="part-stat-label"><?php echo app('translator')->get('l.max_points'); ?></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Current Status -->
+                <div class="status-section">
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($activeAttempt): ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php switch($activeAttempt->status):
+                            case ('not_started'): ?>
+                                <div class="current-status status-not-started">
+                                    <div class="status-icon">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <h4><?php echo app('translator')->get('l.ready_to_start'); ?></h4>
+                                        <p><?php echo app('translator')->get('l.test_ready_to_start_desc'); ?></p>
+                                    </div>
+                                </div>
+                                <?php break; ?>
+
+                            <?php case ('part1_in_progress'): ?>
+                                <div class="current-status status-in-progress">
+                                    <div class="status-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <h4><?php echo app('translator')->get('l.first_part_in_progress'); ?></h4>
+                                        <p><?php echo app('translator')->get('l.continue_where_you_left'); ?></p>
+                                    </div>
+                                </div>
+                                <?php break; ?>
+
+                            <?php case ('in_break'): ?>
+                                <div class="current-status status-in-progress">
+                                    <div class="status-icon">
+                                        <i class="fas fa-coffee"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <h4><?php echo app('translator')->get('l.break_time'); ?></h4>
+                                        <p><?php echo app('translator')->get('l.ready_for_second_part'); ?></p>
+                                    </div>
+                                </div>
+                                <?php break; ?>
+
+                            <?php case ('part2_in_progress'): ?>
+                                <div class="current-status status-in-progress">
+                                    <div class="status-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <h4><?php echo app('translator')->get('l.second_part_in_progress'); ?></h4>
+                                        <p><?php echo app('translator')->get('l.continue_where_you_left'); ?></p>
+                                    </div>
+                                </div>
+                                <?php break; ?>
+
+                            <?php case ('completed'): ?>
+                                <div class="current-status status-completed">
+                                    <div class="status-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <h4><?php echo app('translator')->get('l.test_completed'); ?></h4>
+                                        <p><?php echo app('translator')->get('l.final_score'); ?>: <?php echo e($activeAttempt->final_score); ?>/<?php echo e($test->total_score); ?></p>
+                                    </div>
+                                </div>
+                                <?php break; ?>
+                        <?php endswitch; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <?php else: ?>
+                        <div class="current-status status-not-started">
+                            <div class="status-icon">
+                                <i class="fas fa-play"></i>
+                            </div>
+                            <div class="status-info">
+                                <h4><?php echo app('translator')->get('l.not_started'); ?></h4>
+                                <p><?php echo app('translator')->get('l.click_start_to_begin'); ?></p>
+                            </div>
+                        </div>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                    <!-- Warning Notice -->
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!$activeAttempt || $activeAttempt->status === 'not_started'): ?>
+                        <div class="warning-notice">
+                            <div class="notice-header">
+                                <i class="fas fa-exclamation-triangle notice-icon"></i>
+                                <h6 class="notice-title"><?php echo app('translator')->get('l.important_notice'); ?></h6>
+                            </div>
+                            <div class="notice-content">
+                                <?php echo app('translator')->get('l.test_start_warning'); ?>
+                            </div>
+                        </div>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($activeAttempt): ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php switch($activeAttempt->status):
+                                case ('not_started'): ?>
+                                    <button type="button" class="btn-action btn-primary-action" onclick="startTest()">
+                                        <i class="fas fa-play"></i>
+                                        <?php echo app('translator')->get('l.start_test'); ?>
+                                    </button>
+                                    <?php break; ?>
+
+                                <?php case ('part1_in_progress'): ?>
+                                <?php case ('break_time'): ?>
+                                <?php case ('part2_in_progress'): ?>
+                                    <a href="<?php echo e(route('dashboard.users.tests.take', $test->id)); ?>" class="btn-action btn-warning-action">
+                                        <i class="fas fa-play"></i>
+                                        <?php echo app('translator')->get('l.continue_test'); ?>
+                                    </a>
+                                    <?php break; ?>
+
+                                <?php case ('completed'): ?>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($remainingAttempts > 0): ?>
+                                        <button type="button" class="btn-action btn-primary-action" onclick="startTest()">
+                                            <i class="fas fa-redo"></i>
+                                            <?php echo app('translator')->get('l.start_new_attempt'); ?>
+                                        </button>
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                    <a href="<?php echo e(route('dashboard.users.tests.results', $test->id)); ?>" class="btn-action btn-success-action">
+                                        <i class="fas fa-chart-line"></i>
+                                        <?php echo app('translator')->get('l.view_results'); ?>
+                                    </a>
+                                    <?php break; ?>
+                            <?php endswitch; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <?php else: ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($remainingAttempts > 0): ?>
+                                <button type="button" class="btn-action btn-primary-action" onclick="startTest()">
+                                    <i class="fas fa-play"></i>
+                                    <?php echo app('translator')->get('l.start_test'); ?>
+                                </button>
+                            <?php else: ?>
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <?php echo app('translator')->get('l.no_more_attempts_available'); ?>
+                                </div>
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                        <a href="<?php echo e(route('dashboard.users.tests')); ?>" class="btn-action btn-secondary-action">
+                            <i class="fas fa-arrow-left"></i>
+                            <?php echo app('translator')->get('l.back_to_tests'); ?>
+                        </a>
+                    </div>
+
+                    <!-- Attempts Information -->
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($completedAttempts > 0 || $remainingAttempts < $test->max_attempts): ?>
+                        <div class="attempts-info mt-4">
+                            <div class="alert alert-info">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong><?php echo app('translator')->get('l.attempts_status'); ?>:</strong>
+                                        <?php echo app('translator')->get('l.completed_attempts'); ?>: <?php echo e($completedAttempts); ?> / <?php echo e($test->max_attempts); ?>
+
+                                    </div>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($remainingAttempts > 0): ?>
+                                        <span class="badge bg-success">
+                                            <?php echo e($remainingAttempts); ?> <?php echo app('translator')->get('l.attempts_remaining'); ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="badge bg-warning">
+                                            <?php echo app('translator')->get('l.all_attempts_used'); ?>
+                                        </span>
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                    <!-- Previous Attempts Table -->
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($allAttempts->where('status', 'completed')->count() > 0): ?>
+                        <div class="previous-attempts mt-4">
+                            <div class="attempts-header">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-history me-2"></i>
+                                    <?php echo app('translator')->get('l.previous_attempts'); ?>
+                                </h5>
+                            </div>
+
+                            <div class="attempts-table-container">
+                                <table class="table table-hover attempts-table">
+                                    <thead>
+                                        <tr>
+                                            <th><?php echo app('translator')->get('l.attempt_number'); ?></th>
+                                            <th><?php echo app('translator')->get('l.attempt_date'); ?></th>
+                                            <th><?php echo app('translator')->get('l.attempt_score'); ?></th>
+                                            <th><?php echo app('translator')->get('l.percentage'); ?></th>
+                                            <th><?php echo app('translator')->get('l.actions'); ?></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $allAttempts->where('status', 'completed')->sortByDesc('created_at'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $attempt): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <?php
+                                                $percentage = $test->total_score > 0 ? round(($attempt->final_score / $test->total_score) * 100, 1) : 0;
+                                            ?>
+                                            <tr class="attempt-row">
+                                                <td>
+                                                    <span class="attempt-number-badge">
+                                                        <?php echo e($attempt->attempt_number); ?>
+
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="attempt-date">
+                                                        <div class="date"><?php echo e($attempt->created_at->format('Y-m-d')); ?></div>
+                                                        <small class="time text-muted"><?php echo e($attempt->created_at->format('H:i')); ?></small>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="score-display">
+                                                        <span class="score-value"><?php echo e($attempt->final_score); ?></span>
+                                                        <span class="score-total">/ <?php echo e($test->total_score); ?></span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="percentage-badge <?php echo e($percentage >= 80 ? 'excellent' : ($percentage >= 60 ? 'good' : 'needs-improvement')); ?>">
+                                                        <?php echo e($percentage); ?>%
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a class="btn btn-sm btn-outline-primary view-attempt-btn"
+                                                            href="<?php echo e(route('dashboard.users.tests.results', $test->id)); ?>?attempt_id=<?php echo e($attempt->id); ?>"
+                                                            title="<?php echo app('translator')->get('l.view_details'); ?>">
+                                                        <i class="fas fa-eye me-1"></i>
+                                                        <?php echo app('translator')->get('l.view_details'); ?>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('js'); ?>
+    <script>
+        function startTest() {
+            console.log('Start test function called');
+
+            // التحقق من وجود CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfToken) {
+                console.error('CSRF token not found');
+                Swal.fire({
+                    title: 'خطأ',
+                    text: 'لم يتم العثور على رمز الأمان. يرجى إعادة تحميل الصفحة.',
+                    icon: 'error'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: '<?php echo app('translator')->get("l.start_test"); ?>',
+                text: '<?php echo app('translator')->get("l.are_you_ready_to_start"); ?>',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#1e40af',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<?php echo app('translator')->get("l.yes_start"); ?>',
+                cancelButtonText: '<?php echo app('translator')->get("l.cancel"); ?>',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: '<?php echo app('translator')->get("l.starting_test"); ?>',
+                        text: '<?php echo app('translator')->get("l.please_wait"); ?>',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Send start request
+                    const url = '<?php echo e(route("dashboard.users.tests.start", $test->id)); ?>';
+                    console.log('Sending POST request to:', url);
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken.content,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Response data:', data);
+                        if (data.success) {
+                            console.log('Redirecting to:', data.redirect);
+                            if (data.attempt_number) {
+                                Swal.fire({
+                                    title: '<?php echo app('translator')->get("l.test_started"); ?>',
+                                    text: `<?php echo app('translator')->get("l.attempt_number"); ?>: ${data.attempt_number}${data.remaining_attempts ? ` - <?php echo app('translator')->get("l.remaining_attempts"); ?>: ${data.remaining_attempts}` : ''}`,
+                                    icon: 'success',
+                                    confirmButtonColor: '#1e40af',
+                                    timer: 2000,
+                                    timerProgressBar: true
+                                }).then(() => {
+                                    window.location.href = data.redirect;
+                                });
+                            } else {
+                                window.location.href = data.redirect;
+                            }
+                        } else {
+                            Swal.fire({
+                                title: '<?php echo app('translator')->get("l.error"); ?>',
+                                text: data.error || '<?php echo app('translator')->get("l.unknown_error"); ?>',
+                                icon: 'error',
+                                confirmButtonColor: '#1e40af'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            title: '<?php echo app('translator')->get("l.error"); ?>',
+                            text: error.message || '<?php echo app('translator')->get("l.connection_error"); ?>',
+                            icon: 'error',
+                            confirmButtonColor: '#1e40af'
+                        });
+                    });
+                }
+            });
+
+
+        }
+
+        $(document).ready(function() {
+            // Add fade-in animation
+            $('.test-info-card, .status-section').css('opacity', '0').animate({
+                opacity: 1
+            }, 600);
+
+            // Add animation for attempts table
+            $('.previous-attempts').css('opacity', '0').css('transform', 'translateY(20px)').delay(300).animate({
+                opacity: 1
+            }, 600).css('transform', 'translateY(0)');
+
+            // Add hover effects to parts
+            $('.part-section').hover(
+                function() {
+                    $(this).css('transform', 'translateY(-2px)');
+                },
+                function() {
+                    $(this).css('transform', 'translateY(0)');
+                }
+            );
+
+            // Add hover effects to attempt rows
+            $('.attempt-row').hover(
+                function() {
+                    $(this).css('transform', 'translateY(-2px)');
+                },
+                function() {
+                    $(this).css('transform', 'translateY(0)');
+                }
+            );
+        });
+    </script>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('themes.default.layouts.back.student-master', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /home/u121952710/domains/mathcrack.com/public_html/resources/views/themes/default/back/users/tests/show.blade.php ENDPATH**/ ?>

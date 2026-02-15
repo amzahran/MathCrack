@@ -1,0 +1,1967 @@
+<?php
+
+return [
+    "maintenance" => "الموقع قيد الصيانة",
+    "maintenance_message" => "نعمل حالياً على تحديث خدماتنا. سنعود قريباً!",
+    "maintenance_message_2" => "شكراً لصبركم",
+    "Account & Settings" => "الحساب والإعدادات",
+    "My Account" => "حسابى",
+    "Misc" => "الصيانة",
+    "Support" => "الدعم",
+    "Documentation" => "الوثائق",
+    "success" => "نجح",
+    "error" => "فشل",
+    "warning" => "تحذير",
+    "info" => "معلومات",
+    "Profile updated successfully" => "تم تحديث بيانات الحساب بنجاح",
+    "Account" => "الحساب",
+    "Security" => "الأمان",
+    "Profile Details" => "بيانات الحساب",
+    "Upload new photo" => "رفع صورة جديدة",
+    "Save" => "حفظ",
+    "Allowed JPG, GIF or PNG. Max size of 800K" => "مسموح بـ JPG, GIF أو PNG. أقصى حجم 800 كيلو",
+    "First Name" => "الاسم الأول",
+    "Enter your first name" => "أدخل اسمك الأول",
+    "Last Name" => "الاسم الأخير",
+    "Enter your last name" => "أدخل اسمك الأخير",
+    "E-mail" => "البريد الإلكتروني",
+    "Enter your email" => "أدخل بريدك الإلكتروني",
+    "Phone Number" => "رقم الهاتف",
+    "Enter your phone number" => "أدخل رقم هاتفك",
+    "Country" => "البلد",
+    "Enter your country" => "أدخل بلدك",
+    "City" => "المدينة",
+    "Enter your city" => "أدخل مدينتك",
+    "Address" => "العنوان",
+    "Enter your address" => "أدخل عنوانك",
+    "State" => "المنطقة",
+    "Enter your state" => "أدخل منطقتك",
+    "Zip Code" => "الرمز البريدي",
+    "Select" => "اختر",
+    "Delete Account" => "حذف الحساب",
+    "Are you sure you want to delete your account?" => "هل أنت متأكد أنك تريد حذف حسابك؟",
+    "Once you delete your account, there is no going back. Please be certain." => "بمجرد حذف حسابك، لا يمكن العودة. يرجى التأكد.",
+    "I confirm my account deactivation" => "أنا أؤكد إيقاف حسابي",
+    "Deactivate Account" => "إيقاف الحساب",
+    "Change Password" => "تغيير كلمة المرور",
+    "Save changes" => "حفظ التغييرات",
+    "Image updated successfully" => "تم تحديث الصورة بنجاح",
+    "Password updated successfully" => "تم تحديث كلمة المرور بنجاح",
+    "Password Requirements" => "متطلبات كلمة المرور",
+    "Minimum 8 characters long - the more, the better" => "8 أحرف على الأقل - الأكثر أفضل",
+    "At least one uppercase letter, one lowercase letter" => "حرف واحد كبير وحرف واحد صغير",
+    "At least one number, symbol, or whitespace character" => "رقم واحد أو رمز أو مسافة فارغة",
+    "Current Password" => "كلمة المرور الحالية",
+    "New Password" => "كلمة المرور الجديدة",
+    "Confirm New Password" => "تأكيد كلمة المرور الجديدة",
+    "Create an API key" => "إنشاء مفتاح API",
+    "API key created successfully" => "تم إنشاء مفتاح API بنجاح",
+    "Please current password" => "يرجى إدخال كلمة المرور الحالية",
+    "Password must be more than 8 characters" => "كلمة المرور يجب أن تكون أكثر من 8 أحرف",
+    "Please enter new password" => "يرجى إدخال كلمة المرور الجديدة",
+    "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character" => "كلمة المرور يجب أن تحتوي على حرف واحد كبير وحرف واحد صغير ورقم واحد ورمز واحد",
+    "Please confirm new password" => "يرجى تأكيد كلمة المرور الجديدة",
+    "The password and its confirm are not the same" => "كلمة المرور وتأكيدها غير متطابقتان",
+    "Delete" => "حذف",
+    "An API key is a simple encrypted string that identifies an application without any principal. They are useful for accessing public data anonymously, and are used to associate API requests with your project for quota and billing." => "مفتاح API هو سلسلة نصية مشفرة تحدد تطبيقاً دون أي مسؤولية. يستخدم للوصول إلى البيانات العامة بشكل سري ويستخدم لربط الطلبات المتعلقة بالواجهة البرمجية مع مشروعك للحد من التكلفة والتعرف على الإحصائيات.",
+    "Created on" => "تم الإنشاء في",
+    "Full Control" => "السيطرة الكاملة",
+    "Name the API key" => "اسم مفتاح API",
+    "Create Key" => "إنشاء مفتاح",
+    "API Key List & Access" => "قائمة مفاتيح API والوصول",
+    "Recent Devices" => "الأجهزة الأخيرة",
+    "Choose the Api key type you want to create" => "اختر نوع مفتاح API الذي تريد إنشاءه",
+    "Not Available" => "غير متاح",
+    "Status" => "الحالة",
+    "Location" => "الموقع",
+    "Login Time" => "وقت الدخول",
+    "IP Address" => "عنوان IP",
+    "Device & Browser" => "الجهاز والمتصفح",
+    "Failed" => "فشل",
+    "Successful" => "نجح",
+    "API created successfully" => "تم إنشاء الواجهة البرمجية بنجاح",
+    "API deleted successfully" => "تم حذف الواجهة البرمجية بنجاح",
+    "No data found" => "لا توجد بيانات",
+    "This is your Key" => "هذا هو المفتاح الخاص بك",
+    "Please copy it as it will not be displayed again!" => "يرجى نسخه لأنه لن يتم عرضه مرة أخرى!",
+    "Token copied to clipboard!" => "تم نسخ المفتاح إلى الحافظة!",
+    "Log Out" => "تسجيل الخروج",
+    "You are not authorized!" => "أنت غير مصرح لك!",
+    "You do not have permission to view this page using the credentials that you have provided while login." => "ليس لديك الصلاحية لعرض هذه الصفحة باستخدام البيانات التي قدمتها أثناء تسجيل الدخول.",
+    "Please contact your site administrator." => "يرجى الاتصال بمسؤول الموقع.",
+    "Back to home" => "العودة للرئيسية",
+    "Loading ..." => "جارٍ التحميل ...",
+    "Settings" => "الإعدادات",
+    "General" => "عام",
+    "Email" => "البريد الإلكتروني",
+    "Themes" => "التصميم",
+    "Theme settings" => "إعدادات التصميم",
+    "Email settings" => "إعدادات البريد الإلكتروني",
+    "Security settings" => "إعدادات الأمان",
+    "General settings" => "إعدادات عامة",
+    "Contact" => "الاتصال",
+    "Contact settings" => "إعدادات الاتصال",
+    "Social Auth" => "التسجيل بالتواصل الاجتماعي",
+    "Social Auth settings" => "إعدادات التسجيل بالتواصل الاجتماعي",
+    "Payment Gateways" => "طرق الدفع",
+    "Payment gateway settings" => "إعدادات طرق الدفع",
+    "Currencies" => "العملات",
+    "Currencies settings" => "إعدادات العملات",
+    "Languages" => "اللغات",
+    "Languages settings" => "إعدادات اللغات",
+    "Shipping" => "الشحن",
+    "Shipping settings" => "إعدادات الشحن والتوصيل",
+    "Coding" => "البرمجة",
+    "Coding settings" => "إعدادات البرمجة الإضافية",
+    "Clear Cache" => "إزالة التخزين المؤقت",
+    "Cache cleared successfully" => "تم إزالة التخزين المؤقت بنجاح",
+    "Error clearing cache" => "خطأ في إزالة التخزين المؤقت",
+    "Dashboard" => "لوحة القيادة",
+    "Users & Roles" => "المستخدمون والصلاحيات",
+    "Users" => "المستخدمون",
+    "Roles" => "الصلاحيات",
+    "Roles List" => "قائمة الأدوار والصلاحيات",
+    "Total users" => "إجمالي المستخدمين",
+    "Roles & Permissions" => "الأدوار والصلاحيات",
+    "Add New Role" => "إضافة دور جديد",
+    "Edit Role" => "تعديل الدور",
+    "Add role, if it does not exist" => "إضافة دور جديد إذا لم يكن موجوداً",
+    "A role provided access to predefined menus and features so that depending on" => "يوفر الدور الوصول إلى القوائم والميزات المحددة مسبقاً بحيث يمكن للمسؤول",
+    "assigned role an administrator can have access to what user needs." => "بناءً على الدور المعين الوصول إلى ما يحتاجه المستخدم",
+    "Total" => "إجمالي",
+    "users" => "مستخدمين",
+    "Are you sure?" => "هل أنت متأكد؟",
+    "You will be delete this forever!" => "سيتم حذف هذا نهائياً!",
+    "Yes, delete it!" => "نعم، احذفه!",
+    "Select All" => "اختر الكل",
+    "Check" => "تحقق",
+    "Submit" => "إرسال",
+    "Role Name" => "اسم الدور",
+    "Enter a role name" => "أدخل اسم الدور",
+    "Role Permissions" => "صلاحيات الدور",
+    "Set role permissions" => "تعيين صلاحيات الدور",
+    "Administrator Access" => "صلاحيات المسؤول",
+    "Cancel" => "إلغاء",
+    "Show" => "عرض",
+    "Add" => "إضافة",
+    "Edit" => "تعديل",
+    "Role added successfully" => "تم إضافة الدور بنجاح",
+    "Role deleted successfully" => "تم حذف الدور بنجاح",
+    "Role updated successfully" => "تم تحديث الدور بنجاح",
+    "can not delete Root role " => "لا يمكن حذف الدور الرئيسي",
+    "can not edit Root role " => "لا يمكن تعديل الدور الرئيسي",
+    "Role dose not exist " => "الدور غير موجود",
+    "Role already exist " => "الدور موجود بالفعل",
+    "Allows a full access to the system" => "يسمح بالوصول الكامل إلى النظام",
+    "Role" => "دور",
+    "Back" => "العودة",
+    "Login" => "تسجيل الدخول",
+    "Sign in" => "تسجيل الدخول",
+    "Create an account" => "إنشاء حساب",
+    "New on our platform?" => "جديد على منصتنا؟",
+    "Forgot Password?" => "هل نسيت كلمة المرور؟",
+    "or" => "أو",
+    "Email or Username" => "البريد الإلكتروني أو اسم المستخدم",
+    "Enter your email or username" => "أدخل بريدك الإلكتروني أو اسم المستخدم",
+    "Password" => "كلمة المرور",
+    "Remember Me" => "تذكرني",
+    "Welcome to" => "مرحباً بك في",
+    "Please sign-in to your account and start the adventure" => "يرجى تسجيل الدخول إلى حسابك وابدأ المغامرة",
+    "Email or password is incorrect" => "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "Forgot Password" => "نسيت كلمة المرور",
+    "Enter your email and we'll send you instructions to reset your password" => "أدخل بريدك الإلكتروني وسنرسل لك تعليمات إعادة تعيين كلمة المرور",
+    "Send Reset Link" => "إرسال رابط إعادة التعيين",
+    "Back to login" => "العودة لتسجيل الدخول",
+    "Email is invalid" => "البريد الإلكتروني غير صحيح",
+    "We have sent you a link to reset your password" => "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني",
+    "Reset Password" => "إعادة تعيين كلمة المرور",
+    "Enter your new password" => "أدخل كلمة المرور الجديدة",
+    "Your new password must be different from previously used passwords" => "كلمة المرور الجديدة يجب أن تكون مختلفة عن الكلمات السابقة المستخدمة",
+    "Set new password" => "تعيين كلمة المرور الجديدة",
+    "Confirm Password" => "تأكيد كلمة المرور",
+    "Confirm your new password" => "تأكيد كلمة المرور الجديدة",
+    "Password & confirm password not match" => "كلمة المرور وتأكيدها غير متطابقين",
+    "Verify Email" => "تحقق من البريد الإلكتروني",
+    "Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another." => "شكراً لتسجيل الدخول! قبل البدء، هل يمكنك التحقق من عنوان بريدك الإلكتروني بالضغط على الرابط الذي أرسلناه إليك؟ إذا لم تستلم البريد الإلكتروني، سنرسل لك آخر",
+    "A new verification link has been sent to the email address you provided during registration." => "تم إرسال رابط تحقق جديد إلى عنوان بريدك الإلكتروني الذي قدمته أثناء التسجيل.",
+    "Resend Verification Email" => "إعادة إرسال رابط التحقق من البريد الإلكتروني",
+    "Logout" => "تسجيل الخروج",
+    "Register" => "التسجيل",
+    "This email is already in use!" => "هذا البريد الإلكتروني مستخدم بالفعل!",
+    "Previous" => "السابق",
+    "Next" => "التالي",
+    "Finish" => "الانتهاء",
+    "Account Information" => "معلومات الحساب",
+    "Account Details" => "تفاصيل الحساب",
+    "Personal Information" => "المعلومات الشخصية",
+    "Enter Your Account Details" => "أدخل تفاصيل حسابك",
+    "We're almost there" => "نحن في المرحلة الأخيرة",
+    "Thank you for choosing us, click submit to complete your registration" => "شكراً لاختيارك لنا، اضغط على إرسال لإتمام تسجيل الدخول",
+    "Enter Your Personal Information" => "أدخل معلوماتك الشخصية",
+    "Mobile" => "الهاتف المحمول",
+    "Pincode" => "الرمز البريدي",
+    "Personal" => "شخصي",
+    "Enter Information" => "أدخل المعلومات",
+    "Already have an account?" => "هل لديك حساب؟",
+    "Sign in instead" => "تسجيل الدخول بدلاً من ذلك",
+    "privacy policy & terms" => "سياسة الخصوصية والشروط",
+    "Sign up" => "تسجيل حساب جديد",
+    "I agree to" => "أوافق على",
+    "Adventure starts here" => "المغامرة تبدأ هنا",
+    "Articles" => "المقالات",
+    "Blog Categories" => "فئات المدونة",
+    "Pages & Blog" => "الصفحات والمدونة",
+    "Blog" => "المدونة",
+    "Home Page" => "الصفحة الرئيسية",
+    "About Page" => "صفحة عن الموقع",
+    "Privacy Policy" => "سياسة الخصوصية",
+    "Terms & Conditions" => "الشروط والأحكام",
+    "Team Members" => "أعضاء الفريق",
+    "Questions" => "الأسئلة",
+    "Contact Us" => "اتصل بنا",
+    "Pages" => "الصفحات",
+    "List" => "قائمة",
+    "Inactive" => "غير نشط",
+    "Add New User" => "إضافة مستخدم جديد",
+    "Delete All Inactive Users" => "حذف جميع المستخدمين غير النشطين",
+    "Active Users" => "المستخدمون النشطون",
+    "Inactive Users" => "المستخدمون غير النشطين",
+    "User Name" => "اسم المستخدم",
+    "Phone" => "الهاتف",
+    "Deleted At" => "تاريخ الحذف",
+    "Action" => "الإجراءات",
+    "Activate Email" => "تفعيل البريد الإلكتروني",
+    "Activate User" => "تفعيل المستخدم",
+    "Permanent Delete" => "حذف نهائي",
+    "No Role" => "لا يوجد دور",
+    "User Profile inactive successfully" => "تم إيقاف الحساب بنجاح",
+    "User has been deleted permanently" => "تم حذف المستخدم نهائياً",
+    "User has been restored and is now active" => "تم استعادة المستخدم وهو الآن نشط",
+    "password updated successfully" => "تم تحديث كلمة المرور بنجاح",
+    "User Profile updated successfully" => "تم تحديث معلومات الحساب بنجاح",
+    "User Account added successfully" => "تم إضافة الحساب بنجاح",
+    "roles deleted successfully" => "تم حذف الأدوار بنجاح",
+    "role assigned successfully" => "تم تعيين الدور بنجاح",
+    "All inactive users have been deleted permanently" => "تم حذف جميع المستخدمين غير النشطين نهائياً",
+    "No inactive users found" => "لا يوجد مستخدمون غير نشطين",
+    "add new user" => "إضافة مستخدم جديد",
+    "Done" => "تم بنجاح",
+    "OK" => "حسناً",
+    "Columns" => "الأعمدة",
+    "PDF" => "PDF",
+    "Print" => "طباعة",
+    "Show/Hide Columns" => "إظهار/إخفاء الأعمدة",
+    "Search" => "بحث",
+    "To" => "إلى",
+    "Of" => "من",
+    "Records" => "سجلات",
+    "Loading..." => "جارٍ التحميل...",
+    "No Records Available" => "لا توجد سجلات متاحة",
+    "Filtered From" => "تمت التصفية من",
+    "All" => "الكل",
+    "Users List" => "قائمة المستخدمين",
+    "First" => "الأول",
+    "Last" => "الأخير",
+    "Records Per Page" => "سجلات في الصفحة",
+    "Show _MENU_ entries" => "عرض _MENU_ سجل",
+    "Per Page" => "في الصفحة",
+    "Entry" => "سجل",
+    "No matching records found" => "لا توجد سجلات متطابقة",
+    "Showing _START_ to _END_ of _TOTAL_ entries" => "عرض _START_ إلى _END_ من _TOTAL_ سجل",
+    "Processing..." => "جارٍ المعالجة...",
+    "Search:" => "بحث:",
+    "Showing" => "عرض",
+    "entries" => "سجلات",
+    "No data available in table" => "لا توجد بيانات متاحة في الجدول",
+    "Export" => "تصدير",
+    "CSV" => "CSV",
+    "Excel" => "Excel",
+    "All inactive users will be deleted permanently! This action cannot be undone." => "سيتم حذف جميع المستخدمين غير النشطين نهائياً! لا يمكن التراجع عن هذا الإجراء.",
+    "Yes, delete all!" => "نعم، احذف الكل!",
+    "The user will be deleted permanently!" => "سيتم حذف المستخدم نهائياً!",
+    "The user will be disabled!" => "سيتم تعطيل المستخدم!",
+    "Login as" => "تسجيل الدخول كـ",
+    "Leave" => "العودة",
+    "Hi" => "مرحباً",
+    "You are impersonate this user now. you can back as admin by->" => "أنت تستخدم هذا المستخدم الآن. يمكنك العودة كمسؤول بواسطة الضغط على الزر التالي 👈🏻",
+    "User Account" => "حساب المستخدم",
+    "Add Account" => "إضافة حساب",
+    "Edit Account" => "تعديل الحساب",
+    "Edit User" => "تعديل المستخدم",
+    "Assign a Role to" => "تعيين دور لـ",
+    "Choose the role name you want to assign" => "اختر اسم الدور الذي تريد تعيينه",
+    "Delete all Roles" => "حذف جميع الأدوار",
+    "Are you sure you want to delete this account?" => "هل أنت متأكد أنك تريد حذف هذا الحساب؟",
+    "Once you delete this account, there is no going back. Please be certain." => "بمجرد حذف هذا الحساب، لا يمكن التراجع عنه. يرجى التأكد.",
+    "I confirm this account deactivation" => "أؤكد إيقاف هذا الحساب",
+    "Password Requirements:" => "متطلبات كلمة المرور:",
+    "Ensure that these requirements are met" => "تأكد من تلبية هذه المتطلبات",
+    "Minimum 8 characters long, uppercase & symbol" => "على الأقل 8 أحرف، حرف كبير ورمز",
+    "Choose Role Name" => "اختر اسم الدور",
+    "Assign" => "تعيين",
+    "Customers" => "الطلاب",
+    "Tickets" => "التذاكر",
+    "Support Tickets" => "تذاكر الدعم",
+    "Customers & Support" => "الطلاب والدعم",
+    "Add New Customer" => "إضافة طالب جديد",
+    "Delete All Inactive Customers" => "حذف جميع الطلاب غير النشطين",
+    "Active Customers" => "الطلاب النشطون",
+    "Inactive Customers" => "الطلاب غير النشطين",
+    "Customer Name" => "اسم الطالب",
+    "Customers List" => "قائمة الطلاب",
+    "The customer will be deleted permanently!" => "سيتم حذف الطالب نهائياً!",
+    "The customer will be disabled!" => "سيتم تعطيل الطالب!",
+    "All inactive customers will be deleted permanently! This action cannot be undone." => "سيتم حذف جميع الطلاب غير النشطين نهائياً! لا يمكن التراجع عن هذا الإجراء.",
+    "Customer Profile updated successfully" => "تم تحديث معلومات الطالب بنجاح",
+    "Customer Account added successfully" => "تم إضافة حساب الطالب بنجاح",
+    "Customer Profile inactive successfully" => "تم إيقاف حساب الطالب بنجاح",
+    "Customer has been deleted permanently" => "تم حذف الطالب نهائياً",
+    "Customer has been restored and is now active" => "تم استعادة الطالب وهو الآن نشط",
+    "All inactive customers have been deleted permanently" => "تم حذف جميع الطلاب غير النشطين نهائياً",
+    "Customer Account" => "حساب الطالب",
+    "Edit Customer" => "تعديل الطالب",
+    "SEO" => "تحسين محركات البحث",
+    "SEO settings" => "إعدادات تحسين محركات البحث",
+    "Add New Category" => "إضافة فئة جديدة",
+    "Languages List" => "قائمة اللغات",
+    "Code" => "الرمز",
+    "Name" => "الاسم",
+    "Flag" => "العلم",
+    "Active" => "نشط",
+    "Default" => "افتراضي",
+    "Disable" => "تعطيل",
+    "Activate" => "تفعيل",
+    "Update" => "تحديث",
+    "Updates & Backups" => "التحديثات والنسخ الاحتياطية",
+    "Available Updates & Backups" => "التحديثات المتاحة والنسخ الإحتياطية",
+    "License" => "الترخيص و التجديد",
+    "License information" => "معلومات الترخيص والاستضافة",
+    "Reset" => "إعادة تعيين",
+    "Reset settings" => "إعادة تعيين ضبط المصنع",
+    "Language updated successfully" => "تم تحديث اللغة بنجاح",
+    "Language deleted successfully." => "تم حذف اللغة بنجاح.",
+    "Payment Gateway updated successfully." => "تم تحديث بوابة الدفع بنجاح.",
+    "Payments Gateways List" => "قائمة بوابات الدفع",
+    "Payments Gateways" => "بوابات الدفع",
+    "Note" => "ملاحظة",
+    "Currency exchange rates are automatically updated 3 times per day" => "يتم تحديث أسعار صرف العملات تلقائياً 3 مرات يومياً",
+    "Update Now" => "تحديث الآن",
+    "Symbol" => "الرمز",
+    "Rate" => "السعر",
+    "Last Updated" => "آخر تحديث",
+    "Actions" => "الإجراءات",
+    "Currencies List" => "قائمة العملات",
+    "Please note you can change the default currency in the general settings, and this will affect the currency of the site and all products in the site so please update the prices after changing the default currency" => "ملاحظة: يمكنك تغيير العملة الافتراضية في إعدادات العامة، وهذا سيؤثر على العملة المستخدمة في الموقع وعلي جميع المنتجات في الموقع لذا يرجي اعادة تحديث الاسعار بعد تغيير العملة الافتراضية لانها سيتم حسابها بالعملة الجديدة",
+    "Go to General Settings" => "الذهاب إلى إعدادات العامة",
+    "Please note that all currencies are updated based on the euro, even if it is not the default currency, so if you are going to change the rate of one of the currencies manually, please make sure it will be based on euro" => "يتم تحديث جميع العملات بناءً على اليورو، حتى لو لم يكن هو العملة الافتراضية، لذلك إذا كنت تريد تغيير سعر أحد العملات بشكل يدوي، يرجى التأكد أنك ستضع سعر الصرف للعملة بناءً على اليورو",
+    "Currency deleted successfully." => "تم حذف العملة بنجاح.",
+    "Failed to update currency rates" => "فشل تحديث أسعار العملات",
+    "Currency rates updated successfully" => "تم تحديث أسعار العملات بنجاح",
+    "Currency updated successfully" => "تم تحديث العملة بنجاح",
+    "Currency Name" => "اسم العملة",
+    "Currency Symbol" => "رمز العملة",
+    "Currency Code" => "رمز العملة",
+    "Exchange Rate" => "سعر الصرف",
+    "Automatic" => "تلقائي",
+    "Manual" => "يدوي",
+    "Currency Edit" => "تعديل العملة",
+    "Update Currency" => "تحديث العملة",
+    "Rate Update Method" => "طريقة تحديث السعر",
+    "Notifications" => "الإشعارات",
+    "Notifications settings" => "إعدادات الإشعارات",
+    "General Settings" => "الإعدادات العامة",
+    "Site Name" => "اسم الموقع",
+    "Site Domain" => "نطاق الموقع",
+    "Site Description" => "وصف الموقع",
+    "Upload Logo" => "رفع الشعار",
+    "Upload Black Logo" => "رفع الشعار الأسود",
+    "Upload Favicon" => "رفع أيقونة الموقع",
+    "Language and Currency Settings" => "إعدادات اللغة والعملة",
+    "Please note if you change the default currency this will affect the currency of the site and all products in the site, so please update the prices after changing the default currency" => "يرجى ملاحظة أنه في حالة تغيير العملة الافتراضية، سيؤثر ذلك على عملة الموقع وجميع المنتجات في الموقع، لذا يرجى تحديث الأسعار بعد تغيير العملة الافتراضية",
+    "Default Language" => "اللغة الافتراضية",
+    "Default Currency" => "العملة الافتراضية",
+    "Timezone" => "المنطقة الزمنية",
+    "Additional Settings" => "إعدادات إضافية",
+    "Multistep Registration Form" => "نموذج التسجيل متعدد الخطوات",
+    "Enable this option to split the registration form into multiple steps for better user experience" => "تمكين هذا الخيار لتقسيم نموذج التسجيل إلى خطوات متعددة لتحسين تجربة المستخدم",
+    "Email Verification" => "التحقق من البريد الإلكتروني",
+    "Enable this option to require email verification before users can access their accounts, so you should update the SMTP email settings in the email settings tab" => "تمكين هذا الخيار للمطالبة بالتحقق من البريد الإلكتروني قبل أن يتمكن المستخدمون من الوصول إلى حساباتهم، لذا يجب عليك تحديث إعدادات SMTP في علامة تبويب إعدادات البريد الإلكتروني",
+    "Save Changes" => "حفظ التغييرات",
+    "Maintenance Mode" => "وضع الصيانة",
+    "Enable this option to put the site in maintenance mode, so the site will be in maintenance mode and will not be accessible to the public(only admins can access the site)" => "تمكين هذا الخيار لإدخال الموقع في وضع الصيانة، بحيث يكون الموقع في وضع الصيانة ولن يكون متاحًا للجمهور (يمكن للمسؤولين فقط الوصول إلى الموقع)",
+    "Settings Updated Successfully" => "تم تحديث الإعدادات بنجاح",
+    "Fees" => "الرسوم",
+    "Translate" => "ترجمة",
+    "Payment Gateway translated successfully." => "تم ترجمة بوابة الدفع بنجاح.",
+    "Fees Type" => "نوع الرسوم",
+    "Percentage" => "نسبة مئوية",
+    "Fixed" => "ثابت",
+    "Fees Amount" => "قيمة الرسوم",
+    "Enter a method fees or percentage" => "أدخل رسوم أو نسبة الطريقة",
+    "Enter a method description" => "أدخل وصف الطريقة",
+    "Cash on Delivery static Fee" => "رسوم ثابتة للدفع عند الاستلام",
+    "Enter a method" => "أدخل طريقة",
+    "Description" => "الوصف",
+    "Reset System" => "إعادة تعيين النظام",
+    "Warning: Dangerous Operation!" => "تحذير: عملية خطيرة!",
+    "This operation will permanently delete all data including:" => "ستؤدي هذه العملية إلى حذف جميع البيانات نهائياً بما في ذلك:",
+    "All user accounts and their data" => "جميع حسابات المستخدمين وبياناتهم",
+    "All system settings" => "جميع إعدادات النظام",
+    "All uploaded files" => "جميع الملفات المرفوعة",
+    "All database records" => "جميع سجلات قاعدة البيانات",
+    "Type RESET to confirm" => "اكتب RESET للتأكيد",
+    "Initialize System Reset" => "بدء إعادة تعيين النظام",
+    "Invalid Confirmation" => "تأكيد غير صحيح",
+    "Please type RESET to confirm" => "يرجى كتابة RESET للتأكيد",
+    "Warning!" => "تحذير!",
+    "Are you absolutely sure you want to reset the system?" => "هل أنت متأكد تماماً أنك تريد إعادة تعيين النظام؟",
+    "Yes, proceed" => "نعم، استمر",
+    "Final Warning!" => "تحذير نهائي!",
+    "This action cannot be undone. All data will be permanently deleted!" => "لا يمكن التراجع عن هذا الإجراء. سيتم حذف جميع البيانات نهائياً!",
+    "Yes, reset everything" => "نعم، أعد تعيين كل شيء",
+    "Last Chance!" => "الفرصة الأخيرة!",
+    "Are you really, really sure about this?" => "هل أنت متأكد حقاً، حقاً من هذا؟",
+    "Yes, I understand the consequences" => "نعم، أفهم العواقب",
+    "No, take me back" => "لا، أعدني للخلف",
+    "headerCode" => "اكواد الرأس",
+    "footerCode" => "اكواد التذييل",
+    "This code is added to the header of the page" => "يتم إضافة هذا الكود في رأس الصفحة",
+    "This code is added to the footer of the page" => "يتم إضافة هذا الكود في نهاية الصفحة",
+    "Enter header code here..." => "أدخل كود الرأس هنا...",
+    "Enter footer code here..." => "أدخل كود التذييل هنا...",
+    "Google Authentication" => "تسجيل الدخول بواسطة جوجل",
+    "Facebook Authentication" => "تسجيل الدخول بواسطة فيسبوك",
+    "Twitter Authentication" => "تسجيل الدخول بواسطة تويتر",
+    "Google ID" => "معرف جوجل",
+    "Google Secret" => "السر الخاص بـ جوجل",
+    "Facebook ID" => "معرف فيسبوك",
+    "Facebook Secret" => "السر الخاص بـ فيسبوك",
+    "Redirect URL" => "رابط إعادة التوجيه",
+    "Twitter ID" => "معرف تويتر",
+    "Twitter Secret" => "السر الخاص بـ تويتر",
+    "Enable" => "تفعيل",
+    "Google" => "جوجل",
+    "Facebook" => "فيسبوك",
+    "Twitter" => "تويتر",
+    "Social Authentication Settings" => "إعدادات تسجيل الدخول بواسطة المواقع الاجتماعية",
+    "Here" => "هنا",
+    "If you need help getting these credentials, please read our detailed guide at" => "إذا كنت تحتاج إلى مساعدة في الحصول على هذه البيانات، يرجى قراءة الدليل التفصيلي لدينا",
+    "Whatsapp" => "واتساب",
+    "Instagram" => "انستغرام",
+    "Youtube" => "يوتيوب",
+    "Linkedin" => "لينكدان",
+    "You have exceeded the allowed number of devices." => "لقد تجاوزت الحد المسموح به من الأجهزة.",
+    "Your session has expired." => "جلستك قد انتهت.",
+    "You have :attempts attempts left." => "لديك :attempts محاولة متبقية.",
+    "Too many login attempts. Please try again in :minutes minutes." => "لقد تجاوزت الحد المسموح به من المحاولات. يرجى المحاولة مرة أخرى بعد :minutes دقيقة.",
+    "Invalid credentials. You have :attempts attempts remaining." => "الايميل او كلمة المرور غير صحيحة. لديك :attempts محاولة متبقية.",
+    "Too many login attempts. Please try again in 10 minutes." => "لقد تجاوزت الحد المسموح به من المحاولات. يرجى المحاولة مرة أخرى بعد 10 دقائق.",
+    "blocked IP added successfully" => "تم إضافة عنوان IP المحظور بنجاح",
+    "blocked IP deleted successfully" => "تم حذف عنوان IP المحظور بنجاح",
+    "Max Sessions" => "الحد الأقصى لعدد الجلسات النشطة",
+    "Session Timeout (hours)" => "مدة الجلسة (ساعات)",
+    "Max Login Attempts" => "الحد الأقصى لعدد محاولات تسجيل الدخول",
+    "Recaptcha" => "reCAPTCHA",
+    "Recaptcha Site Key" => "مفتاح الموقع لـ reCAPTCHA",
+    "Recaptcha Secret Key" => "المفتاح الخاص لـ reCAPTCHA",
+    "The maximum number of active sessions allowed for each user (number of login attempts at the same time)" => "الحد الأقصى لعدد الجلسات النشطة المسموح بها للمستخدم الواحد (عدد عمليات تسجيل الدخول في الوقت نفسه)",
+    "The time period in hours before the user session expires automatically in the event of inactivity" => "المدة الزمنية بالساعات قبل انتهاء صلاحية جلسة المستخدم تلقائياً في حالة عدم النشاط",
+    "The maximum number of failed login attempts before temporarily locking the account" => "الحد الأقصى لعدد محاولات تسجيل الدخول الفاشلة قبل قفل الحساب مؤقتاً",
+    "Add New IP" => "إضافة عنوان IP جديد",
+    "Add IP" => "إضافة عنوان IP",
+    "Created At" => "تم الإضافة في",
+    "Security Settings" => "إعدادات الأمان",
+    "Blocked IPs" => "عناوين IP المحظورة",
+    "Enable SMS notifications" => "تفعيل إشعارات الرسائل النصية",
+    "SMS settings" => "إعدادات الرسائل النصية",
+    "SMTP settings" => "إعدادات SMTP",
+    "Encryption type" => "نوع التشفير",
+    "Port" => "المنفذ",
+    "SMTP server" => "خادم SMTP",
+    "Enable email notifications" => "تفعيل إشعارات البريد الإلكتروني",
+    "Updates" => "التحديثات",
+    "Backups" => "النسخ الاحتياطية",
+    "Filename" => "اسم الملف",
+    "Size" => "الحجم",
+    "Create New Backup" => "إنشاء نسخة احتياطية جديدة",
+    "No backups found" => "لا يوجد نسخ احتياطية",
+    "Backup created successfully" => "تم إنشاء نسخة احتياطية بنجاح",
+    "Backup deleted successfully" => "تم حذف نسخة احتياطية بنجاح",
+    "Backup file not found" => "لم يتم العثور على ملف النسخة الاحتياطية",
+    "You won't be able to revert this!" => "لن تتمكن من التراجع عن هذا!",
+    "This may take several minutes" => "قد يستغرق هذا بعض الوقت",
+    "Creating Backup" => "إنشاء نسخة احتياطية",
+    "Resetting System" => "إعادة تعيين النظام",
+    "Two-Factor Authentication" => "التحقق من هويتك بواسطة التطبيق المصادق",
+    "Please enter the 6-digit code generated by your authenticator app to complete the two-factor authentication process." => "يرجى إدخال الرمز الست خاناتي الذي تم إنشاؤه بواسطة تطبيق المصادق الخاص بك لإكمال عملية التحقق من هويتك.",
+    "Verification Code" => "رمز التحقق",
+    "Verify" => "التحقق",
+    "Invalid verification code" => "رمز التحقق غير صحيح",
+    "Two-factor authentication is not enabled yet." => "التحقق من هويتك بواسطة التطبيق المصادق غير مفعل بعد.",
+    "Two-factor authentication adds an additional layer of security to your account by requiring more than just a password to log in." => "التحقق من هويتك بواسطة التطبيق المصادق يضيف طبقة إضافية من الأمان إلى حسابك من خلال التطلب على أكثر من كلمة مرور لتسجيل الدخول.",
+    "Enable Two-Factor Authentication" => "تفعيل التحقق من هويتك بواسطة التطبيق المصادق",
+    "Setup Two-Factor Authentication" => "إعداد التحقق من هويتك بواسطة التطبيق المصادق",
+    "Scan this QR code with your Google Authenticator app:" => "قم بتصوير هذا الرمز الخاص بالتطبيق المصادق بواسطة تطبيق Google Authenticator الخاص بك:",
+    "Or enter this code manually:" => "أو أدخل هذا الرمز يدوياً:",
+    "Enter 6-digit code" => "أدخل رمز ست خاناتي",
+    "Enable 2FA" => "تفعيل التحقق من هويتك بواسطة التطبيق المصادق",
+    "Click the button below to start the setup process" => "اضغط على الزر أدناه لبدء عملية الإعداد",
+    "Begin Setup" => "بدء الإعداد",
+    "Disable 2FA" => "تعطيل التحقق من هويتك بواسطة التطبيق المصادق",
+    "Disable Two-Factor Authentication" => "تعطيل التحقق من هويتك بواسطة التطبيق المصادق",
+    "Your account is secured with two-factor authentication" => "حسابك مؤمن بالتحقق من هويتك بواسطة التطبيق المصادق",
+    "Two-factor authentication is enabled" => "التحقق من هويتك بواسطة التطبيق المصادق مفعل",
+    "Enabled" => "مفعل",
+    "Disabled" => "معطل",
+    "Please enter your verification code to disable 2FA" => "يرجى إدخال رمز التحقق الخاص بك لتعطيل التحقق من هويتك بواسطة التطبيق المصادق",
+    "Two-factor authentication enabled successfully" => "تم تفعيل التحقق من هويتك بواسطة التطبيق المصادق بنجاح",
+    "Two-factor authentication disabled successfully" => "تم تعطيل التحقق من هويتك بواسطة التطبيق المصادق بنجاح",
+    "Delete Selected" => "حذف المختار",
+    "Selected customers will be deleted!" => "سيتم حذف المستخدمين المختارين!",
+    "Selected users will be deleted!" => "سيتم حذف المستخدمين المختارين!",
+    "Yes, delete them!" => "نعم، حذفهم!",
+    "Selected customers have been disabled" => "تم حذف المستخدمين المختارين!",
+    "Selected users have been disabled" => "تم حذف المستخدمين المختارين!",
+    "Selected customers have been deleted permanently" => "تم حذف المستخدمين المختارين!",
+    "Selected users have been deleted permanently" => "تم حذف المستخدمين المختارين!",
+    "Statistics" => "الإحصائيات",
+    "Visitors Statistics" => "إحصائيات الزوار",
+    "Google Analytics" => "إحصائيات جوجل",
+    "Visitor tracking is currently enabled. Disabling this feature will stop tracking visitor data" => "التتبع للزائرين مفعل حالياً. تعطيل هذه الميزة سيوقف تتبع بيانات الزائرين",
+    "Visitor tracking is currently disabled. Enabling this feature will provide comprehensive visitor analytics but please be aware that it requires significant server resources to track and store all visitor data" => "التتبع للزائرين معطل حالياً. تفعيل هذه الميزة سيوفر إحصائيات عامة عن الزائرين ولكن يرجى التأكيد على أنها تتطلب موارد سيرفر عالية للتتبع وتخزين جميع بيانات الزائرين",
+    "Visitor tracking status updated successfully" => "تم تحديث حالة التتبع للزائرين بنجاح",
+    "Google Analytics status updated successfully" => "تم تحديث حالة إحصائيات جوجل بنجاح",
+    "Enable Visitor Tracking" => "تفعيل التتبع للزائرين",
+    "Disable Visitor Tracking" => "تعطيل التتبع للزائرين",
+    "Total Visits This Month" => "إجمالي الزيارات هذا الشهر",
+    "New Visits This Month" => "زيارات جديدة هذا الشهر",
+    "Registered Visitors This Month" => "الزوار المسجلين هذا الشهر",
+    "Unregistered Visitors This Month" => "الزوار غير المسجلين هذا الشهر",
+    "Device Types Distribution This Month" => "توزيع أنواع الأجهزة هذا الشهر",
+    "Today Visits" => "زيارات اليوم",
+    "Browsers This Month" => "المتصفحات هذا الشهر",
+    "Top Pages This Month" => "الصفحات الأكثر زيارة هذا الشهر",
+    "Page" => "الصفحة",
+    "Visits" => "الزيارات",
+    "You are about to disable visitor tracking. This action cannot be undone while disabled." => "أنت على وشك تعطيل تتبع الزوار. لا يمكن التراجع عن هذا الإجراء أثناء التعطيل.",
+    "Yes, disable it!" => "نعم، قم بتعطيله!",
+    "Number of Visits" => "عدد الزيارات",
+    "Select Month" => "اختر الشهر",
+    "Show Statistics" => "عرض الإحصائيات",
+    "Overview Statistics" => "إحصائيات عامة",
+    "Days" => "أيام",
+    "Total Active Users" => "إجمالي المستخدمين النشطين",
+    "Total Page Views" => "إجمالي مشاهدات الصفحات",
+    "Current Active Users" => "المستخدمين النشطين حالياً",
+    "Avg. Daily Views" => "متوسط المشاهدات اليومية",
+    "Visitors Trend" => "اتجاه الزوار",
+    "User Types" => "أنواع المستخدمين",
+    "Top Browsers" => "المتصفحات الأكثر استخداماً",
+    "Top Countries" => "الدول الأكثر زيارة",
+    "Most Visited Pages" => "الصفحات الأكثر زيارة",
+    "Page Title" => "عنوان الصفحة",
+    "URL" => "الرابط",
+    "Views" => "المشاهدات",
+    "New Users" => "مستخدمين جدد",
+    "Returning Users" => "مستخدمين عائدين",
+    "Google Analytics Property ID" => "معرف خاصية إحصائيات جوجل",
+    "Google Analytics File" => "ملف إحصائيات جوجل",
+    "Upload service-account-credentials.json file" => "قم بتحميل ملف service-account-credentials.json",
+    "Enable Google Analytics" => "تفعيل احصائيات جوجل",
+    "Disable Google Analytics" => "تعطيل احصائيات جوجل",
+    "Google Analytics is currently enabled. Disabling this feature will stop Google Analytics visitor data" => "احصائيات جوجل مفعل حالياً. تعطيل هذه الميزة سيوقف بيانات الزوار من Google Analytics",
+    "Google Analytics is currently disabled. Enabling this feature will provide all data of Google Analytics" => "احصائيات جوجل معطل حالياً. تفعيل هذه الميزة سيوفر جميع بيانات Google Analytics",
+    "Answered" => "مجاب",
+    "In Progress" => "قيد التنفيذ",
+    "Closed" => "مغلق",
+    "Add New Ticket" => "إضافة تذكرة جديدة",
+    "Subject" => "الموضوع",
+    "Enter a Subject" => "أدخل الموضوع",
+    "Support type" => "نوع الدعم",
+    "Sales support" => "دعم المبيعات",
+    "Technical support" => "الدعم الفني",
+    "Admin" => "المسؤول",
+    "User" => "المستخدم",
+    "Create" => "إنشاء",
+    "Active Tickets" => "التذاكر النشطة",
+    "Closed Tickets" => "التذاكر المغلقة",
+    "Delete All Closed Tickets" => "حذف جميع التذاكر المغلقة",
+    "Support Type" => "نوع الدعم",
+    "to" => "إلى",
+    "of" => "من",
+    "Selected tickets will be deleted!" => "سيتم حذف التذاكر المحددة!",
+    "All closed tickets will be deleted!" => "سيتم حذف جميع التذاكر المغلقة!",
+    "Ticket created successfully" => "تم إنشاء التذكرة بنجاح",
+    "Replied successfully" => "تم الرد بنجاح",
+    "Ticket does not exist" => "التذكرة غير موجودة",
+    "Ticket deleted successfully" => "تم حذف التذكرة بنجاح",
+    "Ticket closed successfully" => "تم إغلاق التذكرة بنجاح",
+    "Ticket active successfully" => "تم تفعيل التذكرة بنجاح",
+    "No closed tickets found to delete" => "لا يوجد تذاكر مغلقة لحذفها",
+    "All closed tickets and their attachments deleted successfully" => "تم حذف جميع التذاكر المغلقة وملفات الإرفاق بنجاح",
+    "Selected tickets have been deleted successfully" => "تم حذف التذاكر المحددة بنجاح",
+    "Ticket Show" => "عرض التذكرة",
+    "Previous User Chats" => "المحادثات السابقة للمستخدم",
+    "No Chats Found" => "لا يوجد محادثات",
+    "Close Ticket" => "إغلاق التذكرة",
+    "Active Ticket" => "تفعيل التذكرة",
+    "Delete Ticket" => "حذف التذكرة",
+    "Show Attachment" => "عرض المرفق",
+    "Type your message here..." => "أدخل رسالتك هنا...",
+    "Send" => "إرسال",
+    "Client Information" => "بيانات المستخدم",
+    "Show Client" => "عرض المستخدم",
+    "Smiling" => "مبتسم",
+    "Emotions" => "المشاعر",
+    "Hands" => "الأيدي",
+    "People" => "الناس",
+    "Objects" => "الأشياء",
+    "Nature" => "الطبيعة",
+    "Symbols" => "الرموز",
+    "Activities" => "الأنشطة",
+    "Animals" => "الحيوانات",
+    "Food" => "الطعام",
+    "Travel" => "السفر",
+    "Notes" => "الملاحظات",
+    "Is Still Active" => "ما زال مفعل",
+    "Enter a note" => "أدخل ملاحظة",
+    "Date" => "التاريخ",
+    "Add New Note" => "إضافة ملاحظة جديدة",
+    "Keep it always" => "أبقه مفعل دائماً",
+    "When selected, the notification will remain visible until you delete it. If not selected, the notification will only appear on its specified date and disappear afterwards." => "عند التحديد، سيبقى التنبيه مرئي حتى تقوم بحذفه. إذا لم يتم التحديد، سيظهر التنبيه فقط في التاريخ المحدد وسيختفي بعد ذلك.",
+    "Note added successfully" => "تم إضافة الملاحظة بنجاح",
+    "Note updated successfully" => "تم تعديل الملاحظة بنجاح",
+    "Note deleted successfully" => "تم حذف الملاحظة بنجاح",
+    "Notes deleted successfully" => "تم حذف الملاحظات بنجاح",
+    "Delete All" => "حذف الكل",
+    "You will delete this note forever!" => "سيتم حذف هذه الملاحظة بشكل دائم!",
+    "Selected notes will be deleted!" => "سيتم حذف الملاحظات المحددة!",
+    "Edit Note" => "تعديل الملاحظة",
+    "Mark all as read" => "تحديد كل التنبيهات كمقروء",
+    "Delete all notifications" => "حذف جميع التنبيهات",
+    "New" => "جديد",
+    "Notification deleted successfully" => "تم حذف التنبيه بنجاح",
+    "All notifications deleted successfully" => "تم حذف جميع التنبيهات بنجاح",
+    "All notifications marked as read successfully" => "تم تحديث جميع التنبيهات كمقروء بنجاح",
+    "Light" => "فاتح",
+    "Dark" => "غامق",
+    "System" => "نظام",
+    "Shortcuts" => "الروابط السريعة",
+    "You have" => "لديك",
+    "active notes" => "ملاحظات مفعلة",
+    "Notes Reminder" => "تنبيه الملاحظات",
+    "View Notes" => "عرض الملاحظات",
+    "Today's Notes" => "الملاحظات اليوم",
+    "Add new notes to start" => "إضافة ملاحظات جديدة للبدء",
+    "No notes for today" => "لا توجد ملاحظات لليوم",
+    "Pinned" => "مثبت",
+    "Manage Customers" => "إدارة الطلاب",
+    "Manage Roles" => "إدارة الأدوار",
+    "Setting" => "الإعدادات",
+    "System Settings" => "إعدادات النظام",
+    "Select Theme" => "اختيار الثيم",
+    "Primary color" => "اللون الرئيسي",
+    "Color Settings" => "إعدادات اللون",
+    "Category added successfully" => "تم إضافة الفئة بنجاح",
+    "Category updated successfully" => "تم تعديل الفئة بنجاح",
+    "Category deleted successfully" => "تم حذف الفئة بنجاح",
+    "Translation added successfully" => "تم إضافة الترجمة بنجاح",
+    "Slug" => "الرابط",
+    "Enter a name" => "أدخل الاسم",
+    "Enter name in" => "أدخل الاسم ب",
+    "Selected categories will be deleted!" => "سيتم حذف الفئات المحددة!",
+    "Translate Category" => "ترجمة الفئة",
+    "Save Translations" => "حفظ الترجمات",
+    "Edit Category" => "تعديل الفئة",
+    "Translations" => "الترجمات",
+    "Categories deleted successfully" => "تم حذف الفئات بنجاح",
+    "Uncategorized" => "غير مصنف",
+    "Deleted User" => "مستخدم محذوف",
+    "Published" => "منشور",
+    "Draft" => "مؤرشف",
+    "The article will be available to view for visitors." => "سيكون المقال متاح للعرض للزوار.",
+    "The article will be hidden from visitors and saved as a draft." => "سيكون المقال مخفي عن الزوار ومحفوظ كمسودة.",
+    "Article added successfully" => "تمت اضافة المقال بنجاح",
+    "Article updated successfully" => "تم تحديث المقال بنجاح",
+    "Article deleted successfully" => "تم حذف المقال بنجاح",
+    "Articles deleted successfully" => "تم حذف المقالات بنجاح",
+    "Blog Articles" => "مقالات المدونة",
+    "Add New Article" => "إضافة مقال جديد",
+    "Meta Keywords" => "الكلمات المفتاحية",
+    "Meta Description" => "وصف قصير",
+    "Enter a meta description" => "أدخل وصف قصير",
+    "Enter a title" => "أدخل عنوان المقال",
+    "Category" => "الفئة",
+    "Title" => "العنوان",
+    "Content" => "المحتوى",
+    "Image" => "الصورة",
+    "Author" => "الناشر",
+    "Updated At" => "تم تحديثه في",
+    "Selected articles will be deleted!" => "سيتم حذف المقالات المحددة!",
+    "Edit Article" => "تعديل المقال",
+    "Enter views" => "أدخل عدد المشاهدات",
+    "Change Image" => "تغيير الصورة",
+    "No Image Available" => "لا يوجد صورة",
+    "Will be replaced" => "سيتم استبداله",
+    "Translate Article" => "ترجمة المقال",
+    "Enter title in" => "أدخل عنوان المقال ب",
+    "Write content here" => "أدخل المحتوى هنا",
+    "Delete Comment" => "حذف التعليق",
+    "You wont be able to revert this!" => "لا يمكنك التراجع عن هذا!",
+    "Comment deleted successfully" => "تم حذف التعليق بنجاح",
+    "Replies" => "الردود",
+    "Comments" => "التعليقات",
+    "Something went wrong" => "حدث خطأ ما",
+    "Other" => "أخرى",
+    "Drop theme file here or click to upload" => "أسقط ملف الثيم هنا أو اضغط للتحميل",
+    "Supported format: ZIP file containing theme files" => "الشكل المدعوم: ملف ZIP يحتوي على ملفات الثيم",
+    "Upload New Theme" => "تحميل ثيم جديد",
+    "Drop image here or click to upload" => "أسقط الصورة هنا أو اضغط للتحميل",
+    "Supported formats: JPG, PNG, GIF, WebP" => "الشكل المدعوم: JPG, PNG, GIF, WebP",
+    "Current Image" => "الصورة الحالية",
+    "Message marked contacted" => "تم تحديث الرسالة إلى مقروء",
+    "Message deleted successfully" => "تم حذف الرسالة بنجاح",
+    "Data is successfully deleted" => "تم حذف البيانات بنجاح",
+    "Message" => "الرسالة",
+    "Read" => "مقروء",
+    "Unread" => "غير مقروء",
+    "Contacted" => "تم التواصل",
+    "Selected Contacts will be deleted!" => "سيتم حذف الرسائل المحددة!",
+    "Sender Information" => "بيانات المرسل",
+    "Message Details" => "تفاصيل الرسالة",
+    "Auto Translate" => "ترجمة تلقائية",
+    "Please note that automatic translation for large content is not efficient and may take some time, so we do not recommend using it for large content" => "يرجى الانتباه بأن الترجمة التلقائية للمحتوى الكبير غير دقيقة وقد تستغرق بعض الوقت، لذلك لا نوصى باستخدامها للمحتوى الكبير",
+    "Team Members List" => "قائمة الأعضاء",
+    "Add New Member" => "إضافة عضو جديد",
+    "Job Title" => "الوظيفة",
+    "Social Media" => "الوسائط الاجتماعية",
+    "Add New Team Member" => "إضافة عضو جديد",
+    "Profile Image" => "صورة الملف الشخصي",
+    "Facebook URL" => "رابط Facebook",
+    "Twitter URL" => "رابط Twitter",
+    "Instagram URL" => "رابط Instagram",
+    "LinkedIn URL" => "رابط LinkedIn",
+    "Add Member" => "إضافة عضو",
+    "Team Member Edit" => "تعديل العضو",
+    "Member created successfully" => "تم إنشاء العضو بنجاح",
+    "Member does not exist" => "العضو غير موجود",
+    "Member updated successfully" => "تم تحديث العضو بنجاح",
+    "Member deleted successfully" => "تم حذف العضو بنجاح",
+    "Image Preview" => "عرض الصورة",
+    "New Image Preview" => "عرض الصورة الجديدة",
+    "Frequently Asked Questions" => "الأسئلة الشائعة",
+    "Add New Question" => "إضافة سؤال جديد",
+    "Edit Question" => "تعديل السؤال",
+    "Question" => "السؤال",
+    "Answer" => "الجواب",
+    "Enter your question here" => "أدخل السؤال هنا",
+    "Enter the answer here" => "أدخل الجواب هنا",
+    "Save Question" => "حفظ السؤال",
+    "question added successfully" => "تم إضافة السؤال بنجاح",
+    "question updated successfully" => "تم تحديث السؤال بنجاح",
+    "question deleted successfully" => "تم حذف السؤال بنجاح",
+    "question dose not exist" => "السؤال غير موجود",
+    "Add First Question" => "إضافة سؤال أول",
+    "No Questions Added Yet" => "لا يوجد أسئلة مضافة حتي الان",
+    "Start by adding your first question" => "ابدأ بإضافة السؤال الأول",
+    "Question Information" => "معلومات السؤال",
+    "Translate Question" => "ترجمة السؤال",
+    "Translate Question and Answer" => "ترجمة السؤال والجواب",
+    "Enter question in" => "أدخل السؤال ب",
+    "Enter answer in" => "أدخل الجواب ب",
+    "Manage Translations" => "إدارة الترجمات",
+    "Selected questions will be deleted!" => "سيتم حذف الأسئلة المحددة!",
+    "Questions deleted successfully" => "تم حذف الأسئلة بنجاح",
+    "Page Content" => "محتوى الصفحة",
+    "Edit Page" => "تعديل الصفحة",
+    "Translate Page" => "ترجمة الصفحة",
+    "Translate Page Content" => "ترجمة محتوى الصفحة",
+    "Page updated successfully" => "تم تحديث الصفحة بنجاح",
+    "No Pages Added Yet" => "لا يوجد صفحات مضافة حتي الان",
+    "Contact administrator to add pages" => "تواصل مع المسؤول لإضافة صفحات",
+    "This is the default language. You can edit it on the edit page." => "هذه هي اللغة الافتراضية. يمكنك تعديلها في صفحة التعديل",
+    "Home" => "الرئيسية",
+    "About" => "عن الشركة",
+    "Privacy" => "الخصوصية",
+    "Terms" => "الشروط والأحكام",
+    "Edit SEO Page" => "تعديل SEO للصفحة",
+    "Back to List" => "رجوع إلى قائمة الصفحات",
+    "SEO Information" => "معلومات SEO",
+    "Meta Title" => "عنوان Meta",
+    "The title that appears in search engines" => "العنوان الذي يظهر في محركات البحث",
+    "The description that appears in search results" => "الوصف الذي يظهر في نتائج البحث",
+    "Comma separated keywords related to the page" => "كلمات مفتاحية مفصولة بفواصل",
+    "Social Media Sharing" => "مشاركة في الوسائط الاجتماعية",
+    "OG Title" => "عنوان OG",
+    "Title that appears when sharing on social media" => "العنوان الذي يظهر عند مشاركة في الوسائط الاجتماعية",
+    "OG Description" => "وصف OG",
+    "Description that appears when sharing on social media" => "الوصف الذي يظهر عند مشاركة في الوسائط الاجتماعية",
+    "OG Image" => "صورة OG",
+    "The image that appears when sharing on social media" => "الصورة التي تظهر عند مشاركة في الوسائط الاجتماعية",
+    "Structured Data" => "بيانات منظمة",
+    "JSON-LD Structured Data" => "بيانات منظمة JSON-LD",
+    "JSON-LD format structured data for rich snippets" => "صيغة بيانات منظمة JSON-LD للعروض المتقدمة",
+    "Invalid JSON format" => "صيغة JSON غير صالحة",
+    "View SEO Page" => "عرض صفحة SEO",
+    "Page Name" => "اسم الصفحة",
+    "Not Set" => "غير معين",
+    "Translate SEO Page" => "ترجمة صفحة SEO",
+    "Translate SEO Content" => "ترجمة محتوى SEO",
+    "Enter description in" => "أدخل الوصف ب",
+    "Enter keywords in" => "أدخل الكلمات المفتاحية ب",
+    "Enter OG title in" => "أدخل عنوان OG ب",
+    "Enter OG description in" => "أدخل وصف OG ب",
+    "SEO Page Updated Successfully" => "تم تحديث صفحة SEO بنجاح",
+    "No SEO pages found" => "لا يوجد صفحات SEO",
+    "You do not have permission to show this ticket" => "ليس لديك صلاحية لعرض هذه التذكرة",
+    "You do not have permission to reply to this ticket" => "ليس لديك صلاحية للرد على هذه التذكرة",
+    "Previous Chats" => "المحادثات السابقة",
+    "Notes & Support" => "الملاحظات والدعم",
+    "Demo Account Notice: This is a demo account with limited functionality. You cannot make any modifications, and many features are restricted or unavailable." => "ملاحظة: هذا حساب تجريبي بوظيفة محدودة. لا يمكنك إجراء أي تعديلات، ويتم تقييد العديد من الميزات أو عدم وجودها.",
+    "Confirm Backup" => "تأكيد النسخ الاحتياطي",
+    "Are you sure you want to create a new backup? This may take several minutes." => "هل أنت متأكد أنك تريد إنشاء نسخة جديدة احتياطية؟ قد يستغرق هذا بعض الوقت.",
+    "Yes, create it!" => "نعم، قم بإنشاءه!",
+    "Avg. Session Duration" => "متوسط مدة الجلسة",
+    "Engagement Rate" => "معدل المشاركة",
+    "Bounce Rate" => "معدل الارتداد",
+    "Sessions Per User" => "الجلسات لكل مستخدم",
+    "Device Categories" => "أنواع الأجهزة",
+    "User Engagement" => "مشاركة المستخدمين",
+    "Avg. Engagement Time" => "متوسط وقت المشاركة",
+    "Engaged Sessions" => "جلسات المشاركة",
+    "Visitors & Page Views Trend" => "اتجاهات الزوار ومشاهدات الصفحات",
+    "Top Referrers" => "أهم المصادر",
+    "Referrer URL" => "رابط المصدر",
+    "View Per Session" => "المشاهدات لكل جلسة",
+    "Views Per Session" => "المشاهدات لكل جلسة",
+    "Device" => "الجهاز",
+    "You are about to disable Google Analytics tracking. You can re-enable it later." => "أنت على وشك تعطيل تتبع جوجل أناليتكس. يمكنك إعادة تفعيله لاحقاً.",
+    "Enter your email or phone number" => "أدخل البريد الإلكتروني أو رقم الهاتف",
+    "Email or Phone" => "البريد الإلكتروني أو رقم الهاتف",
+    "Import Customers" => "استيراد الطلاب",
+    "Drop CSV or Excel file here or click to upload" => "اسحب ملف CSV أو Excel هنا أو انقر للتحميل",
+    "File Format Instructions" => "تعليمات تنسيق الملف",
+    "The file should have the following columns in order:" => "يجب أن يحتوي الملف على الأعمدة التالية بالترتيب:",
+    "Download CSV Template" => "تحميل قالب CSV",
+    "Download Excel Template" => "تحميل قالب Excel",
+    "Error in line" => "خطأ في السطر",
+    "Imported" => "تم استيراد",
+    "customers successfully" => "طالب بنجاح",
+    "An error occurred while importing the file:" => "حدث خطأ أثناء استيراد الملف:",
+    "If password is not provided, a default password will be set." => "إذا لم يتم تحديد كلمة المرور، سيتم تعيين كلمة مرور افتراضية (123456789).",
+    "Import" => "استيراد",
+    "Import Users" => "استيراد المستخدمين",
+    "Available Roles" => "الأدوار المتاحة",
+    "Invalid role" => "دور غير صالح",
+    "Required fields are missing" => "الحقول المطلوبة مفقودة",
+    "users successfully" => "مستخدم بنجاح",
+    "optional" => "اختياري",
+    "Email already exists" => "البريد الإلكتروني مستخدم بالفعل",
+    "Reset All Translations" => "إعادة ضبط جميع الترجمات",
+    "Are you sure you want to reset all translations to their original values?" => "هل أنت متأكد من رغبتك في إعادة ضبط جميع الترجمات إلى قيمها الأصلية؟",
+    "Yes, reset all!" => "نعم، أعد ضبط الكل!",
+    "Reset Complete" => "اكتملت إعادة الضبط",
+    "All translations have been reset to their original values." => "تمت إعادة ضبط جميع الترجمات إلى قيمها الأصلية.",
+    "All translations have been reset to original values" => "تمت إعادة ضبط جميع الترجمات إلى القيم الأصلية",
+    "Show All" => "عرض الكل",
+    "Show Empty" => "عرض الفارغة",
+    "Error updating language file" => "خطأ في تحديث ملف اللغة",
+    "Main Website Translations" => "ترجمات الموقع الرئيسي",
+    "Dashboard Translations" => "ترجمات لوحة التحكم",
+    "Back to Languages" => "رجوع إلى اللغات",
+    "Total Keys" => "إجمالي المفاتيح",
+    "Key" => "المفتاح",
+    "Search translations" => "بحث عن ترجمات",
+    "Reset to Default" => "إعادة ضبط إلى القيم الأصلية",
+    "Default Value" => "القيمة الافتراضية",
+    "Translation" => "الترجمة",
+    "Reset to original value" => "إعادة ضبط إلى القيمة الأصلية",
+    "No translation keys found" => "لا يوجد مفاتيح ترجمة",
+    "Subscribers" => "المشتركين",
+    "Add New Subscriber" => "إضافة مشترك جديد",
+    "Edit Subscriber" => "تعديل المشترك",
+    "Enter Email" => "أدخل البريد الإلكتروني",
+    "Date Added" => "تاريخ الإضافة",
+    "Unsubscribe Link" => "رابط الإلغاء",
+    "Subscriber added successfully" => "تم إضافة المشترك بنجاح",
+    "Subscriber updated successfully" => "تم تحديث المشترك بنجاح",
+    "Subscriber deleted successfully" => "تم حذف المشترك بنجاح",
+    "Subscribers deleted successfully" => "تم حذف المشتركين بنجاح",
+    "You will not be able to recover this item!" => "لن تكون قادراً على استرجاع هذا العنصر!",
+    "You will not be able to recover these items!" => "لن تكون قادراً على استرجاع هذه العناصر!",
+    "Add New" => "إضافة جديد",
+    "Newsletters Subscribers" => "مشتركي النشرات",
+    "New Article Published" => "تم نشر مقال جديد",
+    "We have published a new article that we think will interest you" => "لقد نشرنا مقالًا جديدًا يعتقد أنه سيعجبك",
+    "Read The Article" => "قراءة المقال",
+    "Thanks for subscribing to our newsletter" => "شكراً لتسجيلك في نشرتنا الإخبارية",
+    "If you no longer wish to receive these emails" => "إذا لم تعد تريد استلام هذه البريد إلكترونية",
+    "Unsubscribe" => "إلغاء الاشتراك",
+    "Newsletter" => "النشرة الإخبارية",
+    "Blog notification" => "إشعار المدونة",
+    "Blog notification sent" => "تم إرسال إشعار المدونة",
+    "Blog notification failed" => "فشل إرسال إشعار المدونة",
+    "Email notification queued" => "تم ترتيب البريد الإلكتروني",
+    "No active subscribers found" => "لا يوجد مشتركين مفعلين",
+    "Failed to send notification" => "فشل إرسال الإشعار",
+    "Sending notifications" => "إرسال الإشعارات",
+    "Tasks & Chats" => "المهام والمحادثات",
+    "Tasks" => "المهام",
+    "Chats" => "المحادثات",
+    "Task added successfully" => "تم إضافة المهمة بنجاح",
+    "Task updated successfully" => "تم تحديث المهمة بنجاح",
+    "Task status updated successfully" => "تم تحديث حالة المهمة بنجاح",
+    "Task deleted successfully" => "تم حذف المهمة بنجاح",
+    "Tasks deleted successfully" => "تم حذف المهام بنجاح",
+    "You do not have permission to edit this task because it is not assigned to you" => "ليس لديك صلاحية لتعديل هذه المهمة لأنها لم تُعين إليك",
+    "An error occurred while updating the task status: " => "حدث خطأ أثناء تحديث حالة المهمة: ",
+    "Overdue tasks status updated successfully" => "تم تحديث حالة المهام المتأخرة بنجاح",
+    "An error occurred while updating the overdue tasks status: " => "حدث خطأ أثناء تحديث حالة المهام المتأخرة: ",
+    "delayed" => "متأخر",
+    "cancelled" => "ملغي",
+    "Executor" => "المنفذ",
+    "Creation Time" => "وقت الإنشاء",
+    "Creation Date" => "تاريخ الإنشاء",
+    "Due Date" => "تاريخ الاستحقاق",
+    "Task Information" => "معلومات المهمة",
+    "Task Details" => "تفاصيل المهمة",
+    "Task Assignees" => "المسؤولون عن المهمة",
+    "Task Creator" => "منشئ المهمة",
+    "Task Executor" => "منفذ المهمة",
+    "Remaining" => "متبقي",
+    "Remaining Time" => "الوقت المتبقي",
+    "Remaining Time Percentage" => "نسبة الوقت المتبقي",
+    "View Details" => "عرض التفاصيل",
+    "Tasks List" => "قائمة المهام",
+    "Add New Task" => "إضافة مهمة جديدة",
+    "Delete Selected Tasks" => "حذف المهام المحددة",
+    "Select All Tasks" => "تحديد كل المهام",
+    "New Tasks" => "المهام الجديدة",
+    "Save Task" => "حفظ المهمة",
+    "Task Title" => "عنوان المهمة",
+    "Task Description" => "وصف المهمة",
+    "Assign To" => "تعيين إلى",
+    "Select User" => "اختر مستخدم",
+    "Edit Task" => "تعديل المهمة",
+    "Delete Task" => "حذف المهمة",
+    "Task Status" => "حالة المهمة",
+    "Deselect All" => "إلغاء تحديد الكل",
+    "This will delete" => "سيتم حذف",
+    "tasks from the database!" => "مهمة من قاعدة البيانات!",
+    "An error occurred while updating the task status:" => "حدث خطأ أثناء تحديث حالة المهمة:",
+    "An error occurred while connecting to the server" => "حدث خطأ أثناء الاتصال بالخادم",
+    "Are you sure you want to complete this task?" => "هل أنت متأكد من أنك تريد إكمال هذه المهمة؟",
+    "You will not be able to undo this action!" => "لن تتمكن من التراجع عن هذا الإجراء!",
+    "You do not have permission to move the task to this status" => "ليس لديك صلاحية لنقل المهمة إلى هذه الحالة",
+    "Updated" => "تم تحديث",
+    "delayed tasks" => "المهام المتأخرة",
+    "Error in checking overdue tasks:" => "خطأ في التحقق من المهام المتأخرة:",
+    "Delayed" => "متأخر",
+    "Cancelled" => "ملغي",
+    "Completed" => "مكتمل",
+    "Created By" => "منشئ المهمة",
+    "Assigned To" => "منفذ المهمة",
+    "Calendar" => "التقويم",
+    "Image size must not exceed 1 MB" => "حجم الصورة يجب أن لا يتجاوز 1 ميجابايت",
+    "Close" => "اغلاق",
+    "Status Filter" => "تصفية التقويم",
+    "Calendar View" => "عرض التقويم",
+    "Month" => "شهر",
+    "Edit Lecture" => "تعديل المحاضرة",
+    "Edit Assignment" => "تعديل الواجب",
+    "Back to Lectures" => "العودة للمحاضرات",
+    "Back to Assignments" => "العودة للواجبات",
+    "Back to Questions" => "العودة للأسئلة",
+    "Select Course" => "اختر الكورس",
+    "Leave empty for no time limit" => "اتركه فارغاً لعدم وجود حد زمني",
+    "Download Current File" => "تحميل الملف الحالي",
+    "Add Option" => "إضافة خيار",
+    "Option Text" => "نص الخيار",
+    "Is Correct" => "إجابة صحيحة",
+    "Required for True/False, Essay, and Numeric questions" => "مطلوب للأسئلة صح/خطأ والمقالية والرقمية",
+    "Options Count" => "عدد الخيارات",
+    "Add Question" => "إضافة سؤال",
+    "Time Limit" => "الحد الزمني",
+    "Time Limit (minutes)" => "الحد الزمني (دقائق)",
+    "Add Lecture" => "إضافة محاضرة",
+    "Questions Count" => "عدد الأسئلة",
+    "Current File" => "الملف الحالي",
+    "Week" => "أسبوع",
+    "Day" => "يوم",
+    "No tasks to display" => "لا يوجد مهام لعرضها",
+    "Tasks Calendar" => "جدول المهام",
+    "Recommended size: 850x179 pixels" => "الحجم الموصى به: 850x179 بكسل",
+    "Recommended size: 500x500 pixels (square)" => "الحجم الموصى به: 500x500 بكسل (مربع)",
+    "Recommended image dimensions are" => "الأبعاد الموصى بها للصورة",
+    "pixels" => "بكسل",
+    "Current dimensions" => "الأبعاد الحالية",
+    "Group created successfully" => "تم إنشاء المجموعة بنجاح",
+    "Permission denied" => "الصلاحية مرفوضة",
+    "Chat ID is required" => "معرف المحادثة مطلوب",
+    "Invalid chat ID" => "معرف المحادثة غير صالح",
+    "Chat not found" => "المحادثة غير موجودة",
+    "You are not a participant in this chat" => "أنت لست مشاركًا في هذه المحادثة",
+    "Unknown User" => "مستخدم غير معروف",
+    "Error loading chat" => "خطأ في تحميل المحادثة",
+    "Chat already exists" => "المحادثة موجودة بالفعل",
+    "Chat created successfully" => "تم إنشاء المحادثة بنجاح",
+    "Error creating chat" => "خطأ في إنشاء المحادثة",
+    "Message cannot be empty" => "لا يمكن أن تكون الرسالة فارغة",
+    "Message sent successfully" => "تم إرسال الرسالة بنجاح",
+    "Added :users to the group" => "تمت إضافة :users إلى المجموعة",
+    "Users added successfully" => "تمت إضافة المستخدمين بنجاح",
+    "This is not a group chat" => "هذه ليست محادثة جماعية",
+    "New admin assigned" => "تم تعيين مسؤول جديد",
+    "as admin" => "كمسؤول",
+    "Left the group" => "غادر المجموعة",
+    "You have left the group" => "لقد غادرت المجموعة",
+    "You are not an admin of this group" => "أنت لست مسؤولًا في هذه المجموعة",
+    "You cannot remove yourself from the group" => "لا يمكنك إزالة نفسك من المجموعة",
+    "User is not a participant in this group" => "المستخدم ليس مشاركًا في هذه المجموعة",
+    "User not found" => "المستخدم غير موجود",
+    ":admin removed :user from the group" => ":admin قام بإزالة :user من المجموعة",
+    "User has been removed from the group" => "تمت إزالة المستخدم من المجموعة",
+    "Groups" => "المجموعات",
+    "You" => "أنت",
+    "Select a chat to start messaging" => "اختر محادثة لبدء المراسلة",
+    "Choose from your existing chats or start a new conversation" => "اختر من محادثاتك الحالية أو ابدأ محادثة جديدة",
+    "Show Chats" => "عرض المحادثات",
+    "New Chat" => "محادثة جديدة",
+    "Direct Message" => "رسالة مباشرة",
+    "Group Chat" => "محادثة جماعية",
+    "Group Name" => "اسم المجموعة",
+    "Select Participants" => "اختيار المشاركين",
+    "Manage Participants" => "إدارة المشاركين",
+    "Current Participants" => "المشاركون الحاليون",
+    "Add New Participants" => "إضافة مشاركين جدد",
+    "Add Participants" => "إضافة مشاركين",
+    "Group Participants" => "المشاركون في المجموعة",
+    "Remove Participant" => "إزالة مشارك",
+    "Are you sure you want to remove this participant from the group?" => "هل أنت متأكد أنك تريد إزالة هذا المشارك من المجموعة؟",
+    "This action cannot be undone." => "لا يمكن التراجع عن هذا الإجراء.",
+    "Remove" => "إزالة",
+    "Loading" => "جاري التحميل",
+    "Invalid response format" => "تنسيق استجابة غير صالح",
+    "An error occurred while loading the chat" => "حدث خطأ أثناء تحميل المحادثة",
+    "Error" => "خطأ",
+    "Refresh" => "تحديث",
+    "participants" => "مشاركين",
+    "Online" => "متصل",
+    "Offline" => "غير متصل",
+    "View Participants" => "عرض المشاركين",
+    "Are you sure you want to leave this group?" => "هل أنت متأكد أنك تريد مغادرة هذه المجموعة؟",
+    "Leave Group" => "مغادرة المجموعة",
+    "No messages yet" => "لا توجد رسائل بعد",
+    "Download" => "تحميل",
+    "Error sending voice message. Please try again." => "خطأ في إرسال الرسالة الصوتية. يرجى المحاولة مرة أخرى.",
+    "Error accessing microphone" => "خطأ في الوصول إلى الميكروفون",
+    "Could not access microphone. Please check permissions." => "تعذر الوصول إلى الميكروفون. يرجى التحقق من الأذونات.",
+    "File size should not exceed 10MB" => "يجب ألا يتجاوز حجم الملف 10 ميغابايت",
+    "Please enter a message or attach a file" => "الرجاء إدخال رسالة أو إرفاق ملف",
+    "Error sending message. Please try again." => "خطأ في إرسال الرسالة. يرجى المحاولة مرة أخرى.",
+    "New Message" => "رسالة جديدة",
+    "Error removing participant. Please try again." => "خطأ في إزالة المشارك. يرجى المحاولة مرة أخرى.",
+    "Today" => "اليوم",
+    "Yesterday" => "البارحة",
+    "Member" => "عضو",
+    "Can Any Register" => "يسمح بالتسجيل بواسطة الجميع",
+    "Enable this option to allow any user to register, so the user will be able to register without the need to be approved by the admin" => "يسمح بالتسجيل بواسطة الجميع، بحيث يمكن للمستخدمين التسجيل دون الحاجة إلى الموافقة من المسؤول",
+    "Please enable reCAPTCHA settings to prevent spam messages from bots from" => "يرجى تفعيل إعدادات reCAPTCHA لمنع إرسال الرسائل المزعجة من البوتات من",
+    "here" => "هنا",
+    "Page Views" => "عدد الزوار",
+    "Taxes" => "الضرائب",
+    "Taxes settings" => "إعدادات الضرائب",
+    "Add New Tax" => "إضافة ضريبة جديدة",
+    "Type" => "النوع",
+    "Rate value" => "القيمة",
+    "Is Default" => "هل هي ضريبة إفتراضية",
+    "Yes" => "نعم",
+    "No" => "لا",
+    "Tax Created Successfully" => "تم إنشاء الضريبة بنجاح",
+    "Tax Updated Successfully" => "تم تحديث الضريبة بنجاح",
+    "Tax Deleted Successfully" => "تم حذف الضريبة بنجاح",
+    "Taxes List" => "قائمة الضرائب",
+    "No taxes found" => "لا يوجد ضرائب",
+    "Translate Tax" => "ترجمة الضريبة",
+    "Play Store Link" => "رابط متجر جوجل بلاي",
+    "App Store Link" => "رابط متجر آبل",
+    "Error can not send more than 1 message every hour" => "لا يمكن إرسال رسالة أكثر من مرة واحدة في الساعة",
+    "Cookie Notice we value your privacy" => "نحن نقدر خصوصيتك",
+    "This website uses cookies to improve your browsing experience and analyze site traffic." => "يستخدم هذا الموقع الكوكيز لتحسين تجربة التصفح وتحليل حركة الموقع",
+    "Terms of Use" => "الشروط والأحكام",
+    "Accept" => "موافق",
+    "Subscriber unsubscribed successfully" => "تم الغاء الاشتراك بنجاح",
+    "Back to Home"=> "العودة للرئيسية",
+    "Buy new License"=> "شراء ترخيص جديد",
+    "License Management" => "إدارة الترخيص",
+    "Domain & Host" => "الدومين والهوست",
+    "Current License Information" => "معلومات الترخيص الحالي",
+    "License Key" => "مفتاح الترخيص",
+    "Edition" => "الإصدار",
+    "Expiry Date" => "تاريخ الانتهاء",
+    "License Actions" => "إجراءات الترخيص",
+    "Renew License" => "تجديد الترخيص",
+    "Upgrade Edition" => "ترقية الإصدار",
+    "Current Host Information" => "معلومات الهوست الحالي",
+    "Domain" => "الدومين",
+    "Host Status" => "حالة الهوست",
+    "Host Expiry" => "انتهاء الهوست",
+    "Host Actions" => "إجراءات الهوست",
+    "Renew Host" => "تجديد الهوست",
+    "Upgrade Host" => "ترقية الهوست",
+    "standard"=> "القياسى",
+    "professional"=> "الاحترافى",
+    "business"=> "الأعمال",
+    "ultimate"=> "المتكامل",
+    "enterprise"=> "المؤسسة",
+    "life time"=> "مدى الحياة",
+    "days remaining" => "يوم متبقي",
+    "License updated successfully"=> "تم تحديث الترخيص بنجاح",
+    "Enter License Code"=> "ادخل مفتاح التفعيل",
+    "Verify License"=> "تحقق من الترخيص",
+    "Buy Now"=> "شراء الان",
+    "Preview"=> "معاينة",
+    "No Taxes"=> "لا يوجد ضرائب",
+    "Levels Management" => "إدارة المستويات",
+    "Add New Level" => "إضافة مستوى جديد",
+    "Level Name" => "اسم المستوى",
+    "Level" => "المستوى",
+    "Select Level" => "اختر المستوى",
+    "No Level" => "لا يوجد مستوى",
+    "Level added successfully" => "تم إضافة المستوى بنجاح",
+    "Level updated successfully" => "تم تحديث المستوى بنجاح",
+    "Level deleted successfully" => "تم حذف المستوى بنجاح",
+    "Cannot delete level. There are users assigned to this level." => "لا يمكن حذف المستوى. هناك مستخدمين مرتبطين بهذا المستوى.",
+    "Edit Level" => "تعديل المستوى",
+    "Students Count" => "عدد الطلاب",
+    "Courses Count" => "عدد الكورسات",
+    "Students in Level" => "الطلاب في المستوى",
+    "Courses in Level" => "الكورسات في المستوى",
+    "Back to Levels" => "العودة للمستويات",
+    "Student Name" => "اسم الطالب",
+    "Course Name" => "اسم الكورس",
+    "Levels" => "المستويات",
+    "Courses" => "الكورسات",
+    "Add New Course" => "إضافة كورس جديد",
+    "Edit Course" => "تعديل الكورس",
+    "Course added successfully" => "تم إضافة الكورس بنجاح",
+    "Course updated successfully" => "تم تحديث الكورس بنجاح",
+    "Course deleted successfully" => "تم حذف الكورس بنجاح",
+    "Cannot delete course. There are lectures assigned to this course." => "لا يمكن حذف الكورس. هناك محاضرات مرتبطة بهذا الكورس.",
+    "Back to Courses" => "العودة للكورسات",
+    "Update Course" => "تحديث الكورس",
+    "Update Level" => "تحديث المستوى",
+    "Are you sure you want to delete" => "هل أنت متأكد أنك تريد حذف",
+    "Price" => "السعر",
+    "Lectures" => "المحاضرات",
+    "Lecture" => "المحاضرة",
+    "Lecture Name" => "اسم المحاضرة",
+    "Video URL" => "رابط الفيديو",
+    "Files" => "الملفات",
+    "Lecture Type" => "نوع المحاضرة",
+    "Free" => "مجاني",
+    "Paid" => "مدفوع",
+    "Monthly" => "شهري",
+    "Course" => "كورس",
+    "Assignments Count" => "عدد الواجبات",
+    "Lecture added successfully" => "تم إضافة المحاضرة بنجاح",
+    "Lecture updated successfully" => "تم تحديث المحاضرة بنجاح",
+    "Lecture deleted successfully" => "تم حذف المحاضرة بنجاح",
+    "Assignments" => "الواجبات",
+    "Assignment Title" => "عنوان الواجب",
+    "Assignment Description" => "وصف الواجب",
+    "No Limit" => "بدون حد",
+    "Show Answers" => "إظهار الإجابات",
+    "Question Text" => "نص السؤال",
+    "Question Type" => "نوع السؤال",
+    "Points" => "النقاط",
+    "Correct Answer" => "الإجابة الصحيحة",
+    "Explanation" => "الشرح",
+    "Multiple Choice" => "اختيار متعدد",
+    "True/False" => "صح/خطأ",
+    "Essay" => "مقالي",
+    "Numeric" => "رقمي",
+    "Options" => "الخيارات",
+    "Student Assignments" => "واجبات الطلاب",
+    "Student Answers" => "إجابات الطلاب",
+    "Score" => "الدرجة",
+    "Total Points" => "إجمالي النقاط",
+    "Time Spent" => "الوقت المستغرق",
+    "Started At" => "بدأ في",
+    "Submitted At" => "سُلم في",
+    "Not Started" => "لم يبدأ",
+    "Time Expired" => "انتهى الوقت",
+    "Teacher Feedback" => "ملاحظات المعلم",
+    "Assignment added successfully" => "تم إضافة الواجب بنجاح",
+    "Assignment updated successfully" => "تم تحديث الواجب بنجاح",
+    "Assignment deleted successfully" => "تم حذف الواجب بنجاح",
+    "Question added successfully" => "تم إضافة السؤال بنجاح",
+    "Question updated successfully" => "تم تحديث السؤال بنجاح",
+    "Question deleted successfully" => "تم حذف السؤال بنجاح",
+    "Start Assignment" => "ابدأ الواجب",
+    "Submit Assignment" => "سلم الواجب",
+    "Your Answer" => "إجابتك",
+    "View Results" => "عرض النتائج",
+    "Assignment Results" => "نتائج الواجب",
+    "Time Remaining" => "الوقت المتبقي",
+    "minutes" => "دقائق",
+    "seconds" => "ثواني",
+    "Expired" => "منتهي الصلاحية",
+    "Question Image" => "صورة السؤال",
+    "Option Image" => "صورة الخيار",
+    "Upload Files" => "رفع ملفات",
+    "Lecture Files" => "ملفات المحاضرة",
+    "Enter amount" => "أدخل المبلغ",
+    "Enter month number (1-12)" => "أدخل رقم الشهر (1-12)",
+    "Add Assignment" => "إضافة واجب",
+    "quiz_statistics" => "إحصائيات الاختبار",
+    "total_questions" => "إجمالي الأسئلة",
+    "total_points" => "إجمالي النقاط",
+    "multiple_choice" => "اختيار من متعدد",
+    "true_false" => "صواب/خطأ",
+    "no_questions_yet" => "لا توجد أسئلة حتى الآن",
+    "start_adding_first_question" => "ابدأ بإضافة أول سؤال للاختبار",
+    "add_first_question" => "إضافة أول سؤال",
+    "loading" => "جاري التحميل",
+    "saving" => "جاري الحفظ",
+    "add_new_question" => "إضافة سؤال جديد",
+    "supports_math_equations" => "يدعم المعادلات الرياضية - استخدم LaTeX أو MathJax للمعادلات المعقدة",
+    "question_text" => "نص السؤال",
+    "question_image_optional" => "صورة السؤال (اختيارية)",
+    "points" => "النقاط",
+    "answer_explanation_optional" => "شرح الإجابة (اختياري)",
+    "answer_explanation_placeholder" => "اكتب شرحاً للإجابة الصحيحة...",
+    "options" => "الخيارات",
+    "add_option" => "إضافة خيار",
+    "correct_answer" => "إجابة صحيحة",
+    "option_text_placeholder" => "اكتب نص الخيار... يدعم المعادلات الرياضية",
+    "option_image_optional" => "صورة الخيار (اختيارية)",
+    "true" => "صواب",
+    "false" => "خطأ",
+    "model_answer" => "الإجابة النموذجية",
+    "model_answer_placeholder" => "اكتب الإجابة النموذجية للسؤال المقالي...",
+    "correct_numeric_answer" => "الإجابة الرقمية الصحيحة",
+    "enter_correct_number" => "أدخل الرقم الصحيح",
+    "decimal_numbers_allowed" => "يمكن إدخال أرقام عشرية أو صحيحة",
+    "latex_support_note" => "يدعم LaTeX: استخدم $ للمعادلات المضمنة، $$ للمعادلات المنفصلة",
+    "math_preview" => "معاينة المعادلة ستظهر هنا",
+    "math_error" => "خطأ في تنسيق المعادلة",
+    "math_rendered_successfully" => "تم عرض المعادلة بنجاح",
+    "save" => "حفظ",
+    "delete" => "حذف",
+    "confirm_delete_question" => "هل أنت متأكد من حذف هذا السؤال؟",
+    "question_saved_successfully" => "تم حفظ السؤال بنجاح",
+    "question_deleted_successfully" => "تم حذف السؤال بنجاح",
+    "question_not_found" => "لم يتم العثور على السؤال",
+    "error_saving_question" => "حدث خطأ أثناء حفظ السؤال",
+    "error_deleting_question" => "حدث خطأ أثناء حذف السؤال",
+    "error_extracting_question_data" => "خطأ في استخراج بيانات السؤال",
+    "question_text_required" => "يجب كتابة نص السؤال",
+    "options_required" => "يجب إضافة خيارات للسؤال",
+    "correct_answer_required" => "يجب اختيار إجابة صحيحة واحدة على الأقل",
+    "option_text_required" => "يجب كتابة نص للخيارات",
+    "true_false_answer_required" => "يجب اختيار الإجابة الصحيحة (صواب أو خطأ)",
+    "numeric_answer_required" => "يجب إدخال الإجابة الرقمية الصحيحة",
+    "numeric_answer_invalid" => "الإجابة يجب أن تكون رقماً صحيحاً",
+    "essay_answer_required" => "يجب كتابة الإجابة النموذجية للسؤال المقالي",
+    "validation_errors_title" => "يرجى تصحيح الأخطاء التالية:",
+    "auto_saved" => "محفوظ",
+    "current_image" => "الصورة الحالية",
+    "created_at" => "تاريخ الإنشاء",
+    "last_updated" => "آخر تحديث",
+    "options_count" => "خيارات",
+    "unknown_error" => "خطأ غير معروف",
+    "access_denied" => "غير مسموح",
+    "question_text_placeholder" => "اكتب نص السؤال...",
+    "Invoices" => "الفواتير",
+    "Add New Invoice" => "إضافة فاتورة جديدة",
+    "Edit Invoice" => "تعديل الفاتورة",
+    "Invoice Details" => "تفاصيل الفاتورة",
+    "Invoice added successfully" => "تم إضافة الفاتورة بنجاح",
+    "Invoice updated successfully" => "تم تحديث الفاتورة بنجاح",
+    "Invoice deleted successfully" => "تم حذف الفاتورة بنجاح",
+    "Selected invoices deleted successfully" => "تم حذف الفواتير المحددة بنجاح",
+    "Invoice not found" => "الفاتورة غير موجودة",
+    "Invoice does not exist" => "الفاتورة غير موجودة",
+    "Are you sure you want to delete this invoice?" => "هل أنت متأكد من حذف هذه الفاتورة؟",
+    "Invoice Information" => "معلومات الفاتورة",
+    "Invoice ID" => "رقم الفاتورة",
+    "Student Information" => "معلومات الطالب",
+    "Item Details" => "تفاصيل العنصر",
+    "Course Information" => "معلومات الدورة",
+    "Lecture Information" => "معلومات المحاضرة",
+    "Monthly Subscription" => "الاشتراك الشهري",
+    "Item details not available" => "تفاصيل العنصر غير متاحة",
+    "Student information not available" => "معلومات الطالب غير متاحة",
+    "Update Invoice" => "تحديث الفاتورة",
+    "Select Student" => "اختر الطالب",
+    "Select Category" => "اختر الفئة",
+    "Select Type" => "اختر النوع",
+    "Select Item" => "اختر العنصر",
+    "Select Status" => "اختر الحالة",
+    "all_students" => "جميع الطلاب",
+    "all_categories" => "جميع الفئات",
+    "all_types" => "جميع الأنواع",
+    "all_amounts" => "جميع المبالغ",
+    "Date From" => "من تاريخ",
+    "Date To" => "إلى تاريخ",
+    "Amount Range" => "نطاق المبلغ",
+    "Low" => "منخفض",
+    "Medium" => "متوسط",
+    "High" => "عالي",
+    "Apply Filters" => "تطبيق المرشحات",
+    "Clear Filters" => "مسح المرشحات",
+    "choice_placeholder" => "اكتب خيار الإجابة",
+    "mcq_options" => "خيارات الاختيار من متعدد",
+    "essay_type" => "مقالي",
+    "numeric_type" => "رقمي",
+    "remove_option" => "حذف الخيار",
+    "choose_answer" => "اختر الإجابة",
+    "question_number" => "السؤال رقم",
+    "filters" => "المرشحات",
+    "all_levels" => "جميع المستويات",
+    "from_date" => "من تاريخ",
+    "to_date" => "إلى تاريخ",
+    "apply_filters" => "تطبيق المرشحات",
+    "clear_filters" => "مسح المرشحات",
+    "price_range" => "نطاق السعر",
+    "paid_courses" => "الدورات المدفوعة",
+    "low_price" => "سعر منخفض",
+    "medium_price" => "سعر متوسط",
+    "high_price" => "سعر عالي",
+    "currency" => "ج.م",
+    "my_courses" => "دوراتي",
+    "explore_your_courses_description" => "استكشف الدورات المتاحة لمستواك الدراسي",
+    "courses_available" => "دورة متاحة",
+    "no_courses_available" => "لا توجد دورات متاحة",
+    "no_courses_description" => "لا توجد دورات متاحة لمستواك الدراسي حاليا",
+    "back_to_courses" => "العودة للدورات",
+    "filter_lectures" => "فلترة المحاضرات",
+    "lecture_type" => "نوع المحاضرة",
+    "lecture_name" => "اسم المحاضرة",
+    "paid_lectures" => "المحاضرات المدفوعة",
+    "view_lecture" => "عرض المحاضرة",
+    "assignments" => "واجبات",
+    "lectures" => "محاضرات",
+    "image" => "صورة",
+    "purchase_course" => "الاشتراك في الكورس",
+    "course_price" => "سعر الكورس",
+    "purchase_now" => "اشتر الآن",
+    "course_benefits" => "فوائد الكورس",
+    "unlimited_access" => "وصول غير محدود للمحاضرات",
+    "downloadable_materials" => "مواد قابلة للتحميل",
+    "instructor_support" => "دعم من المدرب",
+    "certificate_completion" => "شهادة إتمام",
+    "confirm_purchase" => "تأكيد الشراء",
+    "purchase_confirmation_text" => "هل أنت متأكد من رغبتك في شراء هذا الكورس؟",
+    "yes_purchase" => "نعم، اشتر الآن",
+    "processing_payment" => "جاري معالجة الدفع...",
+    "please_wait" => "يرجى الانتظار",
+    "payment_successful" => "تم الدفع بنجاح!",
+    "course_purchased_successfully" => "تم شراء الكورس بنجاح. يمكنك الآن الوصول لجميع المحاضرات",
+    "start_learning" => "ابدأ التعلم",
+    "already_purchased" => "تم الشراء مسبقاً",
+    "course_is_free" => "هذا الكورس مجاني",
+    "purchase_failed" => "فشل في عملية الشراء",
+    "ok" => "موافق",
+    "Tests" => "الاختبارات",
+    "Score Calc" => "حاسبة الدرجات",
+    "Desmos" => "ديسموس",
+    "free_course_enjoy" => "كورس مجاني - استمتع بالتعلم!",
+    "what_you_get" => "ماذا ستحصل",
+    "proceed_to_payment" => "الذهاب للدفع",
+    "lecture_is_free" => "هذه المحاضرة مجانية",
+    "lecture_purchased_successfully" => "تم شراء المحاضرة بنجاح",
+    "already_subscribed_month" => "لديك اشتراك في هذا الشهر مسبقاً",
+    "month_purchased_successfully" => "تم شراء الاشتراك الشهري بنجاح",
+    "quiz_purchased_successfully" => "تم شراء الاختبار بنجاح",
+    "course_quizzes_purchased_successfully" => "تم شراء اختبارات الكورس بنجاح",
+    "no_description_available" => "لا يوجد وصف متاح",
+    "free" => "مجاني",
+    "completed_assignments" => "الواجبات المكتملة",
+    "lecture_video" => "فيديو المحاضرة",
+    "video_not_supported" => "المتصفح لا يدعم تشغيل الفيديو",
+    "lecture_description" => "وصف المحاضرة",
+    "lecture_files" => "ملفات المحاضرة",
+    "download" => "تحميل",
+    "not_started" => "لم تبدأ",
+    "in_progress" => "قيد التنفيذ",
+    "completed" => "مكتملة",
+    "questions_count" => "عدد الأسئلة",
+    "time_limit" => "الوقت المحدد",
+    "unlimited" => "غير محدود",
+    "score" => "النقاط",
+    "percentage" => "النسبة المئوية",
+    "continue_assignment" => "متابعة الواجب",
+    "start_assignment" => "بدء الواجب",
+    "view_results" => "عرض النتائج",
+    "course_info" => "معلومات الكورس",
+    "course_name" => "اسم الكورس",
+    "back_to_course" => "العودة للكورس",
+    "quick_actions" => "إجراءات سريعة",
+    "start_all_assignments" => "بدء جميع الواجبات",
+    "download_all_files" => "تحميل جميع الملفات",
+    "mark_completed" => "تمثيل كمكتمل",
+    "share" => "مشاركة",
+    "progress_summary" => "ملخص التقدم",
+    "total" => "الإجمالي",
+    "downloading_files" => "جاري تحميل الملفات",
+    "files_download_started" => "بدأ تحميل الملفات",
+    "ready_to_start_assignment" => "هل أنت مستعد لبدء الواجب؟",
+    "yes_start" => "نعم، ابدأ",
+    "no_pending_assignments" => "لا توجد واجبات معلقة",
+    "all_assignments_completed" => "تم إكمال جميع الواجبات",
+    "start_all_assignments_confirm" => "هل تريد بدء جميع الواجبات المعلقة؟",
+    "yes_start_all" => "نعم، ابدأ الكل",
+    "mark_lecture_completed_confirm" => "هل تريد تمثيل هذه المحاضرة كمكتملة؟",
+    "yes_mark_completed" => "نعم، تمثيل كمكتمل",
+    "lecture_marked_completed" => "تم تمثيل المحاضرة كمكتملة",
+    "something_went_wrong" => "حدث خطأ ما",
+    "link_copied" => "تم نسخ الرابط",
+    "lecture_link_copied" => "تم نسخ رابط المحاضرة للحافظة",
+    "files"=> "المرفقات",
+    "lectures_count" => "عدد المحاضرات",
+    "Amount"=> "المبلغ",
+    "Invoice" => "الفاتورة",
+    "Item" => "العنصر",
+    "Payment ID" => "رقم الدفع",
+    "Student" => "الطالب",
+    "Lecture Title" => "عنوان المحاضرة",
+    "Student Invoices" => "فواتير الطلاب",
+    "No Invoices Found" => "لا توجد فواتير",
+    "Add Invoice" => "إضافة فاتورة",
+    "View All Invoices" => "عرض جميع الفواتير",
+    "Quiz" => "اختبار",
+    "Single" => "فردى",
+    "Add Invoice for" => "إضافة فاتورة لـ",
+    "assignment" => "واجب",
+    "assignment_results" => "نتائج الواجب",
+    "time_remaining" => "الوقت المتبقي",
+    "no_time_limit" => "لا يوجد حد زمني",
+    "question" => "سؤال",
+    "previous" => "السابق",
+    "next" => "التالي",
+    "save_progress" => "حفظ التقدم",
+    "submit_assignment" => "سلم الواجب",
+    "write_your_answer_here" => "اكتب إجابتك هنا...",
+    "enter_your_answer" => "أدخل إجابتك",
+    "confirm_submission" => "تأكيد التسليم",
+    "are_you_sure_you_want_to_submit" => "هل أنت متأكد من رغبتك في تسليم الواجب؟",
+    "yes_submit" => "نعم، سلم",
+    "cancel" => "إلغاء",
+    "submitting" => "جاري التسليم",
+    "assignment_submitted_successfully" => "تم تسليم الواجب بنجاح",
+    "progress_saved_successfully" => "تم حفظ التقدم بنجاح",
+    "you_dont_have_permission_to_access_this_assignment" => "ليس لديك صلاحية للوصول لهذا الواجب",
+    "time_expired" => "انتهى الوقت",
+    "final_score" => "النتيجة النهائية",
+    "points_earned" => "النقاط المكتسبة",
+    "correct_answers" => "الإجابات الصحيحة",
+    "minutes_spent" => "الدقائق المستغرقة",
+    "questions_review" => "مراجعة الأسئلة",
+    "pending_review" => "في انتظار المراجعة",
+    "correct" => "صحيح",
+    "incorrect" => "خطأ",
+    "your_answer" => "إجابتك",
+    "no_answer" => "لا توجد إجابة",
+    "not_available" => "غير متاح",
+    "explanation" => "الشرح",
+    "teacher_feedback" => "ملاحظات المعلم",
+    "back_to_lecture" => "العودة للمحاضرة",
+    "pending" => "في الانتظار",
+    "assignment_will_be_submitted_automatically" => "سيتم تسليم الواجب تلقائياً",
+    "unanswered_questions_warning" => "تحذير: لديك {count} سؤال بدون إجابة",
+    "image_not_available" => "الصورة غير متاحة",
+    "numeric_input_help" => "أدخل رقماً صحيحاً أو عشرياً (مثال: 5 أو 3.14)",
+    "numeric_input_help_extended" => "يمكنك إدخال معادلات رياضية (مثال: 2+3*4 أو 10/2) أو استخدام الأزرار أدناه",
+    "progress_saved_locally" => "تم حفظ التقدم محلياً فقط",
+    "show_explanation" => "عرض الشرح",
+    "hide_explanation" => "إخفاء الشرح",
+    "final_warning" => "تحذير نهائي",
+    "only_5_minutes_left" => "تبقى 5 دقائق فقط!",
+    "time_warning" => "تحذير زمني",
+    "only_10_minutes_left" => "تبقى 10 دقائق فقط",
+    "all_options" => "جميع الخيارات",
+    "questions" => "الأسئلة",
+    "add_question" => "إضافة سؤال",
+    "purchase_lecture" => "شراء المحاضرة",
+    "lecture_details" => "تفاصيل المحاضرة",
+    "payment_details" => "تفاصيل الدفع",
+    "included_features" => "المميزات المشمولة",
+    "purchase_required_to_access" => "مطلوب الشراء للوصول",
+    "paid_lecture" => "محاضرة مدفوعة",
+    "course_subscription" => "اشتراك الكورس",
+    "monthly_subscription" => "اشتراك شهري",
+    "access_to_this_lecture" => "الوصول لهذه المحاضرة",
+    "download_materials" => "تحميل المواد",
+    "access_to_assignments" => "الوصول للواجبات",
+    "lifetime_access" => "وصول مدى الحياة",
+    "access_to_all_course_lectures" => "الوصول لجميع محاضرات الكورس",
+    "access_to_all_assignments" => "الوصول لجميع الواجبات",
+    "download_all_materials" => "تحميل جميع المواد",
+    "secure_payment_message" => "دفع آمن ومحمي",
+    "single_lecture_payment" => "دفع محاضرة واحدة",
+    "full_course_access" => "الوصول للكورس الكامل",
+    "invalid_payment_type" => "نوع دفع غير صالح",
+    "payment_failed" => "فشل في الدفع",
+    "complete_payment" => "إتمام الدفع",
+    "redirecting_to_payment_gateway" => "جاري التوجيه إلى بوابة الدفع",
+    "please_wait_redirecting" => "الرجاء الانتظار، جاري التوجيه...",
+    "thank_you_for_purchase" => "شكراً لك على الشراء",
+    "payment_completed_successfully" => "تم إكمال عملية الدفع بنجاح",
+    "access_granted_message" => "تم منحك الوصول إلى المحتوى المطلوب",
+    "invoice_details" => "تفاصيل الفاتورة",
+    "invoice_number" => "رقم الفاتورة",
+    "payment_id" => "معرف الدفع",
+    "item" => "العنصر",
+    "type" => "النوع",
+    "single_lecture" => "محاضرة واحدة",
+    "full_course" => "الكورس كاملاً",
+    "payment_date" => "تاريخ الدفع",
+    "amount_paid" => "المبلغ المدفوع",
+    "watch_lecture" => "مشاهدة المحاضرة",
+    "view_course" => "عرض الكورس",
+    "go_to_courses" => "الذهاب للكورسات",
+    "view_invoices" => "عرض الفواتير",
+    "invoice_email_sent_message" => "سيتم إرسال نسخة من الفاتورة إلى بريدك الإلكتروني",
+    "course_details" => "تفاصيل الكورس",
+    "access_all_lectures" => "الوصول لجميع المحاضرات",
+    "access_all_assignments" => "الوصول لجميع الواجبات",
+    "unlimited_time" => "وقت غير محدود",
+    "course_not_found" => "الكورس غير موجود",
+    "processing" => "جاري المعالجة",
+    "purchase_successful" => "تم الشراء بنجاح",
+    "unknown_payment_type" => "نوع دفع غير معروف",
+    "valid_for_current_month" => "صالح للشهر الحالي",
+    "includes_all_monthly_assignments" => "يشمل جميع الواجبات والاختبارات الشهرية للكورس",
+    "download_all_monthly_materials" => "تحميل جميع المواد الشهرية للكورس",
+    "full_course_purchase" => "شراء الكورس بالكامل",
+    "tests_management" => "إدارة الاختبارات",
+    "add_new_test" => "إضافة اختبار جديد",
+    "filter_tests" => "تصفية الاختبارات",
+    "all_courses" => "جميع الكورسات",
+    "all_statuses" => "جميع الحالات",
+    "price_type" => "نوع السعر",
+    "all_prices" => "جميع الأسعار",
+    "questions_status" => "حالة الأسئلة",
+    "incomplete" => "غير مكتمل",
+    "tests_list" => "قائمة الاختبارات",
+    "test_name" => "اسم الاختبار",
+    "students_count" => "عدد الطلاب",
+    "no_tests" => "لا توجد اختبارات",
+    "no_tests_created" => "لم يتم إنشاء أي اختبارات بعد",
+    "confirm_delete" => "تأكيد الحذف",
+    "are_you_sure_delete_test" => "هل أنت متأكد من حذف الاختبار",
+    "action_cannot_be_undone" => "هذا الإجراء لا يمكن التراجع عنه",
+    "basic_information" => "المعلومات الأساسية",
+    "select_course" => "اختر الكورس",
+    "test_description" => "وصف الاختبار",
+    "test_price" => "سعر الاختبار",
+    "put_zero_if_free" => "ضع صفر إذا كان مجاني",
+    "scoring_system" => "نظام الدرجات",
+    "initial_score" => "الدرجة الأولية",
+    "default_question_score" => "درجة السؤال الافتراضية",
+    "total_score_calculation" => "إجمالي الدرجة = الدرجة الأولية + (عدد الأسئلة × درجة السؤال)",
+    "test_structure" => "هيكل الاختبار",
+    "part1_questions_count" => "عدد أسئلة الجزء الأول",
+    "part1_time_minutes" => "وقت الجزء الأول (بالدقائق)",
+    "part2_questions_count" => "عدد أسئلة الجزء الثاني",
+    "part2_time_minutes" => "وقت الجزء الثاني (بالدقائق)",
+    "break_time_minutes" => "وقت الاستراحة (بالدقائق)",
+    "test_timing_info" => "سيحصل الطلاب على استراحة بين الجزأين، ويمكنهم تجاوزها",
+    "save_test" => "حفظ الاختبار",
+    "back_to_list" => "العودة للقائمة",
+    "test_questions" => "أسئلة الاختبار",
+    "questions_overview" => "نظرة عامة على الأسئلة",
+    "part1_questions" => "أسئلة الجزء الأول",
+    "part2_questions" => "أسئلة الجزء الثاني",
+    "questions_remaining" => "أسئلة متبقية",
+    "questions_added" => "أسئلة مُضافة",
+    "question_image" => "صورة السؤال",
+    "minimum_options_required" => "يجب إضافة خيارين على الأقل",
+    "maximum_options_limit" => "الحد الأقصى 6 خيارات",
+    "question_added_progress" => "تم إضافة السؤال رقم :current من أصل :total في :part",
+    "upload_image" => "رفع صورة",
+    "drag_drop_image" => "اسحب وأفلت الصورة هنا أو انقر للاختيار",
+    "image_requirements" => "PNG, JPG, GIF حتى 2MB",
+    "math_formula_support" => "دعم المعادلات الرياضية",
+    "select_type" => "اختر النوع",
+    "select_part" => "اختر الجزء",
+    "question_content" => "محتوى السؤال",
+    "examples" => "أمثلة",
+    "preview" => "معاينة",
+    "select_correct_option" => "اختر الخيار الصحيح",
+    "enter_exact_numeric_value" => "أدخل القيمة الرقمية الدقيقة",
+    "save_question" => "حفظ السؤال",
+    "option" => "خيار",
+    "remove" => "إزالة",
+    "select_true_false_answer" => "اختر الإجابة صح أو خطأ",
+    "enter_numeric_answer" => "أدخل الإجابة الرقمية",
+    "available_parts" => "الأجزاء المتاحة",
+    "back_to_questions" => "العودة للأسئلة",
+    "questions_incomplete" => "الأسئلة غير مكتملة",
+    "test_ready" => "الاختبار جاهز",
+    "all_questions_added" => "تم إضافة جميع الأسئلة",
+    "no_questions_added_yet" => "لم يتم إضافة أي أسئلة بعد",
+    "total_time" => "الإجمالي",
+    "initial_score_error" => "الدرجة الأولية لا يمكن أن تكون أكبر من أو تساوي الدرجة الكلية",
+    "manage_all_tests" => "إدارة جميع الاختبارات",
+    "all_parts" => "جميع الأجزاء",
+    "feature_coming_soon" => "هذه الميزة قريباً",
+    "View" => "عرض",
+    "edit" => "تعديل",
+    "question_part_required" => "يجب اختيار جزء السؤال",
+    "validation_errors" => "يرجى تصحيح الأخطاء التالية",
+    "test_statistics" => "إحصائيات الاختبار",
+    "must_select_correct_answer" => "يجب اختيار الإجابة الصحيحة",
+    "test_details" => "تفاصيل الاختبار",
+    "statistics" => "الاحصائيات",
+    "total_students" => "عدد الطلاب",
+    "completed_students" => "عدد الطلاب المكتملين",
+    "active_test" => "اختبار نشط",
+    "total_score" => "الدرجة الكلية",
+    "break_time" => "وقت الاستراحة",
+    "first_part" => "الجزء الأول",
+    "second_part" => "الجزء الثاني",
+    "view_questions" => "عرض الأسئلة",
+    "view_test" => "عرض الاختبار",
+    "course" => "الكورس",
+    "mcq" => "اختيار من متعدد",
+    "tf" => "صح أم خطأ",
+    "numeric" => "رقمي",
+    "math_support_note" => "دعم المعادلات الرياضية: استخدم صيغة LaTeX",
+    "image_size_limit" => "الحد الأقصى: 2 ميجا، الأنواع المدعومة: JPG, PNG, GIF",
+    "question_part" => "جزء السؤال",
+    "part_first" => "الجزء الأول",
+    "part_second" => "الجزء الثاني",
+    "points_label" => "النقاط",
+    "question_explanation_optional" => "شرح السؤال (اختياري)",
+    "question_explanation_placeholder" => "اكتب شرحاً للسؤال أو إرشادات للطلاب...",
+    "correct_answer_label" => "الإجابة الصحيحة:",
+    "all_questions_added_already" => "تم إضافة جميع الأسئلة المطلوبة",
+    "max_options_limit" => "الحد الأقصى 6 خيارات",
+    "min_two_options_required" => "يجب إضافة خيارين على الأقل",
+    "must_select_tf_answer" => "يجب اختيار الإجابة الصحيحة (صح أم خطأ)",
+    "save_question_error" => "خطأ في حفظ السؤال",
+    "delete_question_error" => "خطأ في حذف السؤال",
+    "numeric_question" => "رقمي",
+    "numbering_will_be_set" => "سيتم تحديد الترقيم بعد اختيار الجزء",
+    "Tests Price" => "سعر الاختبارات",
+    "tests" => "الاختبارات",
+    "explore_available_tests_and_practice" => "استكشف الاختبارات المتاحة ومارس مهاراتك",
+    "tests_available" => "اختبار متاح",
+    "course_tests_price" => "سعر اختبارات الكورس",
+    "all_tests_purchased" => "تم شراء جميع الاختبارات",
+    "locked" => "مقفل",
+    "start_test" => "بدء الاختبار",
+    "continue_test" => "متابعة الاختبار",
+    "purchase_test" => "شراء الاختبار",
+    "access_free_test" => "الوصول للاختبار المجاني",
+    "purchase_all_course_tests_desc" => "شراء جميع اختبارات الكورس بسعر مخفض",
+    "purchase_all_tests" => "شراء جميع الاختبارات",
+    "no_tests_available" => "لا توجد اختبارات متاحة",
+    "no_tests_description" => "لا توجد اختبارات متاحة حالياً، تحقق مرة أخرى لاحقاً",
+    "test_information" => "معلومات الاختبار",
+    "test_parts" => "أجزاء الاختبار",
+    "max_points" => "أقصى نقاط",
+    "ready_to_start" => "جاهز للبدء",
+    "test_ready_to_start_desc" => "يمكنك بدء الاختبار الآن",
+    "first_part_in_progress" => "الجزء الأول قيد التنفيذ",
+    "continue_where_you_left" => "تابع من حيث توقفت",
+    "ready_for_second_part" => "جاهز للجزء الثاني",
+    "second_part_in_progress" => "الجزء الثاني قيد التنفيذ",
+    "test_completed" => "تم إكمال الاختبار",
+    "click_start_to_begin" => "انقر لبدء الاختبار",
+    "important_notice" => "إشعار مهم",
+    "test_start_warning" => "بمجرد بدء الاختبار، سيبدأ العداد ولا يمكن إيقافه حتى إنهاء الجزء",
+    "are_you_ready_to_start" => "هل أنت مستعد للبدء؟",
+    "starting_test" => "جاري بدء الاختبار",
+    "connection_error" => "خطأ في الاتصال",
+    "back_to_tests" => "العودة للاختبارات",
+    "taking_test" => "أداء الاختبار",
+    "remaining_time" => "الوقت المتبقي",
+    "progress" => "التقدم",
+    "current_score" => "النتيجة الحالية",
+    "time_running_out_warning" => "تحذير: الوقت ينفد! أقل من 5 دقائق متبقية",
+    "note" => "ملاحظة",
+    "exit_test" => "الخروج من الاختبار",
+    "finish_part_1" => "إنهاء الجزء الأول",
+    "submit_test" => "تسليم الاختبار",
+    "test_exit_warning" => "هل أنت متأكد من الخروج؟ ستفقد تقدمك الحالي",
+    "five_minutes_remaining" => "5 دقائق متبقية فقط! أسرع في الإجابة",
+    "time_up" => "انتهى الوقت",
+    "test_time_finished" => "انتهى وقت الاختبار وسيتم التسليم تلقائياً",
+    "are_you_sure_submit" => "هل أنت متأكد من التسليم؟",
+    "exit_test_warning" => "هل أنت متأكد من الخروج من الاختبار؟ ستفقد تقدمك الحالي",
+    "yes_exit" => "نعم، اخرج",
+    "submit_part" => "تسليم الجزء",
+    "are_you_sure_submit_part" => "هل أنت متأكد من تسليم",
+    "test_auto_submitted" => "تم تسليم الاختبار تلقائياً بسبب انتهاء الوقت",
+    "leave_page_warning" => "هل أنت متأكد من مغادرة صفحة الاختبار؟ قد تفقد تقدمك الحالي",
+    "break_time_description" => "خذ استراحة قبل الجزء الثاني من الاختبار",
+    "starting_second_part_automatically" => "سيبدأ الجزء الثاني تلقائياً خلال 3 ثوانٍ",
+    "current_score_after_part1" => "نتيجتك بعد الجزء الأول",
+    "waiting" => "في الانتظار",
+    "break_time_remaining" => "وقت الاستراحة المتبقي",
+    "break_timer_description" => "يمكنك بدء الجزء الثاني في أي وقت، أو انتظار انتهاء وقت الاستراحة",
+    "break_tips_title" => "نصائح للاستراحة",
+    "break_tip_1" => "استرح وخذ نفساً عميقاً",
+    "break_tip_2" => "راجع إجاباتك في الجزء الأول ذهنياً",
+    "break_tip_3" => "اشرب الماء وتمدد قليلاً",
+    "break_tip_4" => "ركز على الجزء الثاني القادم",
+    "break_tip_5" => "ثق بنفسك وبإعدادك للاختبار",
+    "start_second_part" => "بدء الجزء الثاني",
+    "break_time_not_over" => "وقت الاستراحة لم ينته بعد",
+    "still_have_break_time" => "لا يزال لديك وقت للاستراحة، هل تريد المتابعة الآن؟",
+    "continue_anyway" => "متابعة رغم ذلك",
+    "wait_more" => "انتظار أكثر",
+    "ready_to_continue_test" => "مستعد لمتابعة الاختبار؟",
+    "starting_second_part" => "جاري بدء الجزء الثاني",
+    "break_time_over" => "انتهى وقت الاستراحة",
+    "test_results" => "نتائج الاختبار",
+    "test_summary" => "ملخص الاختبار",
+    "out_of" => "من أصل",
+    "answered_questions" => "الأسئلة المجابة",
+    "wrong_answers" => "الإجابات الخاطئة",
+    "not_answered" => "لم يتم الإجابة",
+    "print_results" => "طباعة النتائج",
+    "share_results" => "مشاركة النتائج",
+    "copied" => "تم النسخ",
+    "results_copied_to_clipboard" => "تم نسخ النتائج إلى الحافظة",
+    "purchase_course_tests" => "شراء اختبارات الكورس",
+    "secure_payment_process" => "عملية دفع آمنة ومضمونة",
+    "unlimited_access_after_purchase" => "وصول غير محدود بعد الشراء",
+    "detailed_results_and_analysis" => "نتائج مفصلة وتحليل شامل",
+    "math_equations_support" => "دعم المعادلات الرياضية",
+    "two_part_test_with_break" => "اختبار من جزأين مع استراحة",
+    "auto_save_answers" => "حفظ تلقائي للإجابات",
+    "payment_methods" => "طرق الدفع",
+    "online_payment" => "الدفع الإلكتروني",
+    "vodafone_cash" => "فودافون كاش",
+    "bank_transfer" => "حوالة بنكية",
+    "purchase_summary" => "ملخص الشراء",
+    "no_payment_required" => "لا يتطلب دفع",
+    "secure_payment" => "دفع آمن",
+    "payment_security_note" => "جميع المدفوعات محمية بتشفير SSL ومعالجة بواسطة بوابات دفع موثوقة",
+    "pay_with_vodafone" => "الدفع بفودافون كاش",
+    "confirm_test_purchase_message" => "هل أنت متأكد من شراء هذا الاختبار؟",
+    "terms_and_conditions" => "الشروط والأحكام",
+    "test_purchase_term_1" => "بعد الشراء، ستحصل على وصول دائم للاختبار",
+    "test_purchase_term_2" => "يمكنك إعادة مراجعة النتائج في أي وقت",
+    "test_purchase_term_3" => "لا يمكن استرداد المبلغ بعد بدء الاختبار",
+    "test_purchase_term_4" => "الاختبار صالح لمحاولة واحدة فقط",
+    "test_purchase_term_5" => "يجب إكمال الاختبار خلال الوقت المحدد",
+    "get_access_to_all_tests" => "احصل على وصول لجميع الاختبارات",
+    "course_overview" => "نظرة عامة على الكورس",
+    "total_minutes" => "إجمالي الدقائق",
+    "pricing_options" => "خيارات التسعير",
+    "individual_purchase" => "الشراء المنفرد",
+    "buy_tests_individually" => "شراء كل اختبار منفرداً",
+    "course_package" => "باقة الكورس",
+    "recommended" => "مُوصى به",
+    "get_all_tests_package" => "احصل على جميع الاختبارات في باقة واحدة",
+    "you_save" => "توفر",
+    "included_tests" => "الاختبارات المشمولة",
+    "purchased" => "تم الشراء",
+    "complete_purchase" => "إتمام الشراء",
+    "for_all_tests" => "لجميع الاختبارات",
+    "for" => "لـ",
+    "confirm_course_tests_purchase_message" => "هل أنت متأكد من شراء جميع اختبارات الكورس؟",
+    "course_tests_purchase_term_1" => "بعد الشراء، ستحصل على وصول دائم لجميع اختبارات الكورس",
+    "course_tests_purchase_term_2" => "يمكنك أداء كل اختبار مرة واحدة فقط",
+    "course_tests_purchase_term_3" => "الباقة أوفر من الشراء المنفرد",
+    "course_tests_purchase_term_4" => "لا يمكن استرداد المبلغ بعد الشراء",
+    "course_tests_purchase_term_5" => "صالح لجميع الاختبارات الحالية والمستقبلية في الكورس",
+    "single_test" => "اختبار مفرد",
+    "all_course_tests" => "جميع اختبارات الكورس",
+    "view_tests" => "عرض الاختبارات",
+    "all_tests_for_course" => "جميع اختبارات كورس :course",
+    "test_updated_successfully" => "تم تحديث الاختبار بنجاح",
+    "test_deleted_successfully" => "تم حذف الاختبار بنجاح",
+    "test_created_successfully" => "تم إنشاء الاختبار بنجاح",
+    "finish_part_2" => "إنهاء الجزء الثاني",
+    "dashboard_welcome" => "مرحباً بك في لوحة التحكم",
+    "dashboard_platform_stats" => "إحصائيات المنصة التعليمية",
+    "levels_count" => "عدد المستويات",
+    "courses_count" => "عدد الكورسات",
+    "tests_count" => "عدد الاختبارات",
+    "explanation_image_optional" => "صورة الشرح (اختياري)",
+    "test_preview" => "معاينة الاختبار",
+    "preview_as_student" => "معاينة كطالب",
+    "max_attempts" => "الحد الأقصى للمحاولات",
+    "max_attempts_help" => "عدد المرات التي يمكن للطالب أداء الاختبار فيها",
+    "attempts" => "محاولات",
+    "attempt_number" => "رقم المحاولة",
+    "remaining_attempts" => "المحاولات المتبقية",
+    "completed_attempts" => "المحاولات المكتملة",
+    "attempts_status" => "حالة المحاولات",
+    "attempts_remaining" => "محاولات متبقية",
+    "all_attempts_used" => "جميع المحاولات مستنفدة",
+    "no_more_attempts_available" => "لا توجد محاولات متاحة",
+    "start_new_attempt" => "بدء محاولة جديدة",
+    "test_started" => "تم بدء الاختبار",
+    "previous_attempts" => "المحاولات السابقة",
+    "view_previous_attempts" => "عرض المحاولات السابقة",
+    "attempt_details" => "تفاصيل المحاولة",
+    "attempt_score" => "درجة المحاولة",
+    "attempt_date" => "تاريخ المحاولة",
+    "attempt_status" => "حالة المحاولة",
+    "attempt_answers" => "إجابات المحاولة",
+    "no_previous_attempts" => "لا توجد محاولات سابقة",
+    "attempt_history" => "تاريخ المحاولات",
+    "best_score" => "أفضل درجة",
+    "average_score" => "متوسط الدرجات",
+    "last_attempt" => "آخر محاولة",
+    "first_attempt" => "أول محاولة",
+    "attempt_progress" => "تقدم المحاولات",
+    "attempt_summary" => "ملخص المحاولات",
+    "view_details" => "عرض التفاصيل",
+    "actions" => "الإجراءات",
+    "single_live" => "لايف واحد",
+    "join_live" => "الانضمام لللايف",
+    "view_quizzes" => "عرض الاختبارات",
+    "access_all_lives" => "الوصول لجميع البث المباشر",
+    "access_all_quizzes" => "الوصول لجميع الاختبارات",
+    "Not specified" => "غير محدد",
+    "Monthly Access" => "الوصول الشهري",
+    "Live Sessions" => "جلسات البث المباشر",
+    "Add Live Session" => "إضافة جلسة بث مباشر",
+    "Edit Live Session" => "تعديل جلسة البث المباشر",
+    "Live session added successfully" => "تم إضافة جلسة البث المباشر بنجاح",
+    "Live session updated successfully" => "تم تحديث جلسة البث المباشر بنجاح",
+    "Live session deleted successfully" => "تم حذف جلسة البث المباشر بنجاح",
+    "Start Time" => "وقت البداية",
+    "Duration (minutes)" => "المدة (بالدقائق)",
+    "Max Participants" => "الحد الأقصى للمشاركين",
+    "Required only for paid type" => "مطلوب فقط للنوع المدفوع",
+    "All Levels" => "جميع المستويات",
+    "Upcoming" => "قادم",
+    "Live Now" => "مباشر الآن",
+    "Ended" => "منتهي",
+    "Scheduled" => "مجدول",
+    "Link" => "الرابط",
+    "Duration" => "المدة",
+    "Live" => "البث المباشر",
+    "Not scheduled" => "غير مجدول",
+    "Show Live" => "عرض اللايف",
+    "Live Session Information" => "معلومات جلسة البث المباشر",
+    "Live Stream Link" => "رابط البث المباشر",
+    "Live Stream" => "البث المباشر",
+    "Join Live Stream" => "انضم للبث المباشر",
+    "Join Live Session" => "انضم لجلسة البث المباشر",
+    "Previous Attendance" => "الحضور السابق",
+    "Attending" => "يحضر",
+    "Live Session Details" => "تفاصيل جلسة البث المباشر",
+    "Joined At" => "انضم في",
+    "No live stream link available" => "لا يوجد رابط بث مباشر متاح",
+    "Open in New Tab" => "افتح في تبويب جديد",
+    "Attendance Information" => "معلومات الحضور",
+    "Instructions" => "التعليمات",
+    "Ensure stable internet connection" => "تأكد من استقرار الاتصال بالإنترنت",
+    "Use headphones for better audio" => "استخدم سماعات الأذن لصوت أفضل",
+    "Participate actively in discussions" => "شارك بنشاط في المناقشات",
+    "Do not leave without completing" => "لا تغادر بدون إكمال",
+    "Leave Live Session" => "مغادرة جلسة البث المباشر",
+    "Are you sure you want to leave this live session?" => "هل أنت متأكد من أنك تريد مغادرة جلسة البث المباشر هذه؟",
+    "Your attendance will be recorded." => "سيتم تسجيل حضورك.",
+    "Leave Session" => "مغادرة الجلسة",
+    "Error leaving live session" => "خطأ في مغادرة جلسة البث المباشر",
+    "Purchase Live Session" => "شراء جلسة البث المباشر",
+    "Purchase Options" => "خيارات الشراء",
+    "Single Purchase" => "شراء منفصل",
+    "Purchase this live session only" => "شراء جلسة البث المباشر هذه فقط",
+    "Access all monthly content for this course" => "الوصول لجميع المحتوى الشهري لهذا الكورس",
+    "Full Course Purchase" => "شراء كورس كامل",
+    "Access all content for this course" => "الوصول لجميع محتوى هذا الكورس",
+    "Purchase Summary" => "ملخص الشراء",
+    "What You Get" => "ما ستحصل عليه",
+    "Access to live session" => "الوصول لجلسة البث المباشر",
+    "Recording after session" => "تسجيل بعد الجلسة",
+    "Certificate of attendance" => "شهادة حضور",
+    "Support materials" => "المواد الداعمة",
+    "Confirm Purchase" => "تأكيد الشراء",
+    "Are you sure you want to proceed with this purchase?" => "هل أنت متأكد من أنك تريد المتابعة مع هذا الشراء؟",
+    "Error processing purchase" => "خطأ في معالجة الشراء",
+    "already_attended_live" => "لقد حضرت هذه الجلسة المباشرة من قبل",
+    "left_live_session_successfully" => "تم تسجيل مغادرتك بنجاح",
+    "live_not_started_yet" => "جلسة البث المباشر لم تبدأ بعد. تبدأ في: :start_date",
+    "live_has_ended" => "انتهت جلسة البث المباشر في: :end_date",
+    "live_time_not_available" => "وقت جلسة البث المباشر غير متاح",
+    "live_session_ended" => "انتهت جلسة البث المباشر",
+    "Click to join the live stream in a new tab" => "انقر للانضمام للبث المباشر في تبويب جديد",
+    "Important Notes" => "ملاحظات مهمة",
+    "The live stream will open in a new tab" => "سيفتح البث المباشر في تبويب جديد",
+    "Live Status" => "حالة البث المباشر",
+    "Join now!" => "انضم الآن!",
+    "No time restrictions" => "بدون قيود زمنية",
+    "Interactive learning" => "تعلم تفاعلي",
+    "Real-time questions" => "أسئلة في الوقت الفعلي",
+    "Direct communication" => "تواصل مباشر",
+    "Live Session" => "جلسة البث المباشر",
+    "Live Session Name" => "اسم جلسة البث المباشر",
+    "Select type and category first..." => "اختر النوع والفئة أولاً...",
+    "Please select a type" => "يرجى اختيار نوع الدفع",
+    "Please select a category" => "يرجى اختيار فئة المحتوى",
+    "Please select an item" => "يرجى اختيار العنصر",
+    "Please enter a valid amount" => "يرجى إدخال مبلغ صحيح",
+    "Saving..." => "جاري الحفظ...",
+    "Please select category first..." => "يرجى اختيار الفئة أولاً...",
+    "Please select course first..." => "يرجى اختيار الكورس أولاً...",
+    "Monthly subscription" => "اشتراك شهري",
+    "Monthly subscription already exists for this month and course" => "الاشتراك الشهري موجود بالفعل لهذا الشهر والكورس",
+    "Course already purchased" => "تم شراء الكورس بالفعل",
+    "Subscribe Monthly" => "اشترك شهرياً",
+    "Course Purchased" => "تم شراء الكورس",
+    "Quiz Purchased" => "تم شراء الاختبار",
+    "Live Purchased" => "تم شراء البث المباشر",
+    "Lecture Purchased" => "تم شراء المحاضرة",
+    "Free Content Accessed Successfully" => "تم الوصول للمحتوى المجاني بنجاح",
+    "Back to Lives" => "العودة للبث المباشر",
+    "hours" => "ساعات",
+    "days" => "أيام",
+    "All Courses" => "جميع الكورسات",
+    "All Types" => "جميع الأنواع",
+    "Available" => "متاح",
+    "Purchased" => "تم الشراء",
+    "Purchase Required" => "يتطلب الشراء",
+    "Time Status" => "حالة الوقت",
+    "Purchase" => "شراء",
+    "Year" => "سنة",
+    "Years" => "سنوات",
+    "Months" => "شهور",
+    "Access Duration" => "مدة الوصول",
+    "Preview Assignment" => "معاينة الواجب",
+    "test_comparison" => 'مقارنة الاختبارات',
+    "attempt" => 'محاولة',
+    "score" => 'الدرجة',
+    "percentage" => 'النسبة',
+    "improvement" => 'التقدم',
+    "score_change" => 'تغير الدرجة',
+    "percentage_change" => 'تغير النسبة',
+    "questions_comparison" => 'مقارنة الأسئلة',
+    "comparison_table_description" => 'مقارنة أدائك في المحاولات المختلفة',
+    "progress" => 'التقدم',
+    "correct" => 'صحيح',
+    "incorrect" => 'خطأ',
+    "not_attempted" => 'لم يحاول',
+    "consistent_correct" => 'صحيح باستمرار',
+    "consistent_incorrect" => 'خطأ باستمرار',
+    "improved" => 'تحسن',
+    "mixed_results" => 'نتائج متباينة',
+    "total_correct_questions" => 'إجمالي الأسئلة الصحيحة',
+    "total_incorrect_questions" => 'إجمالي الأسئلة الخاطئة',
+    "improved_questions" => 'الأسئلة المحسنة',
+    "consistency_rate" => 'معدل الثبات',
+    "back_to_results" => 'العودة للنتائج',
+    "retake_test" => 'إعادة الاختبار',
+    "print_comparison" => 'طباعة المقارنة',
+    "comparison_between_attempts" => 'مقارنة بين المحاولات',
+    'first_part' => 'الجزء الأول',
+'second_part' => 'الجزء الثاني',
+'third_part' => 'الجزء الثالث', 
+'fourth_part' => 'الجزء الرابع',
+'fifth_part' => 'الجزء الخامس',
+'part_third' => 'الجزء الثالث',
+'part_fourth' => 'الجزء الرابع',
+'part_fifth' => 'الجزء الخامس',
+];

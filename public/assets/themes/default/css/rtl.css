@@ -1,0 +1,28 @@
+
+/* ===== RTL Starter Overrides ===== */
+html[dir="rtl"] body { direction: rtl; unicode-bidi: plaintext; }
+
+/* Sidebar & content layout (adjust class names if different) */
+html[dir="rtl"] .sidebar { left: auto !important; right: 0 !important; }
+html[dir="rtl"] .content, html[dir="rtl"] .main-content {
+  margin-left: 0 !important; margin-right: 260px !important; /* set to your sidebar width */
+}
+
+/* Navbar utilities */
+html[dir="rtl"] .ms-auto { margin-left: 0 !important; margin-right: auto !important; }
+html[dir="rtl"] .me-auto { margin-right: 0 !important; margin-left: auto !important; }
+
+/* Breadcrumb arrow fix */
+html[dir="rtl"] .breadcrumb .breadcrumb-item + .breadcrumb-item::before { transform: scaleX(-1); }
+
+/* Offcanvas (bootstrap) */
+html[dir="rtl"] .offcanvas-start { left: auto; right: 0; transform: translateX(100%); }
+html[dir="rtl"] .offcanvas-start.show { transform: none; }
+
+/* Icons spacing logical */
+html[dir="rtl"] .nav .nav-link i, html[dir="rtl"] .sidebar .menu-item i {
+  margin-inline-end: .5rem; margin-inline-start: 0;
+}
+
+/* Optional: flip text alignment for headers */
+html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3, html[dir="rtl"] h4, html[dir="rtl"] h5 { text-align: right; }
