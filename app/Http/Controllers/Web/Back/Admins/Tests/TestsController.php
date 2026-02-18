@@ -472,56 +472,65 @@ public function update(Request $request)
     /*========================
      *  PREVIEW (ADMIN VIEW)
      *========================*/
-    public function preview(Request $request)
-    {
-    $id = $request->query('id');
-
-        if (!Gate::allows('show tests')) {
-            return view('themes/default/back.permission-denied');
-        }
-
-        $test = Test::with(['course', 'questions.options'])
-            ->findOrFail(decrypt($id));
-
-        $modulesQuestions    = [];
-        $totalQuestionsAdded = 0;
-        $partsStats          = [];
-        $totalTime           = 0;
-
-        for ($partNumber = 1; $partNumber <= 5; $partNumber++) {
-            $partKey   = 'part' . $partNumber;
-
-            $questions = $test->questions()
-                ->where('part', $partKey)
-                ->orderBy('question_order')
-                ->get();
-
-            $modulesQuestions[$partNumber] = $questions;
-            $totalQuestionsAdded          += $questions->count();
-
-            $countField  = $partKey . '_questions_count';
-            $timeField   = $partKey . '_time_minutes';
-            $expected    = (int) ($test->$countField ?? 0);
-            $timeMinutes = (int) ($test->$timeField ?? 0);
-            $pointsSum   = $questions->sum('score');
-
-            $partsStats[$partNumber] = [
-                'expected_count' => $expected,
-                'time_minutes'   => $timeMinutes,
-                'points_sum'     => $pointsSum,
-            ];
-
-            $totalTime += $timeMinutes;
-        }
-
-        return view('themes.default.back.admins.tests.preview', compact(
-            'test',
-            'modulesQuestions',
-            'totalQuestionsAdded',
-            'partsStats',
-            'totalTime'
-        ));
+    /*========================
+ *  PREVIEW (ADMIN VIEW)
+ *========================*/
+public function preview($id)
+{
+    if (!Gate::allows('show tests')) {
+        return view('themes/default/back.permission-denied');
     }
+
+    try {
+        $testId = decrypt($id);
+    } catch (\Exception $e) {
+        abort(404);
+    }
+
+    $test = Test::with(['course', 'questions.options'])
+        ->findOrFail($testId);
+
+    $modulesQuestions    = [];
+    $totalQuestionsAdded = 0;
+    $partsStats          = [];
+    $totalTime           = 0;
+
+    for ($partNumber = 1; $partNumber <= 5; $partNumber++) {
+
+        $partKey = 'part' . $partNumber;
+
+        $questions = $test->questions()
+            ->where('part', $partKey)
+            ->orderBy('question_order')
+            ->get();
+
+        $modulesQuestions[$partNumber] = $questions;
+        $totalQuestionsAdded += $questions->count();
+
+        $countField  = $partKey . '_questions_count';
+        $timeField   = $partKey . '_time_minutes';
+
+        $expected    = (int) $test->$countField;
+        $timeMinutes = (int) $test->$timeField;
+        $pointsSum   = $questions->sum('score');
+
+        $partsStats[$partNumber] = [
+            'expected_count' => $expected,
+            'time_minutes'   => $timeMinutes,
+            'points_sum'     => $pointsSum,
+        ];
+
+        $totalTime += $timeMinutes;
+    }
+
+    return view('themes.default.back.admins.tests.preview', compact(
+        'test',
+        'modulesQuestions',
+        'totalQuestionsAdded',
+        'partsStats',
+        'totalTime'
+    ));
+}
 
 
 public function printResults($id)

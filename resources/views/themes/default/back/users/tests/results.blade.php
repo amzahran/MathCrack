@@ -5,7 +5,6 @@
 @endsection
 
 @section('css')
-    <!-- MathJax -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script>
         window.MathJax = {
@@ -205,8 +204,6 @@
             border: 1px solid #22c55e;
         }
 
-       
-
         .test-parts {
             display: flex;
             flex-direction: column;
@@ -316,35 +313,31 @@
             word-wrap: break-word;
         }
 
-        /* صور السؤال والشرح */
         .question-image,
         .explanation-image {
             margin-bottom: 12px;
             text-align: center;
         }
 
-        /* صورة السؤال والشرح نفس الحجم */
-.question-image img,
-.explanation-image-wrapper img {
-    max-width: 250px;   /* كبّر أو صغّر الرقم براحتك */
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
-}
+        .question-image img,
+        .explanation-image-wrapper img {
+            max-width: 250px;
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+        }
 
-/* صور الاختيارات أصغر قليلا */
-.option-image-wrapper img {
-    max-width: 180px;   /* أصغر من السؤال/الشرح */
-    width: 100%;
-    height: auto;
-    border-radius: 6px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
+        .option-image-wrapper img {
+            max-width: 180px;
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
 
-        /* صور الاختيارات أصغر */
         .options-review img {
             max-width: 200px;
             width: 100%;
@@ -356,18 +349,17 @@
         }
 
         .option-image-wrapper {
-    margin-bottom: 6px;
-}
+            margin-bottom: 6px;
+        }
 
-.option-image-wrapper img {
-    max-width: 200px;
-    width: 100%;
-    border-radius: 6px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    cursor: zoom-in;
-}
-
+        .option-image-wrapper img {
+            max-width: 200px;
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: zoom-in;
+        }
 
         .question-explanation {
             background: #f0f9ff;
@@ -587,7 +579,6 @@
             gap: 6px;
         }
 
-        /* lightbox */
         .image-lightbox-overlay {
             position: fixed;
             inset: 0;
@@ -678,80 +669,61 @@
         $correctAnswers    = 0;
         $wrongAnswers      = 0;
         $answeredQuestions = 0;
-        $totalScoreEarned  = 0;
 
+        $rawEarnedFromAnswers = 0;
         foreach ($allQuestions as $q) {
             $answer = $q->answers->first();
             if ($answer) {
                 $answeredQuestions++;
-                if ($answer->is_correct) {
-                    $correctAnswers++;
-                } else {
-                    $wrongAnswers++;
-                }
-                $totalScoreEarned += ($answer->score_earned ?? 0);
+                if ($answer->is_correct) $correctAnswers++;
+                else $wrongAnswers++;
+
+                $rawEarnedFromAnswers += ($answer->score_earned ?? 0);
             }
         }
 
-        $allowedLevels = [
-    'Digital SAT',
-    'EST I',
-    'EST II',
-    'ACT I',
-    'ACT II',
-];
+        $baseScore = 200;
+        $maxScore  = 800;
+        $targetQuestionsTotal = $maxScore - $baseScore;
 
-$levelName = $test->course->level->name ?? '';
-
-$finalScoreDisplayed = $totalScoreEarned;
-if (($finalScoreDisplayed === 0 || $finalScoreDisplayed === null) && isset($studentTest->final_score)) {
-    $finalScoreDisplayed = $studentTest->final_score;
-}
-
-$roundedScore = $finalScoreDisplayed;
-if ($roundedScore > 0) {
-    $mod = $roundedScore % 10;
-    if ($mod !== 0) {
-        $roundedScore += (10 - $mod);
-    }
-}
-
-if (in_array($levelName, $allowedLevels)) {
-    $finalScoreDisplayed = $roundedScore;
-}
-
-        if (($finalScoreDisplayed === 0 || $finalScoreDisplayed === null) && isset($studentTest->final_score)) {
-            $finalScoreDisplayed = $studentTest->final_score;
+        $rawQuestionsTotal = (float) $allQuestions->sum('score');
+        $scale = 0;
+        if ($rawQuestionsTotal > 0) {
+            $scale = $targetQuestionsTotal / $rawQuestionsTotal;
         }
 
-        // تقريب لأقرب عشرة أعلى
+        $earnedFromQuestionsScaled = $rawEarnedFromAnswers * $scale;
+
+        $finalScoreDisplayed = $baseScore + $earnedFromQuestionsScaled;
+
+        $allowedLevels = ['Digital SAT','EST I','EST II','ACT I','ACT II'];
+        $levelName = $test->course->level->name ?? '';
+
         $roundedScore = $finalScoreDisplayed;
         if ($roundedScore > 0) {
-            $mod = $roundedScore % 10;
+            $mod = ((int) round($roundedScore)) % 10;
             if ($mod !== 0) {
-                $roundedScore += (10 - $mod);
+                $roundedScore = (int) round($roundedScore) + (10 - $mod);
+            } else {
+                $roundedScore = (int) round($roundedScore);
             }
+        } else {
+            $roundedScore = 0;
         }
 
-        $maxScore = $test->total_score ?? 0;
-        if ($maxScore <= 0) {
-            $maxScore = $allQuestions->sum('score');
+        if (in_array($levelName, $allowedLevels)) {
+            $finalScoreDisplayed = $roundedScore;
+        } else {
+            $finalScoreDisplayed = (int) round($finalScoreDisplayed);
         }
 
         $percentage = 0;
         if ($maxScore > 0) {
             $percentage = ($finalScoreDisplayed / $maxScore) * 100;
         }
-
-        $roundedPercentage = 0;
-        if ($maxScore > 0) {
-            $roundedPercentage = ($roundedScore / $maxScore) * 100;
-        }
     @endphp
-    
 
     <div class="main-content">
-        <!-- Header -->
         <div class="results-header">
             <div class="completion-badge">
                 <i class="fas fa-check-circle"></i>
@@ -762,7 +734,7 @@ if (in_array($levelName, $allowedLevels)) {
                     <div class="col-md-8">
                         <h1>@lang('l.test_results')</h1>
                         <p>{{ $test->name }} - {{ $test->course->name ?? '' }}</p>
-                        <p><strong>Attempt:</strong> {{ $studentTest->attempt_number }}</p>
+                        <p><strong>Attempt</strong> {{ $studentTest->attempt_number }}</p>
                     </div>
                     <div class="col-md-4 text-end">
                         <div class="d-flex align-items-center justify-content-end gap-3">
@@ -773,45 +745,17 @@ if (in_array($levelName, $allowedLevels)) {
             </div>
         </div>
 
-        <!-- Score summary -->
         <div class="score-summary">
- <!-- @php
-    $allowedLevels = [
-        'Digital SAT',
-        'EST I',
-        'EST II',
-        'ACT I',
-        'ACT II'
-    ];
-@endphp
-
-@if(in_array($test->course->level->name ?? '', $allowedLevels))
-    <button id="toggleScoreBtn"
-            type="button"
-            class="btn btn-sm btn-primary">
-        Aprox Score
-    </button>
-@endif -->
-
-            <!-- <button id="toggleScoreBtn"
-                            type="button"
-                            class="btn btn-sm btn-primary">
-                        Aprox Score
-                    </button> -->
             <div class="score-header">
                 <h3>@lang('l.test_summary') - Attempt {{ $studentTest->attempt_number }}</h3>
             </div>
+
             <div class="score-body">
                 <div class="score-summary-box">
-                    
-
                     <div class="score-main-label">FINAL SCORE</div>
 
                     <div class="score-main-number score-fraction">
-                        <span id="scoreValue"
-                              class="score-frac-part"
-                              data-original-score="{{ $finalScoreDisplayed }}"
-                              data-rounded-score="{{ $roundedScore }}">
+                        <span id="scoreValue" class="score-frac-part">
                             {{ $finalScoreDisplayed }}
                         </span>
                         <span class="score-frac-slash">/</span>
@@ -819,9 +763,7 @@ if (in_array($levelName, $allowedLevels)) {
                     </div>
 
                     <div class="score-main-percentage">
-                        <span id="percentageValue"
-                              data-original-percentage="{{ number_format($percentage, 1) }}"
-                              data-rounded-percentage="{{ number_format($roundedPercentage, 1) }}">
+                        <span id="percentageValue">
                             {{ number_format($percentage, 1) }}%
                         </span>
                     </div>
@@ -832,31 +774,35 @@ if (in_array($levelName, $allowedLevels)) {
                         <div class="score-item-number">{{ $totalQuestions }}</div>
                         <div class="score-item-label">@lang('l.total_questions')</div>
                     </div>
+
                     <div class="score-item">
                         <div class="score-item-number">{{ $answeredQuestions }}</div>
                         <div class="score-item-label">@lang('l.answered_questions')</div>
                     </div>
+
                     <div class="score-item correct">
                         <div class="score-item-number">{{ $correctAnswers }}</div>
                         <div class="score-item-label">@lang('l.correct_answers')</div>
                     </div>
+
                     <div class="score-item incorrect">
                         <div class="score-item-number">{{ $wrongAnswers }}</div>
                         <div class="score-item-label">@lang('l.wrong_answers')</div>
                     </div>
+
                     <div class="score-item earned">
-                        <div class="score-item-number">{{ $totalScoreEarned }}</div>
+                        <div class="score-item-number">{{ $finalScoreDisplayed }}</div>
                         <div class="score-item-label">@lang('l.points_earned')</div>
                     </div>
+
                     <div class="score-item">
-                        <div class="score-item-number">{{ $test->initial_score ?? 0 }}</div>
+                        <div class="score-item-number">{{ $baseScore }}</div>
                         <div class="score-item-label">@lang('l.initial_score')</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Modules -->
         <div class="test-parts">
             @php $moduleCounter = 1; @endphp
             @foreach($sectionsData as $sectionNumber => $questions)
@@ -865,21 +811,26 @@ if (in_array($levelName, $allowedLevels)) {
                         $moduleTotalQuestions = $questions->count();
                         $moduleCorrect        = 0;
                         $moduleWrong          = 0;
-                        $moduleScoreEarned    = 0;
-                        $moduleScoreTotal     = 0;
+
+                        $moduleRawEarned = 0;
+                        $moduleRawTotal  = 0;
 
                         foreach ($questions as $q) {
-                            $moduleScoreTotal += $q->score;
+                            $moduleRawTotal += (float) $q->score;
                             $ans = $q->answers->first();
                             if ($ans) {
-                                if ($ans->is_correct) {
-                                    $moduleCorrect++;
-                                } else {
-                                    $moduleWrong++;
-                                }
-                                $moduleScoreEarned += ($ans->score_earned ?? 0);
+                                if ($ans->is_correct) $moduleCorrect++;
+                                else $moduleWrong++;
+
+                                $moduleRawEarned += (float) ($ans->score_earned ?? 0);
                             }
                         }
+
+                        $moduleEarnedScaled = $moduleRawEarned * $scale;
+                        $moduleTotalScaled  = $moduleRawTotal * $scale;
+
+                        $moduleEarnedScaled = (int) round($moduleEarnedScaled);
+                        $moduleTotalScaled  = (int) round($moduleTotalScaled);
                     @endphp
 
                     <div class="part-section">
@@ -894,7 +845,7 @@ if (in_array($levelName, $allowedLevels)) {
                             <div class="part-stats d-flex align-items-center gap-3">
                                 <span>{{ $moduleTotalQuestions }} @lang('l.questions')</span>
                                 <span>{{ $moduleCorrect }}/{{ $moduleTotalQuestions }} @lang('l.correct_answers')</span>
-                                <span>{{ $moduleScoreEarned }}/{{ $moduleScoreTotal }} @lang('l.points')</span>
+                                <span>{{ $moduleEarnedScaled }}/{{ $moduleTotalScaled }} @lang('l.points')</span>
                                 <i class="fas fa-chevron-down ms-2"></i>
                             </div>
                         </div>
@@ -907,6 +858,12 @@ if (in_array($levelName, $allowedLevels)) {
                                         $answer     = $question->answers->first();
                                         $isCorrect  = $answer ? $answer->is_correct : false;
                                         $isAnswered = $answer ? (!is_null($answer->answer_text) || !is_null($answer->selected_option_id)) : false;
+
+                                        $qTotalScaled  = (int) round(((float) $question->score) * $scale);
+                                        $qEarnedScaled = 0;
+                                        if ($answer) {
+                                            $qEarnedScaled = (int) round(((float) ($answer->score_earned ?? 0)) * $scale);
+                                        }
                                     @endphp
 
                                     <div class="question-item {{ $isCorrect ? 'question-correct' : ($isAnswered ? 'question-incorrect' : 'question-unanswered') }}">
@@ -928,7 +885,7 @@ if (in_array($levelName, $allowedLevels)) {
                                             </div>
 
                                             <div class="question-score-info">
-                                                {{ $answer ? $answer->score_earned : 0 }}/{{ $question->score }}<br>
+                                                {{ $answer ? $qEarnedScaled : 0 }}/{{ $qTotalScaled }}<br>
                                                 <small>@lang('l.points')</small>
                                             </div>
                                         </div>
@@ -936,53 +893,54 @@ if (in_array($levelName, $allowedLevels)) {
                                         <div class="answer-section">
                                             @switch($question->type)
                                                 @case('mcq')
-    <div class="answer-row">
-        <span class="answer-label">@lang('l.your_answer'):</span>
-        <span class="answer-value {{ $isCorrect ? 'answer-correct' : ($isAnswered ? 'answer-incorrect' : 'answer-unanswered') }}">
-            @if($answer && $answer->selectedOption)
-                {{ $answer->selectedOption->option_text }}
-            @else
-                @lang('l.not_answered')
-            @endif
-        </span>
-    </div>
-    <div class="answer-row">
-        <span class="answer-label">@lang('l.correct_answer'):</span>
-        <span class="answer-value answer-correct">
-            @php
-                $correctOption = $question->options->where('is_correct', true)->first();
-            @endphp
-            {{ $correctOption ? $correctOption->option_text : '-' }}
-        </span>
-    </div>
+                                                    <div class="answer-row">
+                                                        <span class="answer-label">@lang('l.your_answer'):</span>
+                                                        <span class="answer-value {{ $isCorrect ? 'answer-correct' : ($isAnswered ? 'answer-incorrect' : 'answer-unanswered') }}">
+                                                            @if($answer && $answer->selectedOption)
+                                                                {{ $answer->selectedOption->option_text }}
+                                                            @else
+                                                                @lang('l.not_answered')
+                                                            @endif
+                                                        </span>
+                                                    </div>
 
-    <div class="options-review">
-        @foreach($question->options as $optionIndex => $option)
-            <div class="option-review
-                @if($option->is_correct) option-correct @endif
-                @if($answer && $answer->selectedOption && $answer->selectedOption->id == $option->id)
-                    option-selected {{ $option->is_correct ? '' : 'option-incorrect' }}
-                @endif">
+                                                    <div class="answer-row">
+                                                        <span class="answer-label">@lang('l.correct_answer'):</span>
+                                                        <span class="answer-value answer-correct">
+                                                            @php
+                                                                $correctOption = $question->options->where('is_correct', true)->first();
+                                                            @endphp
+                                                            {{ $correctOption ? $correctOption->option_text : '-' }}
+                                                        </span>
+                                                    </div>
 
-                <div class="option-letter">{{ chr(65 + $optionIndex) }}</div>
+                                                    <div class="options-review">
+                                                        @foreach($question->options as $optionIndex => $option)
+                                                            <div class="option-review
+                                                                @if($option->is_correct) option-correct @endif
+                                                                @if($answer && $answer->selectedOption && $answer->selectedOption->id == $option->id)
+                                                                    option-selected {{ $option->is_correct ? '' : 'option-incorrect' }}
+                                                                @endif">
 
-                <div class="option-text">
-                    @if(!empty($option->option_image))
-                        <div class="option-image-wrapper">
-                            <img src="{{ asset($option->option_image) }}"
-                                 alt="Option image"
-                                 class="zoomable-image">
-                        </div>
-                    @endif
+                                                                <div class="option-letter">{{ chr(65 + $optionIndex) }}</div>
 
-                    <div class="option-text-body">
-                        {!! nl2br(e($option->option_text)) !!}
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    </div>
-    @break
+                                                                <div class="option-text">
+                                                                    @if(!empty($option->option_image))
+                                                                        <div class="option-image-wrapper">
+                                                                            <img src="{{ asset($option->option_image) }}"
+                                                                                 alt="Option image"
+                                                                                 class="zoomable-image">
+                                                                        </div>
+                                                                    @endif
+
+                                                                    <div class="option-text-body">
+                                                                        {!! nl2br(e($option->option_text)) !!}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                    @break
 
                                                 @case('tf')
                                                     <div class="answer-row">
@@ -995,6 +953,7 @@ if (in_array($levelName, $allowedLevels)) {
                                                             @endif
                                                         </span>
                                                     </div>
+
                                                     <div class="answer-row">
                                                         <span class="answer-label">@lang('l.correct_answer'):</span>
                                                         <span class="answer-value answer-correct">
@@ -1010,6 +969,7 @@ if (in_array($levelName, $allowedLevels)) {
                                                             {{ ($isAnswered && $answer) ? $answer->answer_text : __('l.not_answered') }}
                                                         </span>
                                                     </div>
+
                                                     <div class="answer-row">
                                                         <span class="answer-label">@lang('l.correct_answer'):</span>
                                                         <span class="answer-value answer-correct">{{ $question->correct_answer }}</span>
@@ -1036,7 +996,7 @@ if (in_array($levelName, $allowedLevels)) {
                                                             </div>
                                                         @endif
 
-                                                        <strong>@lang('l.explanation'):</strong>
+                                                        <strong>@lang('l.explanation')</strong>
                                                         <div class="explanation-text">
                                                             {{ $question->explanation }}
                                                         </div>
@@ -1055,7 +1015,6 @@ if (in_array($levelName, $allowedLevels)) {
             @endforeach
         </div>
 
-        <!-- Actions -->
         <div class="action-buttons">
             <a href="{{ route('dashboard.users.tests') }}" class="btn-action btn-primary-action">
                 <i class="fas fa-list"></i>
@@ -1190,39 +1149,6 @@ if (in_array($levelName, $allowedLevels)) {
         @endif
     </script>
 
-    <!-- toggle original / approx score + percentage -->
-    <!-- <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const scoreEl   = document.getElementById("scoreValue");
-            const percentEl = document.getElementById("percentageValue");
-            const toggleBtn = document.getElementById("toggleScoreBtn");
-
-            if (!scoreEl || !percentEl || !toggleBtn) return;
-
-            const originalScore   = scoreEl.dataset.originalScore;
-            const roundedScore    = scoreEl.dataset.roundedScore;
-            const originalPercent = percentEl.dataset.originalPercentage;
-            const roundedPercent  = percentEl.dataset.roundedPercentage;
-
-            let usingRounded = false;
-
-            toggleBtn.addEventListener("click", function () {
-                if (usingRounded) {
-                    scoreEl.textContent   = originalScore;
-                    percentEl.textContent = originalPercent + '%';
-                    toggleBtn.textContent = "Aprox Score";
-                    usingRounded = false;
-                } else {
-                    scoreEl.textContent   = roundedScore;
-                    percentEl.textContent = roundedPercent + '%';
-                    toggleBtn.textContent = "Original Score";
-                    usingRounded = true;
-                }
-            });
-        });
-    </script> -->
-
-    <!-- lightbox للصور -->
     <script>
         document.addEventListener('click', function (e) {
             const img = e.target.closest('.zoomable-image, .options-review img');

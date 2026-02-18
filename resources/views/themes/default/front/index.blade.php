@@ -9,6 +9,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <meta name="csrf-token" content="{{ csrf_token() }}">
+<!-- <div style="position:fixed;top:90px;left:10px;z-index:999999;background:#ff0;color:#000;padding:6px 10px;font-weight:700">
+  FRONT INDEX LOADED
+</div> -->
+
 
   <style>
     :root {
@@ -1398,12 +1402,12 @@
     </div>
   </div>
 </section>
-
 <section class="cta-section" id="join">
   <div class="container">
     <div class="fade-in">
       <h2 class="cta-title no-break">{{ __('front.journey_title') }}</h2>
-      <p class="lead mb-4">{{ __('front.journey_desc') }}</p>
+      <p class="lead" style="margin-bottom: 5px;">{{ __('front.journey_desc') }}</p>
+      <p class="instructor-name-cta" style="font-weight: bold; font-style: italic; color: #f1c40f; font-size: 1.7rem; margin-top: 0; margin-bottom: 1.5rem;">{{ __('front.journey_instructor') }}</p>
       <a href="{{ route('login') }}" class="cta-button">
         {{ __('front.enroll_now') }}
         @if(app()->getLocale() == 'ar')
@@ -1415,39 +1419,41 @@
     </div>
   </div>
 </section>
-
 <section class="stats-section" id="stats">
   <div class="container">
     <div class="section-title fade-in">
       <h2 class="no-break">{{ __('front.impact_title') }}</h2>
       <p>{{ __('front.impact_desc') }}</p>
+      <h4 style="font-weight: bold; font-style: italic; color: #f1c40f; font-size: 1.7rem;">{{ __('front.instructor_name') }}</h4>
     </div>
 
     <div class="row g-4" id="statsContainer">
       <div class="col-md-3 col-sm-6">
         <div class="stat-item fade-in">
-          <div class="stat-number" id="studentsStat" data-count="18">0</div>
+          <div class="stat-number" id="studentsStat" data-count="{{ (int)($stats['satisfied_students'] ?? 0) }}">0</div>
           <div class="stat-label">{{ __('front.satisfied_students') }}</div>
         </div>
       </div>
 
       <div class="col-md-3 col-sm-6">
         <div class="stat-item fade-in">
-          <div class="stat-number" id="testsStat" data-count="20">0</div>
+          <div class="stat-number" id="testsStat" data-count="{{ (int)($stats['Practice_Tests'] ?? 0) }}">0</div>
+
           <div class="stat-label">{{ __('front.practice_tests') }}</div>
         </div>
       </div>
 
       <div class="col-md-3 col-sm-6">
         <div class="stat-item fade-in">
-          <div class="stat-number" id="coursesStat" data-count="3">0</div>
+          <div class="stat-number" id="coursesStat" data-count="{{ (int)($stats['total_courses'] ?? 0) }}">0</div>
+
           <div class="stat-label">{{ __('front.courses') }}</div>
         </div>
       </div>
 
       <div class="col-md-3 col-sm-6">
         <div class="stat-item fade-in">
-          <div class="stat-number" id="instructorsStat" data-count="1">0</div>
+          <div class="stat-number" id="instructorsStat" data-count="{{ (int)($stats['expert_instructors'] ?? 0) }}">0</div>
           <div class="stat-label">{{ __('front.expert_instructors') }}</div>
         </div>
       </div>
@@ -1685,7 +1691,7 @@
       const timer = setInterval(() => {
         current += step;
         if (current >= target) {
-          element.textContent = target + '+';
+          element.textContent = target + '';
           clearInterval(timer);
         } else {
           element.textContent = Math.floor(current);

@@ -17,30 +17,137 @@ use Symfony\Component\HttpFoundation\IpUtils;
 use Illuminate\Support\Facades\Http;
 use App\Models\Setting;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+use App\Models\Level;
+use App\Models\Course;
+use App\Models\Test;
+use App\Models\Lecture;
 
 class FrontController extends Controller
 {
-public function index(Request $request)
-{
-    $seoPage = SeoPage::getBySlug('/');
-    
-    $totalUsers = DB::table('users')->count();
-    $totalCourses = DB::table('courses')->count();
-    $totalTests = DB::table('tests')->count();
-    
-    // افتراض أن معظم المستخدمين طلاب وعدد قليل مدرسين
-    $instructors = 1;
-    $students = $totalUsers - $instructors;
-    
-    $stats = [
-        'satisfied_students' => $students,           // 9 طلاب
-        'total_courses' => $totalCourses,            // 3 كورسات
-        'Practice_Tests' => $totalTests,             // عدد اختبارات التدريب
-        'expert_instructors' => $instructors,        // 1 مدرب
-    ];
+    public function index(Request $request)
+    {
+        $seoPage = SeoPage::getBySlug('/');
 
-    return view(theme('front.index'), compact('seoPage', 'stats'));
-}
+        $stats = $this->getFrontStats();
+
+        return view(theme('front.index'), compact('seoPage', 'stats'));
+    }
+
+    private function getFrontStats(): array
+    {
+        $totalLevels   = Level::count();
+        $totalCourses  = Course::count();
+        $totalLectures = Lecture::count();
+        $totalTests    = Test::count();
+
+        $totalUsers = Schema::hasTable('users') ? (int) DB::table('users')->count() : 0;
+
+        $instructors = $this->countInstructors($totalUsers);
+        $students    = $this->countStudents($totalUsers, $instructors);
+
+        return [
+            'satisfied_students' => $students,
+            'Practice_Tests'     => $totalTests,
+            'total_courses'      => $totalCourses,
+            'expert_instructors' => $instructors,
+
+            'levels'   => $totalLevels,
+            'lectures' => $totalLectures,
+            'tests'    => $totalTests,
+            'courses'  => $totalCourses,
+        ];
+    }
+
+    private function countInstructors(int $totalUsers): int
+    {
+        if ($totalUsers <= 0) {
+            return 0;
+        }
+
+        // Spatie roles
+        if (Schema::hasTable('model_has_roles') && Schema::hasTable('roles')) {
+            $roleNames = ['instructor', 'teacher', 'admin', 'super-admin'];
+
+            $count = (int) DB::table('model_has_roles')
+                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                ->whereIn('roles.name', $roleNames)
+                ->distinct('model_has_roles.model_id')
+                ->count('model_has_roles.model_id');
+
+            return max($count, 1);
+        }
+
+        // users.role
+        if (Schema::hasColumn('users', 'role')) {
+            $count = (int) DB::table('users')
+                ->whereIn('role', ['instructor', 'teacher', 'admin'])
+                ->count();
+
+            return max($count, 1);
+        }
+
+        // users.type
+        if (Schema::hasColumn('users', 'type')) {
+            $count = (int) DB::table('users')
+                ->whereIn('type', ['instructor', 'teacher', 'admin'])
+                ->count();
+
+            return max($count, 1);
+        }
+
+        // fallback
+        return 1;
+    }
+
+    private function countStudents(int $totalUsers, int $instructors): int
+    {
+        if ($totalUsers <= 0) {
+            return 0;
+        }
+
+        // Spatie roles
+        if (Schema::hasTable('model_has_roles') && Schema::hasTable('roles')) {
+            $roleNames = ['student', 'learner'];
+
+            $count = (int) DB::table('model_has_roles')
+                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                ->whereIn('roles.name', $roleNames)
+                ->distinct('model_has_roles.model_id')
+                ->count('model_has_roles.model_id');
+
+            if ($count > 0) {
+                return $count;
+            }
+        }
+
+        // users.role
+        if (Schema::hasColumn('users', 'role')) {
+            $count = (int) DB::table('users')
+                ->whereIn('role', ['student', 'learner'])
+                ->count();
+
+            if ($count > 0) {
+                return $count;
+            }
+        }
+
+        // users.type
+        if (Schema::hasColumn('users', 'type')) {
+            $count = (int) DB::table('users')
+                ->whereIn('type', ['student', 'learner'])
+                ->count();
+
+            if ($count > 0) {
+                return $count;
+            }
+        }
+
+        // fallback
+        return max($totalUsers - $instructors, 0);
+    }
+
     public function about(Request $request)
     {
         $seoPage = SeoPage::getBySlug('about');
@@ -56,7 +163,6 @@ public function index(Request $request)
             $query->where('title', 'like', '%' . $request->search . '%');
         }
 
-        // فلترة حسب التصنيف
         if ($request->category) {
             $query->whereHas('category', function ($q) use ($request) {
                 $q->where('slug', $request->category);
@@ -73,36 +179,35 @@ public function index(Request $request)
     public function blogDetails(Request $request, $slug)
     {
         $seoPage = SeoPage::getBySlug('blog-post');
-        $post = Blog::where('slug', $slug)->first();
-        $related_posts = Blog::where('blog_category_id', $post->blog_category_id)->where('id', '!=', $post->id)->orderByDesc('id')->limit(3)->get();
+
+        $post = Blog::where('slug', $slug)->firstOrFail();
+
+        $related_posts = Blog::where('blog_category_id', $post->blog_category_id)
+            ->where('id', '!=', $post->id)
+            ->orderByDesc('id')
+            ->limit(3)
+            ->get();
+
         return view(theme('front.blog_details'), compact('post', 'related_posts', 'seoPage'));
     }
 
     public function blogReply(Request $request)
     {
-        // التحقق من تسجيل دخول المستخدم
         if (!auth()->check()) {
             return redirect()->route('login');
         }
 
-        // التحقق من صحة البيانات
         $request->validate([
-            'content' => 'required|string',
-            'blog_id' => 'required|exists:blogs,id',
-            'parent_id' => 'nullable|exists:blog_comments,id'
+            'content'   => 'required|string',
+            'blog_id'   => 'required|exists:blogs,id',
+            'parent_id' => 'nullable|exists:blog_comments,id',
         ]);
 
-        // إنشاء تعليق جديد
         $comment = new BlogComment();
-        $comment->blog_id = $request->blog_id;
-        $comment->user_id = auth()->user()->id;
-        $comment->content = $request->content;
-
-        // إذا كان هناك parent_id فهو رد على تعليق
-        if ($request->parent_id) {
-            $comment->parent_id = $request->parent_id;
-        }
-
+        $comment->blog_id  = (int) $request->blog_id;
+        $comment->user_id  = (int) auth()->id();
+        $comment->content  = (string) $request->content;
+        $comment->parent_id = $request->parent_id ? (int) $request->parent_id : null;
         $comment->save();
 
         return back()->with('success', __('l.Comment added successfully'));
@@ -131,64 +236,71 @@ public function index(Request $request)
     public function contactStore(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email',
-            'subject' => 'nullable|string',
-            'phone' => 'required|string',
-            'details' => 'required|string',
+            'name'                 => 'required|string|max:255',
+            'email'                => 'required|email|max:255',
+            'subject'              => 'nullable|string|max:255',
+            'phone'                => 'required|string|max:50',
+            'details'              => 'required|string',
             'g-recaptcha-response' => 'nullable|string',
         ]);
 
-        // التحقق من وجود حقل fax_number فخ البوتات
+        // honeypot
         if ($request->filled('fax_number')) {
             abort(403, 'Bot detected');
         }
-        
-        // جلب الإعداد من قاعدة البيانات
-        $recaptchaEnabled = Setting::where('option', 'recaptcha')->first()->value ?? 0;
 
-        // تحقق من reCAPTCHA إذا كانت مفعّلة
-        if ($recaptchaEnabled == 1) {
-            $recaptchaResponse = $request->input('g-recaptcha-response');
-            if (empty($recaptchaResponse)) {
-                return redirect()->back()->with('error', __('reCAPTCHA is required'));
+        $recaptchaEnabled = (int) (Setting::where('option', 'recaptcha')->value('value') ?? 0);
+
+        if ($recaptchaEnabled === 1) {
+            $recaptchaResponse = (string) $request->input('g-recaptcha-response', '');
+
+            if ($recaptchaResponse === '') {
+                return redirect()->back()->with('error', __('reCAPTCHA is required'))->withInput();
+            }
+
+            $secret = config('app.recaptcha.secret');
+
+            if (!$secret) {
+                return redirect()->back()->with('error', __('reCAPTCHA Error'))->withInput();
             }
 
             $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                'secret' => config('app.recaptcha.secret'),
+                'secret'   => $secret,
                 'response' => $recaptchaResponse,
                 'remoteip' => IpUtils::anonymize($request->ip()),
             ]);
 
             $result = $response->json();
 
-            if (!$response->successful() || empty($result['success']) || $result['success'] !== true) {
-                return redirect()->back()->with('error', __('reCAPTCHA Error'));
+            if (
+                !$response->successful() ||
+                empty($result['success']) ||
+                $result['success'] !== true
+            ) {
+                return redirect()->back()->with('error', __('reCAPTCHA Error'))->withInput();
             }
         }
 
-        // تحقق من التكرار بناءً على IP
-        $search = Contact::where('ip', $request->ip())->orderByDesc('id')->first();
-        if ($search && strtotime($search->created_at . " +60 minutes") > time()) {
-            return redirect()->back()->with('error', __('l.Error can not send more than 1 message every hour'));
+        // rate limit by ip
+        $last = Contact::where('ip', $request->ip())->orderByDesc('id')->first();
+        if ($last && strtotime($last->created_at . ' +60 minutes') > time()) {
+            return redirect()->back()->with('error', __('l.Error can not send more than 1 message every hour'))->withInput();
         }
 
-        // حفظ البيانات
         $contact = Contact::create([
-            'ip' => $request->ip(),
-            'name' => $request->name,
-            'email' => $request->email,
-            'subject' => $request->subject,
-            'phone' => $request->phone,
-            'details' => $request->details,
-            'status' => 0,
+            'ip'      => $request->ip(),
+            'name'    => (string) $request->name,
+            'email'   => (string) $request->email,
+            'subject' => (string) $request->subject,
+            'phone'   => (string) $request->phone,
+            'details' => (string) $request->details,
+            'status'  => 0,
         ]);
 
         \App\Jobs\ContactsJob::dispatch($contact);
 
         return redirect()->back()->with('success', __('l.Message sent successfully'));
     }
-
 
     public function terms(Request $request)
     {
@@ -204,13 +316,12 @@ public function index(Request $request)
 
     public function subscribe(Request $request)
     {
-
         $request->validate([
             'email' => 'required|email|unique:subscribers,email',
         ]);
 
         $subscriber = new Subscriber();
-        $subscriber->email = $request->input('email');
+        $subscriber->email = (string) $request->input('email');
         $subscriber->is_active = 1;
         $subscriber->unsubscribe_token = Str::random(32);
         $subscriber->save();
@@ -221,7 +332,8 @@ public function index(Request $request)
     public function unsubscribe(Request $request, $token)
     {
         $subscriber = Subscriber::where('unsubscribe_token', $token)->first();
-        if($subscriber){
+
+        if ($subscriber) {
             $subscriber->is_active = 0;
             $subscriber->save();
         }
@@ -232,10 +344,10 @@ public function index(Request $request)
     public function licenseVerify(Request $request)
     {
         $request->validate([
-            'license_code'=> 'required',
+            'license_code' => 'required|string',
         ]);
 
-        $key = $request->input('license_code');
+        $key = (string) $request->input('license_code');
 
         DB::table('settings')->updateOrInsert(
             ['option' => 'key'],
@@ -244,48 +356,48 @@ public function index(Request $request)
 
         return redirect()->back()->with('success', __('l.License updated successfully'));
     }
+
     public function kashierWebhook(Request $request)
     {
         $raw_payload = file_get_contents('php://input');
         $json_data = json_decode($raw_payload, true);
-        $data_obj = $json_data['data'];
-        $event = $json_data['event'];
-        sort($data_obj['signatureKeys']);
-        $headers = getallheaders();
-        // Lower case all keys
-        $headers = array_change_key_case($headers);
-        $kashierSignature = $headers['x-kashier-signature'];
+
+        $data_obj = $json_data['data'] ?? [];
+        $signatureKeys = $data_obj['signatureKeys'] ?? [];
+
+        if (!is_array($signatureKeys)) {
+            $signatureKeys = [];
+        }
+
+        sort($signatureKeys);
+
+        $headers = array_change_key_case(getallheaders());
+        $kashierSignature = $headers['x-kashier-signature'] ?? '';
+
         $data = [];
-        foreach ($data_obj['signatureKeys'] as $key) {
-            $data[$key] = $data_obj[$key];
+        foreach ($signatureKeys as $key) {
+            if (array_key_exists($key, $data_obj)) {
+                $data[$key] = $data_obj[$key];
+            }
         }
 
         $paymentApiKey = config('nafezly-payments.KASHIER_IFRAME_KEY');
-        $queryString = http_build_query($data, $numeric_prefix = "", $arg_separator = '&', $encoding_type = PHP_QUERY_RFC3986);
-        $signature = hash_hmac('sha256',$queryString, $paymentApiKey, false);;
-        if ($signature == $kashierSignature) {
-            if($data_obj['status'] == 'SUCCESS'){
+        $queryString = http_build_query($data, "", '&', PHP_QUERY_RFC3986);
+        $signature = hash_hmac('sha256', $queryString, (string) $paymentApiKey, false);
 
-                // $invoice = \App\Models\Invoice::where('pid', $data_obj['merchantOrderId'])->first();
-
-                // if ($invoice->status != 'paid') {
-                //     $invoice->status = 'paid';
-                //     $invoice->save();
-                // }
-
-            }
-
+        if ($kashierSignature !== '' && hash_equals($signature, $kashierSignature)) {
             echo 'valid signature';
             http_response_code(200);
-        } else {
-            \App\Models\Setting::createOrUpdate([
-                'option' => 'kashier_webhook',
-                'value' => '0'
-            ]);
-
-           echo 'invalid signature';
-           die();
+            return;
         }
+
+        Setting::createOrUpdate([
+            'option' => 'kashier_webhook',
+            'value'  => '0',
+        ]);
+
+        echo 'invalid signature';
+        http_response_code(400);
+        return;
     }
-    
 }

@@ -261,33 +261,6 @@
             color: #3b82f6;
         }
 
-        .btn-info-action {
-            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-            color: white;
-        }
-
-        .btn-info-action:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.3);
-            color: white;
-        }
-
-        .attempts-popup {
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .attempt-item {
-            transition: all 0.3s ease;
-            background: #f8fafc;
-        }
-
-        .attempt-item:hover {
-            background: #e2e8f0;
-            transform: translateY(-1px);
-        }
-
-        /* Previous Attempts Table Styles */
         .previous-attempts {
             background: white;
             border-radius: 15px;
@@ -422,38 +395,6 @@
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .attempts-table-container {
-                font-size: 0.85rem;
-            }
-
-            .attempts-table thead th,
-            .attempts-table tbody td {
-                padding: 10px 8px;
-            }
-
-            .attempt-number-badge {
-                padding: 6px 10px;
-                font-size: 0.8rem;
-            }
-
-            .percentage-badge {
-                padding: 4px 8px;
-                font-size: 0.8rem;
-                min-width: 50px;
-            }
-
-            .view-attempt-btn {
-                padding: 4px 8px;
-                font-size: 0.8rem;
-            }
-
-            .previous-attempts {
-                padding: 15px;
-            }
-        }
-
         .test-description {
             background: #f8fafc;
             padding: 20px;
@@ -524,33 +465,91 @@
         }
 
         @media (max-width: 768px) {
-            .test-hero h1 {
-                font-size: 2rem;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .part-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .btn-action {
-                justify-content: center;
-                text-align: center;
-            }
+            .test-hero h1 { font-size: 2rem; }
+            .info-grid { grid-template-columns: 1fr; }
+            .part-stats { grid-template-columns: repeat(2, 1fr); }
+            .action-buttons { flex-direction: column; }
+            .btn-action { justify-content: center; text-align: center; }
         }
     </style>
 @endsection
 
 @section('content')
+    @php
+        $baseScore = 200;
+        $maxScore  = 800;
+
+        $allowedLevels = ['Digital SAT','EST I','EST II','ACT I','ACT II'];
+        $levelName = $test->course->level->name ?? '';
+        $useRoundUpTo10 = in_array($levelName, $allowedLevels, true);
+
+        $allQuestions = $test->questions()->get();
+        $rawQuestionsTotal = (float) $allQuestions->sum('score');
+
+        $scale = 0;
+        if ($rawQuestionsTotal > 0) {
+            $scale = ($maxScore - $baseScore) / $rawQuestionsTotal;
+        }
+
+        $roundUpToNext10 = function ($n) {
+            $n = (int) $n;
+            if ($n <= 0) return 0;
+            $mod = $n % 10;
+            if ($mod !== 0) $n += (10 - $mod);
+            return $n;
+        };
+
+        $clamp = function ($n, $min, $max) {
+            if ($n < $min) return $min;
+            if ($n > $max) return $max;
+            return $n;
+        };
+
+        $calcRawEarnedForAttempt = function ($attemptId) use ($test) {
+            $raw = 0.0;
+            $qs = $test->questions()->with(['answers' => function($q) use ($attemptId) {
+                $q->where('student_test_id', $attemptId);
+            }])->get();
+
+            foreach ($qs as $q) {
+                $ans = $q->answers->first();
+                if ($ans) {
+                    $raw += (float) ($ans->score_earned ?? 0);
+                }
+            }
+            return $raw;
+        };
+
+        $calcScaled800 = function ($rawEarned) use ($baseScore, $maxScore, $scale, $useRoundUpTo10, $roundUpToNext10, $clamp) {
+            $scaled = (int) round($baseScore + ((float)$rawEarned * (float)$scale));
+
+            $scaled = $clamp($scaled, $baseScore, $maxScore);
+
+            if ($useRoundUpTo10) {
+                $scaled = $roundUpToNext10($scaled);
+                $scaled = $clamp($scaled, $baseScore, $maxScore);
+            }
+
+            return $scaled;
+        };
+
+        $activeScore800 = null;
+        if (!empty($activeAttempt)) {
+            $rawEarnedActive = $calcRawEarnedForAttempt($activeAttempt->id);
+            $activeScore800  = $calcScaled800($rawEarnedActive);
+        }
+
+        $part1Count = (int) ($test->part1_questions_count ?? 0);
+        $part2Count = (int) ($test->part2_questions_count ?? 0);
+
+        $module1Questions = $allQuestions->slice(0, $part1Count);
+        $module2Questions = $allQuestions->slice($part1Count, $part2Count);
+
+        $module1MaxPoints = (float) $module1Questions->sum('score');
+        $module2MaxPoints = (float) $module2Questions->sum('score');
+    @endphp
+
     <div class="main-content">
-        <!-- Test Hero Section -->
         <div class="test-hero">
             <div class="container-fluid">
                 <div class="row align-items-center">
@@ -569,19 +568,17 @@
 
         <div class="row">
             <div class="col-lg-8">
-                <!-- Test Information -->
                 <div class="test-info-card">
                     <div class="card-header-custom">
                         <h3>@lang('l.test_information')</h3>
                     </div>
+
                     <div class="card-body-custom">
-                        <!-- Course Info -->
                         <div class="course-info">
                             <h6>@lang('l.course')</h6>
                             <p>{{ $test->course->name ?? '' }}</p>
                         </div>
 
-                        <!-- Test Description -->
                         @if($test->description)
                             <div class="test-description">
                                 <h5>@lang('l.description')</h5>
@@ -589,7 +586,6 @@
                             </div>
                         @endif
 
-                        <!-- General Info -->
                         <div class="info-grid">
                             <div class="info-item">
                                 <div class="info-label">@lang('l.total_questions')</div>
@@ -601,11 +597,11 @@
                             </div>
                             <div class="info-item">
                                 <div class="info-label">@lang('l.total_score')</div>
-                                <div class="info-value">{{ $test->total_score }} @lang('l.points')</div>
+                                <div class="info-value">{{ $maxScore }} @lang('l.points')</div>
                             </div>
                             <div class="info-item">
                                 <div class="info-label">@lang('l.initial_score')</div>
-                                <div class="info-value">{{ $test->initial_score }} @lang('l.points')</div>
+                                <div class="info-value">{{ $baseScore }} @lang('l.points')</div>
                             </div>
                             <div class="info-item">
                                 <div class="info-label">@lang('l.max_attempts')</div>
@@ -613,10 +609,8 @@
                             </div>
                         </div>
 
-                        <!-- Test Parts -->
                         <h5 class="mb-3">@lang('l.test_parts')</h5>
 
-                        <!-- Part 1 -->
                         <div class="part-section">
                             <div class="part-header">
                                 @lang('l.first_part')
@@ -624,7 +618,7 @@
                             <div class="part-content">
                                 <div class="part-stats">
                                     <div class="part-stat-item">
-                                        <span class="part-stat-number">{{ $test->part1_questions_count }}</span>
+                                        <span class="part-stat-number">{{ $part1Count }}</span>
                                         <div class="part-stat-label">@lang('l.questions')</div>
                                     </div>
                                     <div class="part-stat-item">
@@ -632,15 +626,14 @@
                                         <div class="part-stat-label">@lang('l.minutes')</div>
                                     </div>
                                     <div class="part-stat-item">
-                                        <span class="part-stat-number">{{ $test->part1_questions_count * $test->default_question_score }}</span>
+                                        <span class="part-stat-number">{{ (int) round($module1MaxPoints) }}</span>
                                         <div class="part-stat-label">@lang('l.max_points')</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Break Time -->
-                        @if($test->break_time_minutes > 0)
+                        @if(($test->break_time_minutes ?? 0) > 0)
                             <div class="part-section">
                                 <div class="part-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
                                     @lang('l.break_time')
@@ -660,7 +653,6 @@
                             </div>
                         @endif
 
-                        <!-- Part 2 -->
                         <div class="part-section">
                             <div class="part-header">
                                 @lang('l.second_part')
@@ -668,7 +660,7 @@
                             <div class="part-content">
                                 <div class="part-stats">
                                     <div class="part-stat-item">
-                                        <span class="part-stat-number">{{ $test->part2_questions_count }}</span>
+                                        <span class="part-stat-number">{{ $part2Count }}</span>
                                         <div class="part-stat-label">@lang('l.questions')</div>
                                     </div>
                                     <div class="part-stat-item">
@@ -676,26 +668,24 @@
                                         <div class="part-stat-label">@lang('l.minutes')</div>
                                     </div>
                                     <div class="part-stat-item">
-                                        <span class="part-stat-number">{{ $test->part2_questions_count * $test->default_question_score }}</span>
+                                        <span class="part-stat-number">{{ (int) round($module2MaxPoints) }}</span>
                                         <div class="part-stat-label">@lang('l.max_points')</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
 
             <div class="col-lg-4">
-                <!-- Current Status -->
                 <div class="status-section">
                     @if($activeAttempt)
                         @switch($activeAttempt->status)
                             @case('not_started')
                                 <div class="current-status status-not-started">
-                                    <div class="status-icon">
-                                        <i class="fas fa-play"></i>
-                                    </div>
+                                    <div class="status-icon"><i class="fas fa-play"></i></div>
                                     <div class="status-info">
                                         <h4>@lang('l.ready_to_start')</h4>
                                         <p>@lang('l.test_ready_to_start_desc')</p>
@@ -705,9 +695,7 @@
 
                             @case('part1_in_progress')
                                 <div class="current-status status-in-progress">
-                                    <div class="status-icon">
-                                        <i class="fas fa-clock"></i>
-                                    </div>
+                                    <div class="status-icon"><i class="fas fa-clock"></i></div>
                                     <div class="status-info">
                                         <h4>@lang('l.first_part_in_progress')</h4>
                                         <p>@lang('l.continue_where_you_left')</p>
@@ -717,9 +705,7 @@
 
                             @case('in_break')
                                 <div class="current-status status-in-progress">
-                                    <div class="status-icon">
-                                        <i class="fas fa-coffee"></i>
-                                    </div>
+                                    <div class="status-icon"><i class="fas fa-coffee"></i></div>
                                     <div class="status-info">
                                         <h4>@lang('l.break_time')</h4>
                                         <p>@lang('l.ready_for_second_part')</p>
@@ -729,9 +715,7 @@
 
                             @case('part2_in_progress')
                                 <div class="current-status status-in-progress">
-                                    <div class="status-icon">
-                                        <i class="fas fa-clock"></i>
-                                    </div>
+                                    <div class="status-icon"><i class="fas fa-clock"></i></div>
                                     <div class="status-info">
                                         <h4>@lang('l.second_part_in_progress')</h4>
                                         <p>@lang('l.continue_where_you_left')</p>
@@ -741,21 +725,17 @@
 
                             @case('completed')
                                 <div class="current-status status-completed">
-                                    <div class="status-icon">
-                                        <i class="fas fa-check"></i>
-                                    </div>
+                                    <div class="status-icon"><i class="fas fa-check"></i></div>
                                     <div class="status-info">
                                         <h4>@lang('l.test_completed')</h4>
-                                        <p>@lang('l.final_score'): {{ $activeAttempt->final_score }}/{{ $test->total_score }}</p>
+                                        <p>@lang('l.final_score') {{ (int) ($activeScore800 ?? $baseScore) }}/{{ $maxScore }}</p>
                                     </div>
                                 </div>
                                 @break
                         @endswitch
                     @else
                         <div class="current-status status-not-started">
-                            <div class="status-icon">
-                                <i class="fas fa-play"></i>
-                            </div>
+                            <div class="status-icon"><i class="fas fa-play"></i></div>
                             <div class="status-info">
                                 <h4>@lang('l.not_started')</h4>
                                 <p>@lang('l.click_start_to_begin')</p>
@@ -763,7 +743,6 @@
                         </div>
                     @endif
 
-                    <!-- Warning Notice -->
                     @if(!$activeAttempt || $activeAttempt->status === 'not_started')
                         <div class="warning-notice">
                             <div class="notice-header">
@@ -776,7 +755,6 @@
                         </div>
                     @endif
 
-                    <!-- Action Buttons -->
                     <div class="action-buttons">
                         @if($activeAttempt)
                             @switch($activeAttempt->status)
@@ -788,7 +766,7 @@
                                     @break
 
                                 @case('part1_in_progress')
-                                @case('break_time')
+                                @case('in_break')
                                 @case('part2_in_progress')
                                     <a href="{{ route('dashboard.users.tests.take', $test->id) }}" class="btn-action btn-warning-action">
                                         <i class="fas fa-play"></i>
@@ -829,32 +807,7 @@
                         </a>
                     </div>
 
-                    <!-- Attempts Information -->
-                    @if($completedAttempts > 0 || $remainingAttempts < $test->max_attempts)
-                        <div class="attempts-info mt-4">
-                            <div class="alert alert-info">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        <strong>@lang('l.attempts_status'):</strong>
-                                        @lang('l.completed_attempts'): {{ $completedAttempts }} / {{ $test->max_attempts }}
-                                    </div>
-                                    @if($remainingAttempts > 0)
-                                        <span class="badge bg-success">
-                                            {{ $remainingAttempts }} @lang('l.attempts_remaining')
-                                        </span>
-                                    @else
-                                        <span class="badge bg-warning">
-                                            @lang('l.all_attempts_used')
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-
-                    <!-- Previous Attempts Table -->
-                    @if($allAttempts->where('status', 'completed')->count() > 0)
+                    @if(($allAttempts->where('status', 'completed')->count() ?? 0) > 0)
                         <div class="previous-attempts mt-4">
                             <div class="attempts-header">
                                 <h5 class="mb-3">
@@ -877,13 +830,23 @@
                                     <tbody>
                                         @foreach($allAttempts->where('status', 'completed')->sortByDesc('created_at') as $attempt)
                                             @php
-                                                $percentage = $test->total_score > 0 ? round(($attempt->final_score / $test->total_score) * 100, 1) : 0;
+                                                $rawEarned = $calcRawEarnedForAttempt($attempt->id);
+                                                $score800  = $calcScaled800($rawEarned);
+
+                                                $percentage = round(($score800 / $maxScore) * 100, 1);
+
+                                                if ($percentage >= 80) {
+                                                    $badgeClass = 'excellent';
+                                                } elseif ($percentage >= 60) {
+                                                    $badgeClass = 'good';
+                                                } else {
+                                                    $badgeClass = 'needs-improvement';
+                                                }
                                             @endphp
+
                                             <tr class="attempt-row">
                                                 <td>
-                                                    <span class="attempt-number-badge">
-                                                        {{ $attempt->attempt_number }}
-                                                    </span>
+                                                    <span class="attempt-number-badge">{{ $attempt->attempt_number }}</span>
                                                 </td>
                                                 <td>
                                                     <div class="attempt-date">
@@ -893,19 +856,17 @@
                                                 </td>
                                                 <td>
                                                     <div class="score-display">
-                                                        <span class="score-value">{{ $attempt->final_score }}</span>
-                                                        <span class="score-total">/ {{ $test->total_score }}</span>
+                                                        <span class="score-value">{{ $score800 }}</span>
+                                                        <span class="score-total">/ {{ $maxScore }}</span>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <span class="percentage-badge {{ $percentage >= 80 ? 'excellent' : ($percentage >= 60 ? 'good' : 'needs-improvement') }}">
-                                                        {{ $percentage }}%
-                                                    </span>
+                                                    <span class="percentage-badge {{ $badgeClass }}">{{ $percentage }}%</span>
                                                 </td>
                                                 <td>
                                                     <a class="btn btn-sm btn-outline-primary view-attempt-btn"
-                                                            href="{{ route('dashboard.users.tests.results', $test->id) }}?attempt_id={{ $attempt->id }}"
-                                                            title="@lang('l.view_details')">
+                                                       href="{{ route('dashboard.users.tests.results', $test->id) }}?attempt_id={{ $attempt->id }}"
+                                                       title="@lang('l.view_details')">
                                                         <i class="fas fa-eye me-1"></i>
                                                         @lang('l.view_details')
                                                     </a>
@@ -917,6 +878,7 @@
                             </div>
                         </div>
                     @endif
+
                 </div>
             </div>
         </div>
@@ -926,12 +888,8 @@
 @section('js')
     <script>
         function startTest() {
-            console.log('Start test function called');
-
-            // التحقق من وجود CSRF token
             const csrfToken = document.querySelector('meta[name="csrf-token"]');
             if (!csrfToken) {
-                console.error('CSRF token not found');
                 Swal.fire({
                     title: 'خطأ',
                     text: 'لم يتم العثور على رمز الأمان. يرجى إعادة تحميل الصفحة.',
@@ -951,110 +909,82 @@
                 cancelButtonText: '@lang("l.cancel")',
                 reverseButtons: true
             }).then((result) => {
-                if (result.isConfirmed) {
-                    // Show loading
-                    Swal.fire({
-                        title: '@lang("l.starting_test")',
-                        text: '@lang("l.please_wait")',
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        showConfirmButton: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
+                if (!result.isConfirmed) return;
 
-                    // Send start request
-                    const url = '{{ route("dashboard.users.tests.start", $test->id) }}';
-                    console.log('Sending POST request to:', url);
+                Swal.fire({
+                    title: '@lang("l.starting_test")',
+                    text: '@lang("l.please_wait")',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => Swal.showLoading()
+                });
 
-                    fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken.content,
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                    .then(response => {
-                        console.log('Response status:', response.status);
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Response data:', data);
-                        if (data.success) {
-                            console.log('Redirecting to:', data.redirect);
-                            if (data.attempt_number) {
-                                Swal.fire({
-                                    title: '@lang("l.test_started")',
-                                    text: `@lang("l.attempt_number"): ${data.attempt_number}${data.remaining_attempts ? ` - @lang("l.remaining_attempts"): ${data.remaining_attempts}` : ''}`,
-                                    icon: 'success',
-                                    confirmButtonColor: '#1e40af',
-                                    timer: 2000,
-                                    timerProgressBar: true
-                                }).then(() => {
-                                    window.location.href = data.redirect;
-                                });
-                            } else {
-                                window.location.href = data.redirect;
-                            }
-                        } else {
-                            Swal.fire({
-                                title: '@lang("l.error")',
-                                text: data.error || '@lang("l.unknown_error")',
-                                icon: 'error',
-                                confirmButtonColor: '#1e40af'
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
+                const url = '{{ route("dashboard.users.tests.start", $test->id) }}';
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken.content,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(r => {
+                    if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+                    return r.json();
+                })
+                .then(data => {
+                    if (!data.success) {
                         Swal.fire({
                             title: '@lang("l.error")',
-                            text: error.message || '@lang("l.connection_error")',
+                            text: data.error || '@lang("l.unknown_error")',
                             icon: 'error',
                             confirmButtonColor: '#1e40af'
                         });
+                        return;
+                    }
+
+                    if (data.attempt_number) {
+                        Swal.fire({
+                            title: '@lang("l.test_started")',
+                            text: `@lang("l.attempt_number") ${data.attempt_number}`,
+                            icon: 'success',
+                            confirmButtonColor: '#1e40af',
+                            timer: 2000,
+                            timerProgressBar: true
+                        }).then(() => window.location.href = data.redirect);
+                    } else {
+                        window.location.href = data.redirect;
+                    }
+                })
+                .catch(err => {
+                    Swal.fire({
+                        title: '@lang("l.error")',
+                        text: err.message || '@lang("l.connection_error")',
+                        icon: 'error',
+                        confirmButtonColor: '#1e40af'
                     });
-                }
+                });
             });
-
-
         }
 
         $(document).ready(function() {
-            // Add fade-in animation
-            $('.test-info-card, .status-section').css('opacity', '0').animate({
-                opacity: 1
-            }, 600);
+            $('.test-info-card, .status-section').css('opacity', '0').animate({ opacity: 1 }, 600);
 
-            // Add animation for attempts table
             $('.previous-attempts').css('opacity', '0').css('transform', 'translateY(20px)').delay(300).animate({
                 opacity: 1
             }, 600).css('transform', 'translateY(0)');
 
-            // Add hover effects to parts
             $('.part-section').hover(
-                function() {
-                    $(this).css('transform', 'translateY(-2px)');
-                },
-                function() {
-                    $(this).css('transform', 'translateY(0)');
-                }
+                function() { $(this).css('transform', 'translateY(-2px)'); },
+                function() { $(this).css('transform', 'translateY(0)'); }
             );
 
-            // Add hover effects to attempt rows
             $('.attempt-row').hover(
-                function() {
-                    $(this).css('transform', 'translateY(-2px)');
-                },
-                function() {
-                    $(this).css('transform', 'translateY(0)');
-                }
+                function() { $(this).css('transform', 'translateY(-2px)'); },
+                function() { $(this).css('transform', 'translateY(0)'); }
             );
         });
     </script>
