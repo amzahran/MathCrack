@@ -871,7 +871,32 @@
   text-justify: inter-word;
 }
 
+/* Fix option vertical alignment and slightly larger font */
+.option-item{
+  align-items: center;          /* بدل align-items:start */
+}
 
+.option-text{
+  font-size: 18px;              /* كان 15px */
+  line-height: 1.7;             /* يعطي اتزان للنص */
+}
+
+.option-label{
+  font-size: 15px;              /* يكبر حرف A داخل الدائرة */
+}
+
+.option-label span{
+  display: block;
+  line-height: 1;
+  transform: translateY(0px);   /* ينزل الحرف شوية لتوسيطه */
+}
+
+
+/* Question text size */
+.stem{
+  font-size: 18px;   /* غير الرقم زي ما تحب */
+  line-height: 1.7;
+}
 
 </style>
 
