@@ -313,6 +313,38 @@
             word-wrap: break-word;
         }
 
+        .question-meta-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0 12px;
+        }
+
+        .question-meta-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border: 1px solid #e5e7eb;
+            background: #f8fafc;
+            color: #334155;
+        }
+
+        .question-meta-badge.difficulty {
+            background: #fff7ed;
+            border-color: #fdba74;
+            color: #9a3412;
+        }
+
+        .question-meta-badge.topic {
+            background: #eff6ff;
+            border-color: #93c5fd;
+            color: #1d4ed8;
+        }
+
         .question-image,
         .explanation-image {
             margin-bottom: 12px;
@@ -320,44 +352,48 @@
         }
 
         .question-image img,
-        .explanation-image-wrapper img {
-            max-width: 250px;
-            width: 100%;
+        .explanation-image-wrapper img,
+        .explanation-image img {
+            display: inline-block;
+            max-width: 100%;
+            width: auto;
             height: auto;
+            max-height: 420px;
+            object-fit: contain;
             border-radius: 8px;
             border: 1px solid #e5e7eb;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+            background: #fff;
+            padding: 4px;
         }
 
         .option-image-wrapper img {
-            max-width: 180px;
-            width: 100%;
+            display: inline-block;
+            max-width: 220px;
+            width: auto;
             height: auto;
+            max-height: 220px;
+            object-fit: contain;
             border-radius: 6px;
             border: 1px solid #e5e7eb;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .options-review img {
-            max-width: 200px;
-            width: 100%;
-            height: auto;
-            border-radius: 6px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background: #fff;
+            padding: 4px;
             cursor: zoom-in;
         }
 
-        .option-image-wrapper {
-            margin-bottom: 6px;
-        }
-
-        .option-image-wrapper img {
-            max-width: 200px;
-            width: 100%;
+        .options-review img {
+            display: inline-block;
+            max-width: 220px;
+            width: auto;
+            height: auto;
+            max-height: 220px;
+            object-fit: contain;
             border-radius: 6px;
             border: 1px solid #e5e7eb;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background: #fff;
+            padding: 4px;
             cursor: zoom-in;
         }
 
@@ -447,7 +483,7 @@
             margin-bottom: 5px;
             font-size: 0.9rem;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 8px;
         }
 
@@ -587,6 +623,7 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
+            padding: 20px;
         }
 
         .image-lightbox-overlay img {
@@ -594,6 +631,7 @@
             max-height: 90%;
             border-radius: 8px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            background: #fff;
         }
 
         @media (max-width: 768px) {
@@ -632,37 +670,62 @@
             }
         }
 
-        /* Force correct option to be green even if selected */
-.option-review.option-correct{
-  background: #d1fae5;
-  border: 1px solid #10b981;
-  color: #065f46;
-}
+        .option-review.option-correct{
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
 
-.option-review.option-correct .option-letter{
-  background: #10b981;
-  color: #fff;
-}
+        .option-review.option-correct .option-letter{
+            background: #10b981;
+            color: #fff;
+        }
 
-/* When correct AND selected, keep it green not blue */
-.option-review.option-correct.option-selected{
-  background: #d1fae5;
-  border: 1px solid #10b981;
-  color: #065f46;
-}
+        .option-review.option-correct.option-selected{
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
 
-.option-review.option-correct.option-selected .option-letter{
-  background: #10b981;
-  color: #fff;
-}
+        .option-review.option-correct.option-selected .option-letter{
+            background: #10b981;
+            color: #fff;
+        }
     </style>
 @endsection
 
 @section('content')
     @php
-        $allQuestions = $test->questions()->with(['answers' => function($query) use ($studentTest) {
-            $query->where('student_test_id', $studentTest->id);
-        }])->get();
+        $allQuestions = $test->questions()->with([
+            'options',
+            'answers' => function($query) use ($studentTest) {
+                $query->where('student_test_id', $studentTest->id);
+            }
+        ])->get();
+
+        $resolveImageUrl = function ($path) {
+            if (empty($path)) {
+                return null;
+            }
+
+            $path = trim($path);
+
+            if (
+                \Illuminate\Support\Str::startsWith($path, ['http://', 'https://', '//', 'data:'])
+            ) {
+                return $path;
+            }
+
+            if (\Illuminate\Support\Str::startsWith($path, 'public/')) {
+                return asset('storage/' . \Illuminate\Support\Str::after($path, 'public/'));
+            }
+
+            if (\Illuminate\Support\Str::startsWith($path, ['storage/', 'assets/', 'uploads/', 'images/', 'back-assets/'])) {
+                return asset($path);
+            }
+
+            return asset('storage/' . ltrim($path, '/'));
+        };
 
         $sectionsData = $allQuestions->groupBy(function($q) {
             $fields = ['section', 'module_number', 'part', 'part_number'];
@@ -888,6 +951,11 @@
                                         if ($answer) {
                                             $qEarnedScaled = (int) round(((float) ($answer->score_earned ?? 0)) * $scale);
                                         }
+
+                                        $questionImageUrl    = $resolveImageUrl($question->question_image ?? null);
+                                        $explanationImageUrl = $resolveImageUrl($question->explanation_image ?? null);
+                                        $difficultyValue     = $question->difficulty ?? null;
+                                        $topicValue          = $question->content ?? null;
                                     @endphp
 
                                     <div class="question-item {{ $isCorrect ? 'question-correct' : ($isAnswered ? 'question-incorrect' : 'question-unanswered') }}">
@@ -895,17 +963,36 @@
                                             <div class="question-number">{{ $index + 1 }}</div>
 
                                             <div class="question-content">
-                                                @if($question->question_image)
+                                                @if($questionImageUrl)
                                                     <div class="question-image">
-                                                        <img src="{{ asset($question->question_image) }}"
+                                                        <img src="{{ $questionImageUrl }}"
                                                              alt="Question Image"
-                                                             class="zoomable-image">
+                                                             class="zoomable-image"
+                                                             loading="lazy">
                                                     </div>
                                                 @endif
 
                                                 <div class="question-text">
                                                     {!! nl2br(e($question->question_text)) !!}
                                                 </div>
+
+                                                @if($difficultyValue || $topicValue)
+                                                    <div class="question-meta-badges">
+                                                        @if($difficultyValue)
+                                                            <span class="question-meta-badge difficulty">
+                                                                <i class="fas fa-signal"></i>
+                                                                Difficulty: {{ $difficultyValue }}
+                                                            </span>
+                                                        @endif
+
+                                                        @if($topicValue)
+                                                            <span class="question-meta-badge topic">
+                                                                <i class="fas fa-bookmark"></i>
+                                                                Topic: {{ $topicValue }}
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                @endif
                                             </div>
 
                                             <div class="question-score-info">
@@ -940,6 +1027,10 @@
 
                                                     <div class="options-review">
                                                         @foreach($question->options as $optionIndex => $option)
+                                                            @php
+                                                                $optionImageUrl = $resolveImageUrl($option->option_image ?? null);
+                                                            @endphp
+
                                                             <div class="option-review
                                                                 @if($option->is_correct) option-correct @endif
                                                                 @if($answer && $answer->selectedOption && $answer->selectedOption->id == $option->id)
@@ -949,11 +1040,12 @@
                                                                 <div class="option-letter">{{ chr(65 + $optionIndex) }}</div>
 
                                                                 <div class="option-text">
-                                                                    @if(!empty($option->option_image))
+                                                                    @if($optionImageUrl)
                                                                         <div class="option-image-wrapper">
-                                                                            <img src="{{ asset($option->option_image) }}"
+                                                                            <img src="{{ $optionImageUrl }}"
                                                                                  alt="Option image"
-                                                                                 class="zoomable-image">
+                                                                                 class="zoomable-image"
+                                                                                 loading="lazy">
                                                                         </div>
                                                                     @endif
 
@@ -1012,17 +1104,18 @@
 
                                                     <div class="question-explanation"
                                                          id="explanation-{{ $moduleCounter }}-{{ $index }}">
-                                                        @if(!empty($question->explanation_image ?? null))
+                                                        @if($explanationImageUrl)
                                                             <div class="explanation-image">
-                                                                <img src="{{ asset($question->explanation_image) }}"
+                                                                <img src="{{ $explanationImageUrl }}"
                                                                      alt="Explanation Image"
-                                                                     class="zoomable-image">
+                                                                     class="zoomable-image"
+                                                                     loading="lazy">
                                                             </div>
                                                         @endif
 
                                                         <strong>@lang('l.explanation')</strong>
                                                         <div class="explanation-text">
-                                                            {{ $question->explanation }}
+                                                            {!! nl2br(e($question->explanation)) !!}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1063,6 +1156,16 @@
                 <i class="fas fa-share"></i>
                 @lang('l.share_results')
             </button>
+
+<a href="{{ route('dashboard.users.tests.report', [
+    'id' => $test->id,
+    'attempt_id' => $studentTest->id,
+]) }}" class="btn-action btn-primary-action">
+    <i class="fas fa-chart-pie"></i>
+    View Report
+</a>
+
+
         </div>
     </div>
 @endsection

@@ -219,3 +219,8 @@ Route::get('/mock-unavailable', function() {
         'message' => 'No course found for your selected level.'
     ]);
 });
+
+Route::get('/users/tests/{id}/report', [UserTestsController::class, 'report'])
+    ->name('dashboard.users.tests.report');
+
+

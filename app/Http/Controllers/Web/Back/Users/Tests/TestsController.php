@@ -831,4 +831,206 @@ class TestsController extends Controller
 
         return null;
     }
+
+public function report(Request $request, $id)
+{
+    $test = \App\Models\Test::with(['course'])->findOrFail($id);
+    $user = auth()->user();
+
+    $attemptQuery = \App\Models\StudentTest::where('student_id', $user->id)
+        ->where('test_id', $id);
+
+    if ($request->filled('attempt_id')) {
+        $attemptQuery->where('id', $request->input('attempt_id'));
+    }
+
+    $studentTest = $attemptQuery->orderBy('attempt_number', 'desc')->firstOrFail();
+
+    $previousAttempt = \App\Models\StudentTest::where('student_id', $user->id)
+        ->where('test_id', $id)
+        ->where('attempt_number', '<', $studentTest->attempt_number)
+        ->orderBy('attempt_number', 'desc')
+        ->first();
+
+    $questions = \App\Models\TestQuestion::where('test_id', $test->id)
+        ->with([
+            'answers' => function ($query) use ($studentTest) {
+                $query->where('student_test_id', $studentTest->id);
+            }
+        ])
+        ->get();
+
+    $previousAnswersMap = collect();
+
+    if ($previousAttempt) {
+        $previousAnswers = \App\Models\TestQuestion::where('test_id', $test->id)
+            ->with([
+                'answers' => function ($query) use ($previousAttempt) {
+                    $query->where('student_test_id', $previousAttempt->id);
+                }
+            ])
+            ->get();
+
+        $previousAnswersMap = $previousAnswers->mapWithKeys(function ($q) {
+            $answer = $q->answers->first();
+            return [
+                $q->id => [
+                    'topic' => $q->content ?: 'Uncategorized',
+                    'is_correct' => $answer ? (bool) $answer->is_correct : false,
+                ]
+            ];
+        });
+    }
+
+    $topicReport = $questions->groupBy(function ($q) {
+        return $q->content ?: 'Uncategorized';
+    })->map(function ($topicQuestions, $topicName) use ($previousAnswersMap) {
+
+        $total = $topicQuestions->count();
+        $answered = 0;
+        $correct = 0;
+        $wrong = 0;
+
+        $previousCorrect = 0;
+        $previousTotal = 0;
+
+        foreach ($topicQuestions as $q) {
+            $answer = $q->answers->first();
+            if ($answer) {
+                $answered++;
+                if ($answer->is_correct) {
+                    $correct++;
+                } else {
+                    $wrong++;
+                }
+            }
+
+            if ($previousAnswersMap->has($q->id)) {
+                $previousTotal++;
+                if ($previousAnswersMap[$q->id]['is_correct']) {
+                    $previousCorrect++;
+                }
+            }
+        }
+
+        $percentage = $total > 0 ? round(($correct / $total) * 100, 1) : 0;
+        $previousPercentage = $previousTotal > 0 ? round(($previousCorrect / $previousTotal) * 100, 1) : null;
+
+        if ($percentage < 40) {
+            $level = 'Weak';
+        } elseif ($percentage < 60) {
+            $level = 'Basic';
+        } elseif ($percentage < 80) {
+            $level = 'Good';
+        } else {
+            $level = 'Strong';
+        }
+
+        $difficultyBreakdown = $topicQuestions->groupBy(function ($q) {
+            return $q->difficulty ?: 'Unknown';
+        })->map(function ($difficultyQuestions, $difficultyName) {
+            $dTotal = $difficultyQuestions->count();
+            $dCorrect = 0;
+            $dWrong = 0;
+
+            foreach ($difficultyQuestions as $q) {
+                $answer = $q->answers->first();
+                if ($answer) {
+                    if ($answer->is_correct) {
+                        $dCorrect++;
+                    } else {
+                        $dWrong++;
+                    }
+                }
+            }
+
+            $dPercentage = $dTotal > 0 ? round(($dCorrect / $dTotal) * 100, 1) : 0;
+
+            return [
+                'difficulty' => $difficultyName,
+                'total' => $dTotal,
+                'correct' => $dCorrect,
+                'wrong' => $dWrong,
+                'percentage' => $dPercentage,
+            ];
+        })->values();
+
+        if ($percentage >= 85) {
+            $studyRecommendation = "You are exam-ready in {$topicName}.";
+        } elseif ($percentage >= 65) {
+            $studyRecommendation = "You are doing well in {$topicName}, but you still need targeted practice.";
+        } elseif ($percentage >= 40) {
+            $studyRecommendation = "You need more structured revision in {$topicName}.";
+        } else {
+            $studyRecommendation = "You need serious work in {$topicName}. Start with basics and easy questions.";
+        }
+
+        return [
+            'topic' => $topicName,
+            'total' => $total,
+            'answered' => $answered,
+            'correct' => $correct,
+            'wrong' => $wrong,
+            'percentage' => $percentage,
+            'previous_percentage' => $previousPercentage,
+            'level' => $level,
+            'difficulty_breakdown' => $difficultyBreakdown,
+            'study_recommendation' => $studyRecommendation,
+        ];
+    })->values();
+
+    $weakTopics = $topicReport->filter(fn($t) => $t['percentage'] < 50)->pluck('topic')->values();
+    $strongTopics = $topicReport->filter(fn($t) => $t['percentage'] >= 80)->pluck('topic')->values();
+
+    $recommendations = [];
+
+    if ($weakTopics->count()) {
+        $recommendations[] = 'You need more work in ' . $weakTopics->implode(', ') . '.';
+    }
+
+    if ($strongTopics->count()) {
+        $recommendations[] = 'You are exam-ready in ' . $strongTopics->implode(', ') . '.';
+    }
+
+    if ($topicReport->count() > 0) {
+        $lowestTopic = $topicReport->sortBy('percentage')->first();
+        $highestTopic = $topicReport->sortByDesc('percentage')->first();
+
+        if ($lowestTopic) {
+            $recommendations[] = 'Your weakest topic currently is ' . $lowestTopic['topic'] . '.';
+        }
+
+        if ($highestTopic) {
+            $recommendations[] = 'Your best topic currently is ' . $highestTopic['topic'] . '.';
+        }
+    }
+
+    $chartLabels = $topicReport->pluck('topic')->values();
+    $chartValues = $topicReport->pluck('percentage')->values();
+    $previousChartValues = $topicReport->map(function ($t) {
+        return $t['previous_percentage'] ?? 0;
+    })->values();
+
+    $finalSummary = [];
+
+    foreach ($topicReport as $item) {
+        if ($item['percentage'] >= 85) {
+            $finalSummary[] = "You are exam-ready in {$item['topic']}.";
+        } elseif ($item['percentage'] < 50) {
+            $finalSummary[] = "You need more work in {$item['topic']}.";
+        }
+    }
+
+    return view('themes.default.back.users.tests.report', compact(
+        'test',
+        'studentTest',
+        'previousAttempt',
+        'topicReport',
+        'recommendations',
+        'chartLabels',
+        'chartValues',
+        'previousChartValues',
+        'finalSummary'
+    ));
+}
 }
