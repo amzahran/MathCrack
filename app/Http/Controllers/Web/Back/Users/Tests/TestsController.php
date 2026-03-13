@@ -834,8 +834,16 @@ class TestsController extends Controller
 
 public function report(Request $request, $id)
 {
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+
     $test = \App\Models\Test::with(['course'])->findOrFail($id);
     $user = auth()->user();
+
+    if (!$user) {
+        return redirect()->route('login');
+    }
 
     $attemptQuery = \App\Models\StudentTest::where('student_id', $user->id)
         ->where('test_id', $id);
@@ -863,7 +871,7 @@ public function report(Request $request, $id)
     $previousAnswersMap = collect();
 
     if ($previousAttempt) {
-        $previousAnswers = \App\Models\TestQuestion::where('test_id', $test->id)
+        $previousQuestions = \App\Models\TestQuestion::where('test_id', $test->id)
             ->with([
                 'answers' => function ($query) use ($previousAttempt) {
                     $query->where('student_test_id', $previousAttempt->id);
@@ -871,12 +879,19 @@ public function report(Request $request, $id)
             ])
             ->get();
 
-        $previousAnswersMap = $previousAnswers->mapWithKeys(function ($q) {
+        $previousAnswersMap = $previousQuestions->mapWithKeys(function ($q) {
             $answer = $q->answers->first();
+
+            $isAnswered = $answer && (
+                !is_null($answer->answer_text) ||
+                !is_null($answer->selected_option_id)
+            );
+
             return [
                 $q->id => [
                     'topic' => $q->content ?: 'Uncategorized',
-                    'is_correct' => $answer ? (bool) $answer->is_correct : false,
+                    'is_correct' => $isAnswered ? (bool) $answer->is_correct : false,
+                    'is_answered' => $isAnswered,
                 ]
             ];
         });
@@ -890,23 +905,32 @@ public function report(Request $request, $id)
         $answered = 0;
         $correct = 0;
         $wrong = 0;
+        $unanswered = 0;
 
         $previousCorrect = 0;
-        $previousTotal = 0;
+        $previousAnswered = 0;
 
         foreach ($topicQuestions as $q) {
             $answer = $q->answers->first();
-            if ($answer) {
+
+            $isAnswered = $answer && (
+                !is_null($answer->answer_text) ||
+                !is_null($answer->selected_option_id)
+            );
+
+            if ($isAnswered) {
                 $answered++;
                 if ($answer->is_correct) {
                     $correct++;
                 } else {
                     $wrong++;
                 }
+            } else {
+                $unanswered++;
             }
 
-            if ($previousAnswersMap->has($q->id)) {
-                $previousTotal++;
+            if ($previousAnswersMap->has($q->id) && $previousAnswersMap[$q->id]['is_answered']) {
+                $previousAnswered++;
                 if ($previousAnswersMap[$q->id]['is_correct']) {
                     $previousCorrect++;
                 }
@@ -914,7 +938,8 @@ public function report(Request $request, $id)
         }
 
         $percentage = $total > 0 ? round(($correct / $total) * 100, 1) : 0;
-        $previousPercentage = $previousTotal > 0 ? round(($previousCorrect / $previousTotal) * 100, 1) : null;
+        $accuracy = $answered > 0 ? round(($correct / $answered) * 100, 1) : 0;
+        $previousPercentage = $previousAnswered > 0 ? round(($previousCorrect / $previousAnswered) * 100, 1) : null;
 
         if ($percentage < 40) {
             $level = 'Weak';
@@ -932,26 +957,41 @@ public function report(Request $request, $id)
             $dTotal = $difficultyQuestions->count();
             $dCorrect = 0;
             $dWrong = 0;
+            $dAnswered = 0;
+            $dUnanswered = 0;
 
             foreach ($difficultyQuestions as $q) {
                 $answer = $q->answers->first();
-                if ($answer) {
+
+                $isAnswered = $answer && (
+                    !is_null($answer->answer_text) ||
+                    !is_null($answer->selected_option_id)
+                );
+
+                if ($isAnswered) {
+                    $dAnswered++;
                     if ($answer->is_correct) {
                         $dCorrect++;
                     } else {
                         $dWrong++;
                     }
+                } else {
+                    $dUnanswered++;
                 }
             }
 
-            $dPercentage = $dTotal > 0 ? round(($dCorrect / $dTotal) * 100, 1) : 0;
+            $dAccuracy = $dAnswered > 0 ? round(($dCorrect / $dAnswered) * 100, 1) : 0;
+            $dCoverage = $dTotal > 0 ? round(($dAnswered / $dTotal) * 100, 1) : 0;
 
             return [
                 'difficulty' => $difficultyName,
                 'total' => $dTotal,
+                'answered' => $dAnswered,
                 'correct' => $dCorrect,
                 'wrong' => $dWrong,
-                'percentage' => $dPercentage,
+                'unanswered' => $dUnanswered,
+                'accuracy' => $dAccuracy,
+                'coverage' => $dCoverage,
             ];
         })->values();
 
@@ -971,7 +1011,9 @@ public function report(Request $request, $id)
             'answered' => $answered,
             'correct' => $correct,
             'wrong' => $wrong,
+            'unanswered' => $unanswered,
             'percentage' => $percentage,
+            'accuracy' => $accuracy,
             'previous_percentage' => $previousPercentage,
             'level' => $level,
             'difficulty_breakdown' => $difficultyBreakdown,

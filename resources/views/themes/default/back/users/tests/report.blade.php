@@ -71,6 +71,7 @@
         font-size: 1rem;
         font-weight: 700;
         color: #1f2937;
+        text-transform: capitalize;
     }
 
     .topic-level{
@@ -102,7 +103,7 @@
 
     .topic-stats{
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(6, 1fr);
         gap: 12px;
         margin-bottom: 15px;
     }
@@ -236,6 +237,12 @@
         max-height: 380px;
     }
 
+    @media (max-width: 1200px){
+        .topic-stats{
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
     @media (max-width: 992px){
         .report-grid{
             grid-template-columns: 1fr;
@@ -306,7 +313,7 @@
             @foreach($topicReport as $item)
                 <div class="topic-card">
                     <div class="topic-head">
-                        <div class="topic-name">{{ $item['topic'] }}</div>
+                        <div class="topic-name">{{ str_replace('_', ' ', $item['topic']) }}</div>
                         <div class="topic-level level-{{ $item['level'] }}">
                             {{ $item['level'] }}
                         </div>
@@ -334,6 +341,11 @@
                         </div>
 
                         <div class="mini-box">
+                            <div class="num">{{ $item['unanswered'] }}</div>
+                            <div class="label">Unanswered</div>
+                        </div>
+
+                        <div class="mini-box">
                             <div class="num">
                                 @if(!is_null($item['previous_percentage']))
                                     {{ $item['previous_percentage'] }}%
@@ -347,7 +359,9 @@
 
                     <div class="progress-wrap">
                         <div style="margin-bottom:8px; font-weight:600;">
-                            Current Performance: {{ $item['percentage'] }}%
+                            Performance by Total: {{ $item['percentage'] }}%
+                            <br>
+                            Accuracy by Answered: {{ $item['accuracy'] }}%
                         </div>
                         <div class="progress">
                             <div class="progress-bar" style="width: {{ $item['percentage'] }}%"></div>
@@ -359,19 +373,25 @@
                             <tr>
                                 <th>Difficulty</th>
                                 <th>Total</th>
+                                <th>Answered</th>
                                 <th>Correct</th>
                                 <th>Wrong</th>
-                                <th>Performance</th>
+                                <th>Unanswered</th>
+                                <th>Accuracy</th>
+                                <th>Coverage</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($item['difficulty_breakdown'] as $difficulty)
                                 <tr>
-                                    <td>{{ $difficulty['difficulty'] }}</td>
+                                    <td>{{ ucfirst($difficulty['difficulty']) }}</td>
                                     <td>{{ $difficulty['total'] }}</td>
+                                    <td>{{ $difficulty['answered'] }}</td>
                                     <td>{{ $difficulty['correct'] }}</td>
                                     <td>{{ $difficulty['wrong'] }}</td>
-                                    <td>{{ $difficulty['percentage'] }}%</td>
+                                    <td>{{ $difficulty['unanswered'] }}</td>
+                                    <td>{{ $difficulty['accuracy'] }}%</td>
+                                    <td>{{ $difficulty['coverage'] }}%</td>
                                 </tr>
                             @endforeach
                         </tbody>
