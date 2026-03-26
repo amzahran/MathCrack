@@ -428,24 +428,24 @@ class TestQuestionsController extends Controller
             $questionImagePath    = $question->question_image;
             $explanationImagePath = $question->explanation_image;
 
-            if ($request->has('remove_question_image') && $question->question_image) {
+            if ((string) $request->input('remove_question_image') === '1' && $question->question_image) {
                 delete_from_public($question->question_image);
                 $questionImagePath = null;
             }
 
-            if ($request->has('remove_explanation_image') && $question->explanation_image) {
+            if ((string) $request->input('remove_explanation_image') === '1' && $question->explanation_image) {
                 delete_from_public($question->explanation_image);
                 $explanationImagePath = null;
             }
 
-            if ($request->hasFile('question_image')) {
+            if ($request->hasFile('question_image') && (string) $request->input('remove_question_image') !== '1') {
                 if ($question->question_image) {
                     delete_from_public($question->question_image);
                 }
                 $questionImagePath = upload_to_public($request->file('question_image'), 'images/questions');
             }
 
-            if ($request->hasFile('explanation_image')) {
+            if ($request->hasFile('explanation_image') && (string) $request->input('remove_explanation_image') !== '1') {
                 if ($question->explanation_image) {
                     delete_from_public($question->explanation_image);
                 }
@@ -466,40 +466,60 @@ class TestQuestionsController extends Controller
             ]);
 
             if ($request->type === 'mcq' && $request->has('options')) {
-                $oldOptionsImages = [];
-                foreach ($question->options as $oldOption) {
-                    $oldOptionsImages[$oldOption->option_order] = $oldOption->option_image;
-                }
-
-                $question->options()->delete();
-
-                Log::info('Updating MCQ options', ['options' => $request->options]);
+                $existingOptions = $question->options()->get()->keyBy('id');
+                $submittedOptionIds = [];
 
                 foreach ($request->options as $index => $optionData) {
-                    $optionImagePath = null;
+                    $optionId = isset($optionData['id']) && is_numeric($optionData['id'])
+                        ? (int) $optionData['id']
+                        : null;
 
-                    if (isset($optionData['option_image']) && $optionData['option_image']) {
-                        $optionImagePath = upload_to_public($optionData['option_image'], 'images/options');
-
-                        if (isset($oldOptionsImages[$index + 1]) && $oldOptionsImages[$index + 1]) {
-                            delete_from_public($oldOptionsImages[$index + 1]);
-                        }
+                    if ($optionId && isset($existingOptions[$optionId])) {
+                        $option = $existingOptions[$optionId];
                     } else {
-                        $optionImagePath = $oldOptionsImages[$index + 1] ?? null;
+                        $option = new TestQuestionOption();
+                        $option->test_question_id = $question->id;
                     }
 
-                    TestQuestionOption::create([
-                        'test_question_id' => $question->id,
-                        'option_text'      => $optionData['option_text'] ?? '',
-                        'option_image'     => $optionImagePath,
-                        'is_correct'       => isset($optionData['is_correct']) && $optionData['is_correct'] == true,
-                        'option_order'     => $index + 1
-                    ]);
+                    $option->option_text = $optionData['option_text'] ?? '';
+                    $option->is_correct = isset($optionData['is_correct']) && ($optionData['is_correct'] == true || $optionData['is_correct'] == '1');
+                    $option->option_order = $index + 1;
+
+                    $removeByOptionsArray = isset($optionData['remove_image']) && (string) $optionData['remove_image'] === '1';
+
+                    $removeByLegacyArray = false;
+                    if ($optionId && $request->has('remove_option_image')) {
+                        $legacyRemove = $request->input("remove_option_image.$optionId");
+                        $removeByLegacyArray = (string) $legacyRemove === '1';
+                    }
+
+                    if ($removeByOptionsArray || $removeByLegacyArray) {
+                        if ($option->option_image) {
+                            delete_from_public($option->option_image);
+                        }
+                        $option->option_image = null;
+                    }
+
+                    if (isset($optionData['option_image']) && $optionData['option_image'] instanceof \Illuminate\Http\UploadedFile) {
+                        if ($option->option_image) {
+                            delete_from_public($option->option_image);
+                        }
+                        $option->option_image = upload_to_public($optionData['option_image'], 'images/options');
+                    }
+
+                    $option->save();
+
+                    if ($option->id) {
+                        $submittedOptionIds[] = $option->id;
+                    }
                 }
 
-                foreach ($oldOptionsImages as $order => $imagePath) {
-                    if ($imagePath && $order > count($request->options)) {
-                        delete_from_public($imagePath);
+                foreach ($existingOptions as $oldOptionId => $oldOption) {
+                    if (!in_array($oldOptionId, $submittedOptionIds)) {
+                        if ($oldOption->option_image) {
+                            delete_from_public($oldOption->option_image);
+                        }
+                        $oldOption->delete();
                     }
                 }
             }

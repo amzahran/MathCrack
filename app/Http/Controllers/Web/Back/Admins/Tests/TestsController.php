@@ -7,10 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Test;
 use App\Models\Course;
+use App\Models\TestQuestion;
+use App\Models\TestQuestionOption;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TestsController extends Controller
 {
@@ -567,5 +570,449 @@ class TestsController extends Controller
             ->get();
 
         return view('themes.default.back.admins.tests.print', compact('rows'));
+    }
+
+    /* ========================
+     *  QUESTIONS MANAGEMENT
+     * ======================== */
+
+    /**
+     * عرض صفحة إدارة الأسئلة
+     */
+    public function questions(Request $request)
+    {
+        if (!Gate::allows('edit tests')) {
+            return view('themes/default/back.permission-denied');
+        }
+
+        $testId = decrypt($request->test_id);
+        $test = Test::with(['course'])->findOrFail($testId);
+
+        $questions = TestQuestion::where('test_id', $testId)
+            ->with('options')
+            ->orderBy('part')
+            ->orderBy('question_order')
+            ->get();
+
+        return view('themes.default.back.admins.tests.questions', compact('test', 'questions'));
+    }
+
+    /**
+     * تحديث السؤال (مع إمكانية حذف الصور)
+     */
+    public function updateQuestion(Request $request)
+{
+    try {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:test_questions,id',
+            'test_id' => 'required|exists:tests,id',
+            'question_text' => 'required|string',
+            'part' => 'required|string',
+            'score' => 'required|integer|min:1',
+            'type' => 'required|in:mcq,tf,numeric',
+            'correct_answer' => 'nullable|string',
+            'difficulty' => 'nullable|string',
+            'content' => 'nullable|string',
+            'explanation' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        DB::beginTransaction();
+
+        $question = TestQuestion::findOrFail($request->id);
+
+        // تحديث البيانات الأساسية
+        $question->question_text = $request->question_text;
+        $question->part = $request->part;
+        $question->score = $request->score;
+        $question->type = $request->type;
+        $question->difficulty = $request->difficulty;
+        $question->content = $request->content;
+        $question->explanation = $request->explanation;
+
+        // معالجة صورة السؤال
+        if ($request->has('remove_question_image') && $request->remove_question_image == '1') {
+            if ($question->question_image && file_exists(public_path($question->question_image))) {
+                unlink(public_path($question->question_image));
+            }
+            $question->question_image = null;
+        }
+
+        if ($request->hasFile('question_image')) {
+            if ($question->question_image && file_exists(public_path($question->question_image))) {
+                unlink(public_path($question->question_image));
+            }
+            
+            $image = $request->file('question_image');
+            $imageName = time() . '_question_' . $question->id . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('uploads/questions', $imageName, 'public');
+            $question->question_image = 'storage/' . $path;
+        }
+
+        // معالجة صورة الشرح
+        if ($request->has('remove_explanation_image') && $request->remove_explanation_image == '1') {
+            if ($question->explanation_image && file_exists(public_path($question->explanation_image))) {
+                unlink(public_path($question->explanation_image));
+            }
+            $question->explanation_image = null;
+        }
+
+        if ($request->hasFile('explanation_image')) {
+            if ($question->explanation_image && file_exists(public_path($question->explanation_image))) {
+                unlink(public_path($question->explanation_image));
+            }
+            
+            $image = $request->file('explanation_image');
+            $imageName = time() . '_explanation_' . $question->id . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('uploads/explanation', $imageName, 'public');
+            $question->explanation_image = 'storage/' . $path;
+        }
+
+        // معالجة الإجابة حسب نوع السؤال
+        if ($request->type === 'tf') {
+            $question->correct_answer = $request->correct_answer === '1' ? 'true' : 'false';
+        } elseif ($request->type === 'numeric') {
+            $question->correct_answer = $request->correct_answer;
+        }
+
+        $question->save();
+
+        // ==================== معالجة خيارات MCQ مع حذف الصور ====================
+        if ($request->type === 'mcq') {
+            
+            // ========== الخطوة 1: حذف صور الخيارات المحددة ==========
+            if ($request->has('remove_option_image')) {
+                foreach ($request->remove_option_image as $optionId => $shouldRemove) {
+                    if ($shouldRemove == '1') {
+                        // البحث عن الخيار بواسطة المعرف
+                        $option = TestQuestionOption::find($optionId);
+                        if ($option) {
+                            if ($option->option_image && file_exists(public_path($option->option_image))) {
+                                unlink(public_path($option->option_image));
+                                Log::info('Deleted option image: ' . $option->option_image);
+                            }
+                            $option->option_image = null;
+                            $option->save();
+                        }
+                    }
+                }
+            }
+            // ==========================================================
+            
+            // جلب الخيارات الحالية
+            $existingOptions = $question->options;
+            
+            // معالجة الخيارات الجديدة
+            if ($request->has('options')) {
+                // حذف الخيارات القديمة مع صورها (التي لم يتم تحديثها)
+                foreach ($existingOptions as $oldOption) {
+                    // التحقق مما إذا كان هذا الخيار قد تم تحديثه في الطلب
+                    $isUpdated = false;
+                    foreach ($request->options as $newOption) {
+                        if (isset($newOption['id']) && $newOption['id'] == $oldOption->id) {
+                            $isUpdated = true;
+                            break;
+                        }
+                    }
+                    
+                    // إذا لم يتم تحديث الخيار، احذفه مع صورته
+                    if (!$isUpdated) {
+                        if ($oldOption->option_image && file_exists(public_path($oldOption->option_image))) {
+                            unlink(public_path($oldOption->option_image));
+                        }
+                        $oldOption->delete();
+                    }
+                }
+
+                // إضافة أو تحديث الخيارات
+                foreach ($request->options as $index => $optionData) {
+                    $optionId = $optionData['id'] ?? null;
+                    
+                    if ($optionId && ($existingOption = TestQuestionOption::find($optionId))) {
+                        // تحديث خيار موجود
+                        $existingOption->option_text = $optionData['option_text'] ?? '';
+                        $existingOption->is_correct = isset($optionData['is_correct']) && $optionData['is_correct'] == '1' ? 1 : 0;
+                        
+                        // رفع صورة جديدة للخيار إذا وجدت
+                        if (isset($optionData['option_image']) && $optionData['option_image'] instanceof \Illuminate\Http\UploadedFile) {
+                            // حذف الصورة القديمة
+                            if ($existingOption->option_image && file_exists(public_path($existingOption->option_image))) {
+                                unlink(public_path($existingOption->option_image));
+                            }
+                            
+                            $image = $optionData['option_image'];
+                            $imageName = time() . '_option_' . $question->id . '_' . $index . '.' . $image->getClientOriginalExtension();
+                            $path = $image->storeAs('uploads/options', $imageName, 'public');
+                            $existingOption->option_image = 'storage/' . $path;
+                        }
+                        
+                        $existingOption->save();
+                    } else {
+                        // إضافة خيار جديد
+                        $option = new TestQuestionOption();
+                        $option->test_question_id = $question->id;
+                        $option->option_text = $optionData['option_text'] ?? '';
+                        $option->is_correct = isset($optionData['is_correct']) && $optionData['is_correct'] == '1' ? 1 : 0;
+                        
+                        if (isset($optionData['option_image']) && $optionData['option_image'] instanceof \Illuminate\Http\UploadedFile) {
+                            $image = $optionData['option_image'];
+                            $imageName = time() . '_option_' . $question->id . '_' . $index . '.' . $image->getClientOriginalExtension();
+                            $path = $image->storeAs('uploads/options', $imageName, 'public');
+                            $option->option_image = 'storage/' . $path;
+                        }
+                        
+                        $option->save();
+                    }
+                }
+            }
+        }
+        // ====================================================================
+
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => __('l.question_updated_successfully'),
+            'question' => $question->fresh(['options'])
+        ]);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Error updating question: ' . $e->getMessage(), [
+            'request' => $request->all(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Error updating question: ' . $e->getMessage()
+        ], 500);
+    }
+}
+    // ======================================================
+    
+    // جلب الخيارات الحالية
+    $existingOptions = $question->options;
+    
+    // معالجة الخيارات الجديدة
+    if ($request->has('options')) {
+        // حذف الخيارات القديمة (باستثناء التي تم تحديث صورها)
+        foreach ($existingOptions as $oldOption) {
+            // التحقق مما إذا كان هذا الخيار قد تم تحديث صورته
+            $isUpdated = false;
+            foreach ($request->options as $newOption) {
+                if (isset($newOption['id']) && $newOption['id'] == $oldOption->id) {
+                    $isUpdated = true;
+                    break;
+                }
+            }
+            
+            // إذا لم يتم تحديث الخيار، احذفه مع صورته
+            if (!$isUpdated) {
+                if ($oldOption->option_image && file_exists(public_path($oldOption->option_image))) {
+                    unlink(public_path($oldOption->option_image));
+                }
+                $oldOption->delete();
+            }
+        }
+
+        // إضافة أو تحديث الخيارات
+        foreach ($request->options as $index => $optionData) {
+            $optionId = $optionData['id'] ?? null;
+            
+            if ($optionId && ($existingOption = TestQuestionOption::find($optionId))) {
+                // تحديث خيار موجود
+                $existingOption->option_text = $optionData['option_text'] ?? '';
+                $existingOption->is_correct = isset($optionData['is_correct']) && $optionData['is_correct'] == '1' ? 1 : 0;
+                
+                // رفع صورة جديدة للخيار إذا وجدت
+                if (isset($optionData['option_image']) && $optionData['option_image'] instanceof \Illuminate\Http\UploadedFile) {
+                    // حذف الصورة القديمة
+                    if ($existingOption->option_image && file_exists(public_path($existingOption->option_image))) {
+                        unlink(public_path($existingOption->option_image));
+                    }
+                    
+                    $image = $optionData['option_image'];
+                    $imageName = time() . '_option_' . $question->id . '_' . $index . '.' . $image->getClientOriginalExtension();
+                    $path = $image->storeAs('uploads/options', $imageName, 'public');
+                    $existingOption->option_image = 'storage/' . $path;
+                }
+                
+                $existingOption->save();
+            } else {
+                // إضافة خيار جديد
+                $option = new TestQuestionOption();
+                $option->test_question_id = $question->id;
+                $option->option_text = $optionData['option_text'] ?? '';
+                $option->is_correct = isset($optionData['is_correct']) && $optionData['is_correct'] == '1' ? 1 : 0;
+                
+                if (isset($optionData['option_image']) && $optionData['option_image'] instanceof \Illuminate\Http\UploadedFile) {
+                    $image = $optionData['option_image'];
+                    $imageName = time() . '_option_' . $question->id . '_' . $index . '.' . $image->getClientOriginalExtension();
+                    $path = $image->storeAs('uploads/options', $imageName, 'public');
+                    $option->option_image = 'storage/' . $path;
+                }
+                
+                $option->save();
+            }
+        }
+    }
+}
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => __('l.question_updated_successfully'),
+                'question' => $question->fresh(['options'])
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error updating question: ' . $e->getMessage(), [
+                'request' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating question: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * حذف السؤال
+     */
+    public function deleteQuestion(Request $request)
+    {
+        try {
+            $questionId = $request->input('question_id');
+            
+            $question = TestQuestion::findOrFail($questionId);
+            $testId = $question->test_id;
+            
+            DB::beginTransaction();
+            
+            // حذف صورة السؤال
+            if ($question->question_image && file_exists(public_path($question->question_image))) {
+                unlink(public_path($question->question_image));
+            }
+            
+            // حذف صورة الشرح
+            if ($question->explanation_image && file_exists(public_path($question->explanation_image))) {
+                unlink(public_path($question->explanation_image));
+            }
+            
+            // حذف الخيارات والصور المرتبطة بها
+            foreach ($question->options as $option) {
+                if ($option->option_image && file_exists(public_path($option->option_image))) {
+                    unlink(public_path($option->option_image));
+                }
+                $option->delete();
+            }
+            
+            // حذف الإجابات المرتبطة
+            \App\Models\StudentTestAnswer::where('question_id', $questionId)->delete();
+            
+            // حذف السؤال
+            $question->delete();
+            
+            // إعادة ترتيب الأسئلة
+            $this->reorderQuestions($testId);
+            
+            DB::commit();
+            
+            return response()->json([
+                'success' => true,
+                'message' => __('l.question_deleted_successfully')
+            ]);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error deleting question: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting question: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * إعادة ترتيب الأسئلة بعد الحذف
+     */
+    private function reorderQuestions($testId)
+    {
+        $questions = TestQuestion::where('test_id', $testId)
+            ->orderBy('part')
+            ->orderBy('question_order')
+            ->get();
+        
+        $currentOrder = 1;
+        $currentPart = null;
+        
+        foreach ($questions as $question) {
+            if ($currentPart !== $question->part) {
+                $currentOrder = 1;
+                $currentPart = $question->part;
+            }
+            
+            $question->question_order = $currentOrder;
+            $question->save();
+            
+            $currentOrder++;
+        }
+    }
+
+    /**
+     * حذف صورة خيار
+     */
+    public function deleteOptionImage(Request $request)
+    {
+        try {
+            $optionId = $request->input('option_id');
+
+            if (!$optionId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Option ID is required'
+                ], 422);
+            }
+
+            $option = TestQuestionOption::find($optionId);
+
+            if (!$option) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Option not found'
+                ], 404);
+            }
+
+            if ($option->option_image && file_exists(public_path($option->option_image))) {
+                unlink(public_path($option->option_image));
+            }
+
+            $option->option_image = null;
+            $option->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Image deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error deleting option image: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting image: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
