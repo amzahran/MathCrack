@@ -252,6 +252,34 @@ window.routes = {
     questionsDelete: '{{ route("dashboard.admins.tests-questions-delete") }}'
 };
 
+window.testScoring = {
+    part1: {
+        easy: {{ (int) $test->module1_easy_score }},
+        medium: {{ (int) $test->module1_medium_score }},
+        hard: {{ (int) $test->module1_hard_score }},
+    },
+    part2: {
+        easy: {{ (int) $test->module2_easy_score }},
+        medium: {{ (int) $test->module2_medium_score }},
+        hard: {{ (int) $test->module2_hard_score }},
+    },
+    part3: {
+        easy: {{ (int) $test->module3_easy_score }},
+        medium: {{ (int) $test->module3_medium_score }},
+        hard: {{ (int) $test->module3_hard_score }},
+    },
+    part4: {
+        easy: {{ (int) $test->module4_easy_score }},
+        medium: {{ (int) $test->module4_medium_score }},
+        hard: {{ (int) $test->module4_hard_score }},
+    },
+    part5: {
+        easy: {{ (int) $test->module5_easy_score }},
+        medium: {{ (int) $test->module5_medium_score }},
+        hard: {{ (int) $test->module5_hard_score }},
+    }
+};
+
 window.translations = {
     all_questions_added_already: '@lang("l.all_questions_added_already")',
     max_options_limit: '@lang("l.max_options_limit")',
@@ -322,7 +350,8 @@ window.translations = {
     select_content: '@lang("l.select_content")',
     content_required: '@lang("l.content_required")',
 
-    default_score: '{{ $test->default_question_score }}'
+    // احتياطي فقط لأي اعتماد قديم داخل js الحالي
+    default_score: '{{ (int) ($test->module1_easy_score ?? 0) }}'
 };
 </script>
 
@@ -403,7 +432,110 @@ window.translations = {
         });
     }
 
-    document.addEventListener('DOMContentLoaded', rebuildModuleSelects);
+    function getQuestionRoot(element) {
+        if (!element) return null;
+        return element.closest('.question-card') || element.closest('.question-body') || element.closest('.question-item') || element.closest('.quiz-question') || element.parentElement;
+    }
+
+    function getScoreInput(root) {
+        if (!root) return null;
+        return root.querySelector('.question-score, .score-input, input[name="score"], input[placeholder*="Point"], input[placeholder*="point"]');
+    }
+
+    function getDifficultySelect(root) {
+        if (!root) return null;
+        return root.querySelector('.question-difficulty, select[name="difficulty"]');
+    }
+
+    function getPartSelect(root) {
+        if (!root) return null;
+        return root.querySelector('.question-part, .part-select, select[name="part"]');
+    }
+
+    function resolveScore(part, difficulty) {
+        if (!part || !difficulty) return null;
+        if (!window.testScoring || !window.testScoring[part]) return null;
+
+        const score = window.testScoring[part][difficulty];
+        return (typeof score !== 'undefined' && score !== null) ? score : null;
+    }
+
+    function applyAutoScore(root) {
+        if (!root) return;
+
+        const partSelect = getPartSelect(root);
+        const difficultySelect = getDifficultySelect(root);
+        const scoreInput = getScoreInput(root);
+
+        if (!partSelect || !difficultySelect || !scoreInput) return;
+
+        const part = partSelect.value;
+        const difficulty = difficultySelect.value;
+        const score = resolveScore(part, difficulty);
+
+        if (score === null) return;
+
+        scoreInput.value = score;
+        // gscoreInput.setAttribute('readonly', 'readonly');
+    }
+
+    function initializeExistingQuestions() {
+        document.querySelectorAll('.question-card, .question-body').forEach(function (root) {
+            applyAutoScore(root);
+        });
+    }
+
+    document.addEventListener('change', function (e) {
+        const target = e.target;
+        if (!target) return;
+
+        if (
+            target.classList.contains('question-difficulty') ||
+            target.classList.contains('question-part') ||
+            target.classList.contains('part-select') ||
+            target.matches('select[name="difficulty"]') ||
+            target.matches('select[name="part"]')
+        ) {
+            const root = getQuestionRoot(target);
+            applyAutoScore(root);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        rebuildModuleSelects();
+
+        setTimeout(function () {
+            initializeExistingQuestions();
+        }, 100);
+
+        const container = document.getElementById('questionsContainer');
+        if (container && 'MutationObserver' in window) {
+            const observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    mutation.addedNodes.forEach(function (node) {
+                        if (!(node instanceof HTMLElement)) return;
+
+                        if (node.matches('.question-card, .question-body')) {
+                            applyAutoScore(node);
+                        } else {
+                            const nestedCards = node.querySelectorAll
+                                ? node.querySelectorAll('.question-card, .question-body')
+                                : [];
+                            nestedCards.forEach(function (nested) {
+                                applyAutoScore(nested);
+                            });
+                        }
+                    });
+                });
+            });
+
+            observer.observe(container, {
+                childList: true,
+                subtree: true
+            });
+        }
+    });
+
     setInterval(rebuildModuleSelects, 1000);
 })();
 </script>

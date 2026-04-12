@@ -6,38 +6,51 @@
 
 @section('css')
     <style>
-        /* تكبير كل عناوين الحقول داخل المودال */
         .modal label.form-label,
         .modal label {
             font-size: 18px !important;
             font-weight: 600;
         }
 
-        /* تكبير عناوين الأقسام داخل المودال */
         .modal h6.text-primary.border-bottom {
             font-size: 22px;
             font-weight: 700;
         }
 
-         /* إخفاء عناصر apexcharts إذا كانت موجودة */
-    .apexcharts-canvas,
-    #salesOverviewChart,
-    #revenueChart,
-    #growthChart {
-        display: none !important;
-    }
+        .apexcharts-canvas,
+        #salesOverviewChart,
+        #revenueChart,
+        #growthChart {
+            display: none !important;
+        }
+
+        .module-score-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            background: #f9fafb;
+            margin-bottom: 16px;
+        }
+
+        .module-score-card h6 {
+            margin-bottom: 14px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #2563eb;
+        }
     </style>
 @endsection
-
 
 @section('content')
     <div class="main-content">
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
+
         @if (session('error'))
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
+
         @if ($errors->any())
             <div class="alert alert-danger">
                 @foreach ($errors->all() as $error)
@@ -62,7 +75,6 @@
                 </div>
             </div>
 
-            <!-- فلاتر البحث -->
             <div class="card mb-3">
                 <div class="card-body">
                     <form id="filterForm">
@@ -76,6 +88,7 @@
                                     @endforeach
                                 </select>
                             </div>
+
                             <div class="col-md-4">
                                 <label for="status_filter" class="form-label">@lang('l.status')</label>
                                 <select class="form-select" id="status_filter" name="status">
@@ -84,6 +97,7 @@
                                     <option value="0">@lang('l.inactive')</option>
                                 </select>
                             </div>
+
                             <div class="col-md-4">
                                 <label for="price_filter" class="form-label">@lang('l.price_type')</label>
                                 <select class="form-select" id="price_filter" name="price_type">
@@ -93,6 +107,7 @@
                                 </select>
                             </div>
                         </div>
+
                         <div class="row mt-3">
                             <div class="col-12 d-flex justify-content-end gap-2">
                                 <button type="button" class="btn btn-secondary btn-sm" id="clearFilters">
@@ -104,7 +119,6 @@
                 </div>
             </div>
 
-            <!-- جدول الاختبارات -->
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
@@ -127,30 +141,31 @@
             </div>
 
             @can('add tests')
-                <!-- مودال إضافة اختبار جديد -->
-                <!-- Add Test Modal -->
-<div class="modal fade" id="addTestModal" tabindex="-1" aria-labelledby="addTestModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addTestModalLabel">@lang('l.add_new_test')</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{{ route('dashboard.admins.tests-store') }}" method="POST" id="addTestForm">
-                @csrf
-                <div class="modal-body" style="max-height: calc(100vh - 180px); overflow-y: auto;">
-                    <div class="row">
-                        ...
-                        <!-- معلومات أساسية -->
+                <div class="modal fade" id="addTestModal" tabindex="-1" aria-labelledby="addTestModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addTestModalLabel">@lang('l.add_new_test')</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+
+                            <form action="{{ route('dashboard.admins.tests-store') }}" method="POST" id="addTestForm">
+                                @csrf
+
+                                <div class="modal-body" style="max-height: calc(100vh - 180px); overflow-y: auto;">
+                                    <div class="row">
+
                                         <div class="col-12">
                                             <h6 class="text-primary border-bottom pb-2 mb-3">@lang('l.basic_information')</h6>
                                         </div>
+
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="name" class="form-label">@lang('l.test_name') <span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="name" name="name" required>
                                             </div>
                                         </div>
+
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="course_id" class="form-label">@lang('l.Course') <span class="text-danger">*</span></label>
@@ -162,12 +177,14 @@
                                                 </select>
                                             </div>
                                         </div>
+
                                         <div class="col-12">
                                             <div class="mb-3">
                                                 <label for="description" class="form-label">@lang('l.test_description')</label>
                                                 <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                                             </div>
                                         </div>
+
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="price" class="form-label">@lang('l.test_price') (EGP) <span class="text-danger">*</span></label>
@@ -175,6 +192,7 @@
                                                 <small class="form-text text-muted">@lang('l.put_zero_if_free')</small>
                                             </div>
                                         </div>
+
                                         <div class="col-md-6">
                                             <div class="mb-3 mt-4">
                                                 <div class="form-check">
@@ -186,38 +204,26 @@
                                             </div>
                                         </div>
 
-                                        <!-- نظام الدرجات -->
                                         <div class="col-12">
                                             <h6 class="text-primary border-bottom pb-2 mb-3">@lang('l.scoring_system')</h6>
                                         </div>
+
                                         <div class="col-md-4">
                                             <div class="mb-3">
-                                                <label for="total_score" class="form-label">@lang('l.total_score') <span class="text-danger">*</span></label>
-                                                <input type="number" class="form-control" id="total_score" name="total_score" min="1" max="1000" value="800" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label for="initial_score" class="form-label">@lang('l.initial_score') <span class="text-danger">*</span></label>
-                                                <input type="number" class="form-control" id="initial_score" name="initial_score" min="0" max="800" value="200" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label for="default_question_score" class="form-label">@lang('l.default_question_score') <span class="text-danger">*</span></label>
-                                                <input type="number" class="form-control" id="default_question_score" name="default_question_score" min="1" max="100" value="15" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="alert alert-info">
-                                                <strong>@lang('l.Note'):</strong>
-                                                @lang('l.total_score_calculation')
-                                                <br>
-                                                <span id="score-calculation" class="fw-bold"></span>
+                                                <label for="initial_score" class="form-label">Initial Score <span class="text-danger">*</span></label>
+                                                <input type="number" class="form-control" id="initial_score" name="initial_score" min="0" max="100000" value="200" required>
                                             </div>
                                         </div>
 
-                                        <!-- هيكل الاختبار -->
+                                        <div class="col-12">
+                                            <div class="alert alert-info">
+                                                <strong>@lang('l.Note'):</strong>
+                                                Final score will be calculated automatically after adding the test questions based on each module scoring settings.
+                                                <br>
+                                                <span id="score-calculation-preview" class="fw-bold text-success"></span>
+                                            </div>
+                                        </div>
+
                                         <div class="col-12">
                                             <h6 class="text-primary border-bottom pb-2 mb-2">@lang('l.test_structure')</h6>
                                         </div>
@@ -235,6 +241,58 @@
                                                 @lang('l.modules_help_text', [], null) ?? 'Select number of modules (1–5). Hidden modules will be treated as 0 questions.'
                                             </small>
                                         </div>
+
+                                        <div class="col-12 mt-3">
+                                            <h6 class="text-primary border-bottom pb-2 mb-3">Module Scoring Settings</h6>
+                                        </div>
+
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <div class="col-12 module-score-block" data-module="{{ $i }}">
+                                                <div class="module-score-card">
+                                                    <h6>Module {{ $i }} Scoring</h6>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="mb-3">
+                                                                <label for="module{{ $i }}_easy_score" class="form-label">Module {{ $i }} Easy Score <span class="text-danger">*</span></label>
+                                                                <input type="number"
+                                                                       class="form-control module-score-input"
+                                                                       id="module{{ $i }}_easy_score"
+                                                                       name="module{{ $i }}_easy_score"
+                                                                       min="0"
+                                                                       max="100000"
+                                                                       value="10">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-4">
+                                                            <div class="mb-3">
+                                                                <label for="module{{ $i }}_medium_score" class="form-label">Module {{ $i }} Medium Score <span class="text-danger">*</span></label>
+                                                                <input type="number"
+                                                                       class="form-control module-score-input"
+                                                                       id="module{{ $i }}_medium_score"
+                                                                       name="module{{ $i }}_medium_score"
+                                                                       min="0"
+                                                                       max="100000"
+                                                                       value="13">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-4">
+                                                            <div class="mb-3">
+                                                                <label for="module{{ $i }}_hard_score" class="form-label">Module {{ $i }} Hard Score <span class="text-danger">*</span></label>
+                                                                <input type="number"
+                                                                       class="form-control module-score-input"
+                                                                       id="module{{ $i }}_hard_score"
+                                                                       name="module{{ $i }}_hard_score"
+                                                                       min="0"
+                                                                       max="100000"
+                                                                       value="17">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endfor
 
                                         <div class="col-12"></div>
 
@@ -277,16 +335,14 @@
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="break_time_minutes" class="form-label">@lang('l.break_time_minutes')</label>
-                                                <input type="number" class="form-control" id="break_time_minutes" name="break_time_minutes"
-                                                       min="0" max="60" value="15">
+                                                <input type="number" class="form-control" id="break_time_minutes" name="break_time_minutes" min="0" max="60" value="15">
                                             </div>
                                         </div>
 
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="max_attempts" class="form-label">@lang('l.max_attempts') <span class="text-danger">*</span></label>
-                                                <input type="number" class="form-control" id="max_attempts" name="max_attempts"
-                                                       min="1" max="10" value="1" required>
+                                                <input type="number" class="form-control" id="max_attempts" name="max_attempts" min="1" max="10" value="1" required>
                                                 <small class="form-text text-muted">@lang('l.max_attempts_help')</small>
                                             </div>
                                         </div>
@@ -318,7 +374,6 @@
 $(document).ready(function() {
     console.log('Tests Management - Loading...');
 
-    // إعداد DataTable
     var testsTable = $('#testsTable').DataTable({
         processing: true,
         serverSide: true,
@@ -332,13 +387,13 @@ $(document).ready(function() {
         },
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-            { data: 'name',        name: 'name' },
+            { data: 'name', name: 'name' },
             { data: 'course_name', name: 'course.name', defaultContent: '' },
-            { data: 'price_formatted',   name: 'price', orderable: false, searchable: false },
-            { data: 'questions_status',  name: 'questions_status', orderable: false, searchable: false },
-            { data: 'students_count',    name: 'students_count', searchable: false },
-            { data: 'status',            name: 'status', orderable: false, searchable: false },
-            { data: 'action',            name: 'action', orderable: false, searchable: false },
+            { data: 'price_formatted', name: 'price', orderable: false, searchable: false },
+            { data: 'questions_status', name: 'questions_status', orderable: false, searchable: false },
+            { data: 'students_count', name: 'students_count', searchable: false },
+            { data: 'status', name: 'status', orderable: false, searchable: false },
+            { data: 'action', name: 'action', orderable: false, searchable: false },
         ],
         order: [[1, 'asc']],
         language: {
@@ -346,18 +401,15 @@ $(document).ready(function() {
         }
     });
 
-    // تطبيق الفلاتر
     $('#course_filter, #status_filter, #price_filter').on('change', function() {
         testsTable.draw();
     });
 
-    // مسح الفلاتر
     $('#clearFilters').click(function() {
         $('#filterForm')[0].reset();
         testsTable.draw();
     });
 
-    // تبديل الحالة
     $(document).on('change', '.status-toggle', function() {
         var checkbox = $(this);
         var testId   = checkbox.data('id');
@@ -385,41 +437,32 @@ $(document).ready(function() {
         });
     });
 
-    // ===== حساب الدرجات التلقائي =====
     function getInt(selector) {
         return parseInt($(selector).val()) || 0;
     }
 
-    function updateScoreCalculation() {
-        const initialScore  = getInt('#initial_score');
-        const questionScore = getInt('#default_question_score');
+    function updateScorePreview() {
+        const modulesCount = getInt('#modules_count');
+        const initialScore = getInt('#initial_score');
 
-        const part1Count = getInt('#part1_questions_count');
-        const part2Count = getInt('#part2_questions_count');
-        const part3Count = getInt('#part3_questions_count');
-        const part4Count = getInt('#part4_questions_count');
-        const part5Count = getInt('#part5_questions_count');
+        let message = `Initial Score: ${initialScore}`;
 
-        const totalQuestions  = part1Count + part2Count + part3Count + part4Count + part5Count;
-        const questionsTotal  = totalQuestions * questionScore;
-        const calculatedTotal = initialScore + questionsTotal;
+        for (let i = 1; i <= modulesCount; i++) {
+            const easy   = getInt(`#module${i}_easy_score`);
+            const medium = getInt(`#module${i}_medium_score`);
+            const hard   = getInt(`#module${i}_hard_score`);
 
-        $('#total_score').val(calculatedTotal);
+            message += ` | Module ${i}: Easy ${easy}, Medium ${medium}, Hard ${hard}`;
+        }
 
-        let message = `Initial Score: ${initialScore} + (${totalQuestions} Questions × ${questionScore}) = ${calculatedTotal}`;
-        $('#score-calculation')
+        message += ` | Final score will be calculated automatically after adding questions.`;
+
+        $('#score-calculation-preview')
             .removeClass('text-danger')
             .addClass('text-success')
             .html(message);
     }
 
-    $('#initial_score, #default_question_score,' +
-      '#part1_questions_count, #part2_questions_count, #part3_questions_count, #part4_questions_count, #part5_questions_count'
-    ).on('input', updateScoreCalculation);
-
-    updateScoreCalculation();
-
-    // ===== إظهار / إخفاء الموديولات =====
     function toggleModules() {
         var count = parseInt($('#modules_count').val()) || 1;
 
@@ -433,6 +476,17 @@ $(document).ready(function() {
             }
         });
 
+        $('.module-score-block').each(function () {
+            var mod = parseInt($(this).data('module'));
+            if (mod <= count) {
+                $(this).show();
+                $(this).find('input').prop('required', true);
+            } else {
+                $(this).hide();
+                $(this).find('input').prop('required', false);
+            }
+        });
+
         if (count <= 1) {
             $('#break_time_minutes').val(0);
             $('#break_time_minutes').closest('.col-md-6').hide();
@@ -442,20 +496,30 @@ $(document).ready(function() {
                 $('#break_time_minutes').val(15);
             }
         }
+
+        updateScorePreview();
     }
 
     $('#modules_count').on('change', toggleModules);
+    $('#initial_score').on('input', updateScorePreview);
+    $(document).on('input', '.module-score-input', updateScorePreview);
+
     toggleModules();
+    updateScorePreview();
 
     $('#addTestForm').on('submit', function () {
         var count = parseInt($('#modules_count').val()) || 1;
+
         for (var i = count + 1; i <= 5; i++) {
             $('#part' + i + '_questions_count').val(0);
             $('#part' + i + '_time_minutes').val(0);
+
+            $('#module' + i + '_easy_score').val(0);
+            $('#module' + i + '_medium_score').val(0);
+            $('#module' + i + '_hard_score').val(0);
         }
     });
 
-    // حذف السجل
     $(document).on('click', '.delete-record', function() {
         var href     = $(this).attr('href');
         var testName = $(this).closest('tr').find('td:eq(1)').text();

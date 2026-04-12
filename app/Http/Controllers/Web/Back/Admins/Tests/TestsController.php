@@ -163,31 +163,50 @@ class TestsController extends Controller
                     return $query->where('course_id', $request->course_id);
                 })
             ],
-            'description'            => 'nullable|string',
-            'course_id'              => 'required|exists:courses,id',
-            'price'                  => 'required|numeric|min:0',
-            'total_score'            => 'required|integer|min:1|max:1000',
-            'initial_score'          => 'required|integer|min:0|max:800',
-            'default_question_score' => 'required|integer|min:1|max:100',
+            'description' => 'nullable|string',
+            'course_id'   => 'required|exists:courses,id',
+            'price'       => 'required|numeric|min:0',
 
-            'part1_questions_count'  => 'required|integer|min:1|max:100',
-            'part1_time_minutes'     => 'required|integer|min:1|max:300',
+            'initial_score' => 'required|integer|min:0|max:100000',
 
-            'part2_questions_count'  => 'nullable|integer|min:0|max:100',
-            'part2_time_minutes'     => 'nullable|integer|min:0|max:300',
+            'module1_easy_score'   => 'required|integer|min:0|max:100000',
+            'module1_medium_score' => 'required|integer|min:0|max:100000',
+            'module1_hard_score'   => 'required|integer|min:0|max:100000',
 
-            'part3_questions_count'  => 'nullable|integer|min:0|max:100',
-            'part3_time_minutes'     => 'nullable|integer|min:0|max:300',
+            'module2_easy_score'   => 'nullable|integer|min:0|max:100000',
+            'module2_medium_score' => 'nullable|integer|min:0|max:100000',
+            'module2_hard_score'   => 'nullable|integer|min:0|max:100000',
 
-            'part4_questions_count'  => 'nullable|integer|min:0|max:100',
-            'part4_time_minutes'     => 'nullable|integer|min:0|max:300',
+            'module3_easy_score'   => 'nullable|integer|min:0|max:100000',
+            'module3_medium_score' => 'nullable|integer|min:0|max:100000',
+            'module3_hard_score'   => 'nullable|integer|min:0|max:100000',
 
-            'part5_questions_count'  => 'nullable|integer|min:0|max:100',
-            'part5_time_minutes'     => 'nullable|integer|min:0|max:300',
+            'module4_easy_score'   => 'nullable|integer|min:0|max:100000',
+            'module4_medium_score' => 'nullable|integer|min:0|max:100000',
+            'module4_hard_score'   => 'nullable|integer|min:0|max:100000',
 
-            'break_time_minutes'     => 'nullable|integer|min:0|max:60',
-            'max_attempts'           => 'required|integer|min:1|max:10',
-            'is_active'              => 'nullable|boolean',
+            'module5_easy_score'   => 'nullable|integer|min:0|max:100000',
+            'module5_medium_score' => 'nullable|integer|min:0|max:100000',
+            'module5_hard_score'   => 'nullable|integer|min:0|max:100000',
+
+            'part1_questions_count' => 'required|integer|min:1|max:100',
+            'part1_time_minutes'    => 'required|integer|min:1|max:300',
+
+            'part2_questions_count' => 'nullable|integer|min:0|max:100',
+            'part2_time_minutes'    => 'nullable|integer|min:0|max:300',
+
+            'part3_questions_count' => 'nullable|integer|min:0|max:100',
+            'part3_time_minutes'    => 'nullable|integer|min:0|max:300',
+
+            'part4_questions_count' => 'nullable|integer|min:0|max:100',
+            'part4_time_minutes'    => 'nullable|integer|min:0|max:300',
+
+            'part5_questions_count' => 'nullable|integer|min:0|max:100',
+            'part5_time_minutes'    => 'nullable|integer|min:0|max:300',
+
+            'break_time_minutes' => 'nullable|integer|min:0|max:60',
+            'max_attempts'       => 'required|integer|min:1|max:10',
+            'is_active'          => 'nullable|boolean',
         ], [
             'name.unique'        => __('l.test_name_exists_in_course'),
             'course_id.required' => __('l.course_required'),
@@ -207,10 +226,17 @@ class TestsController extends Controller
             foreach ([2, 3, 4, 5] as $i) {
                 $data["part{$i}_questions_count"] = $data["part{$i}_questions_count"] ?? 0;
                 $data["part{$i}_time_minutes"]    = $data["part{$i}_time_minutes"] ?? 0;
+
+                $data["module{$i}_easy_score"]   = $data["module{$i}_easy_score"] ?? 0;
+                $data["module{$i}_medium_score"] = $data["module{$i}_medium_score"] ?? 0;
+                $data["module{$i}_hard_score"]   = $data["module{$i}_hard_score"] ?? 0;
             }
 
             $data['break_time_minutes'] = $data['break_time_minutes'] ?? 0;
-            $data['is_active']          = $request->has('is_active') ? 1 : 0;
+            $data['is_active'] = $request->has('is_active') ? 1 : 0;
+
+            // يتم حساب total_score لاحقًا بعد إضافة الأسئلة
+            $data['total_score'] = 0;
 
             Test::create($data);
 
@@ -263,32 +289,50 @@ class TestsController extends Controller
                     return $query->where('course_id', $request->course_id);
                 })->ignore($test->id)
             ],
-            'description'            => 'nullable|string',
-            'course_id'              => 'required|exists:courses,id',
-            'price'                  => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+            'course_id'   => 'required|exists:courses,id',
+            'price'       => 'required|numeric|min:0',
 
-            'total_score'            => 'required|integer|min:1|max:1000',
-            'initial_score'          => 'required|integer|min:0|max:800',
-            'default_question_score' => 'required|integer|min:1|max:100',
+            'initial_score' => 'required|integer|min:0|max:100000',
 
-            'part1_questions_count'  => 'required|integer|min:1|max:100',
-            'part1_time_minutes'     => 'required|integer|min:1|max:300',
+            'module1_easy_score'   => 'required|integer|min:0|max:100000',
+            'module1_medium_score' => 'required|integer|min:0|max:100000',
+            'module1_hard_score'   => 'required|integer|min:0|max:100000',
 
-            'part2_questions_count'  => 'nullable|integer|min:0|max:100',
-            'part2_time_minutes'     => 'nullable|integer|min:0|max:300',
+            'module2_easy_score'   => 'nullable|integer|min:0|max:100000',
+            'module2_medium_score' => 'nullable|integer|min:0|max:100000',
+            'module2_hard_score'   => 'nullable|integer|min:0|max:100000',
 
-            'part3_questions_count'  => 'nullable|integer|min:0|max:100',
-            'part3_time_minutes'     => 'nullable|integer|min:0|max:300',
+            'module3_easy_score'   => 'nullable|integer|min:0|max:100000',
+            'module3_medium_score' => 'nullable|integer|min:0|max:100000',
+            'module3_hard_score'   => 'nullable|integer|min:0|max:100000',
 
-            'part4_questions_count'  => 'nullable|integer|min:0|max:100',
-            'part4_time_minutes'     => 'nullable|integer|min:0|max:300',
+            'module4_easy_score'   => 'nullable|integer|min:0|max:100000',
+            'module4_medium_score' => 'nullable|integer|min:0|max:100000',
+            'module4_hard_score'   => 'nullable|integer|min:0|max:100000',
 
-            'part5_questions_count'  => 'nullable|integer|min:0|max:100',
-            'part5_time_minutes'     => 'nullable|integer|min:0|max:300',
+            'module5_easy_score'   => 'nullable|integer|min:0|max:100000',
+            'module5_medium_score' => 'nullable|integer|min:0|max:100000',
+            'module5_hard_score'   => 'nullable|integer|min:0|max:100000',
 
-            'break_time_minutes'     => 'nullable|integer|min:0|max:60',
-            'max_attempts'           => 'required|integer|min:1|max:10',
-            'is_active'              => 'nullable|boolean',
+            'part1_questions_count' => 'required|integer|min:1|max:100',
+            'part1_time_minutes'    => 'required|integer|min:1|max:300',
+
+            'part2_questions_count' => 'nullable|integer|min:0|max:100',
+            'part2_time_minutes'    => 'nullable|integer|min:0|max:300',
+
+            'part3_questions_count' => 'nullable|integer|min:0|max:100',
+            'part3_time_minutes'    => 'nullable|integer|min:0|max:300',
+
+            'part4_questions_count' => 'nullable|integer|min:0|max:100',
+            'part4_time_minutes'    => 'nullable|integer|min:0|max:300',
+
+            'part5_questions_count' => 'nullable|integer|min:0|max:100',
+            'part5_time_minutes'    => 'nullable|integer|min:0|max:300',
+
+            'break_time_minutes' => 'nullable|integer|min:0|max:60',
+            'max_attempts'       => 'required|integer|min:1|max:10',
+            'is_active'          => 'nullable|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -304,10 +348,17 @@ class TestsController extends Controller
             foreach ([2, 3, 4, 5] as $i) {
                 $data["part{$i}_questions_count"] = $data["part{$i}_questions_count"] ?? 0;
                 $data["part{$i}_time_minutes"]    = $data["part{$i}_time_minutes"] ?? 0;
+
+                $data["module{$i}_easy_score"]   = $data["module{$i}_easy_score"] ?? 0;
+                $data["module{$i}_medium_score"] = $data["module{$i}_medium_score"] ?? 0;
+                $data["module{$i}_hard_score"]   = $data["module{$i}_hard_score"] ?? 0;
             }
 
             $data['break_time_minutes'] = $data['break_time_minutes'] ?? 0;
-            $data['is_active']          = $request->has('is_active') ? 1 : 0;
+            $data['is_active'] = $request->has('is_active') ? 1 : 0;
+
+            // يتم إعادة حساب total_score لاحقًا بعد تحديث الأسئلة
+            $data['total_score'] = $test->total_score ?? 0;
 
             $test->update($data);
 
@@ -576,9 +627,6 @@ class TestsController extends Controller
      *  QUESTIONS MANAGEMENT
      * ======================== */
 
-    /**
-     * عرض صفحة إدارة الأسئلة
-     */
     public function questions(Request $request)
     {
         if (!Gate::allows('edit tests')) {
@@ -597,256 +645,225 @@ class TestsController extends Controller
         return view('themes.default.back.admins.tests.questions', compact('test', 'questions'));
     }
 
-    /**
-     * تحديث السؤال (مع إمكانية حذف الصور)
-     */
     public function updateQuestion(Request $request)
-{
-    try {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|exists:test_questions,id',
-            'test_id' => 'required|exists:tests,id',
-            'question_text' => 'required|string',
-            'part' => 'required|string',
-            'score' => 'required|integer|min:1',
-            'type' => 'required|in:mcq,tf,numeric',
-            'correct_answer' => 'nullable|string',
-            'difficulty' => 'nullable|string',
-            'content' => 'nullable|string',
-            'explanation' => 'nullable|string',
-        ]);
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => 'required|exists:test_questions,id',
+                'test_id' => 'required|exists:tests,id',
+                'question_text' => 'required|string',
+                'part' => 'required|string',
+                'score' => 'required|integer|min:1',
+                'type' => 'required|in:mcq,tf,numeric',
+                'correct_answer' => 'nullable|string',
+                'difficulty' => 'nullable|string',
+                'content' => 'nullable|string',
+                'explanation' => 'nullable|string',
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        DB::beginTransaction();
-
-        $question = TestQuestion::findOrFail($request->id);
-
-        // تحديث البيانات الأساسية
-        $question->question_text = $request->question_text;
-        $question->part = $request->part;
-        $question->score = $request->score;
-        $question->type = $request->type;
-        $question->difficulty = $request->difficulty;
-        $question->content = $request->content;
-        $question->explanation = $request->explanation;
-
-        // معالجة صورة السؤال
-        if ($request->has('remove_question_image') && $request->remove_question_image == '1') {
-            if ($question->question_image && file_exists(public_path($question->question_image))) {
-                unlink(public_path($question->question_image));
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
             }
-            $question->question_image = null;
-        }
 
-        if ($request->hasFile('question_image')) {
-            if ($question->question_image && file_exists(public_path($question->question_image))) {
-                unlink(public_path($question->question_image));
+            DB::beginTransaction();
+
+            $question = TestQuestion::findOrFail($request->id);
+
+            $question->question_text = $request->question_text;
+            $question->part = $request->part;
+            $question->score = $request->score;
+            $question->type = $request->type;
+            $question->difficulty = $request->difficulty;
+            $question->content = $request->content;
+            $question->explanation = $request->explanation;
+
+            if ($request->has('remove_question_image') && $request->remove_question_image == '1') {
+                if ($question->question_image && file_exists(public_path($question->question_image))) {
+                    unlink(public_path($question->question_image));
+                }
+                $question->question_image = null;
             }
-            
-            $image = $request->file('question_image');
-            $imageName = time() . '_question_' . $question->id . '.' . $image->getClientOriginalExtension();
-            $path = $image->storeAs('uploads/questions', $imageName, 'public');
-            $question->question_image = 'storage/' . $path;
-        }
 
-        // معالجة صورة الشرح
-        if ($request->has('remove_explanation_image') && $request->remove_explanation_image == '1') {
-            if ($question->explanation_image && file_exists(public_path($question->explanation_image))) {
-                unlink(public_path($question->explanation_image));
+            if ($request->hasFile('question_image')) {
+                if ($question->question_image && file_exists(public_path($question->question_image))) {
+                    unlink(public_path($question->question_image));
+                }
+
+                $image = $request->file('question_image');
+                $imageName = time() . '_question_' . $question->id . '.' . $image->getClientOriginalExtension();
+                $path = $image->storeAs('uploads/questions', $imageName, 'public');
+                $question->question_image = 'storage/' . $path;
             }
-            $question->explanation_image = null;
-        }
 
-        if ($request->hasFile('explanation_image')) {
-            if ($question->explanation_image && file_exists(public_path($question->explanation_image))) {
-                unlink(public_path($question->explanation_image));
+            if ($request->has('remove_explanation_image') && $request->remove_explanation_image == '1') {
+                if ($question->explanation_image && file_exists(public_path($question->explanation_image))) {
+                    unlink(public_path($question->explanation_image));
+                }
+                $question->explanation_image = null;
             }
-            
-            $image = $request->file('explanation_image');
-            $imageName = time() . '_explanation_' . $question->id . '.' . $image->getClientOriginalExtension();
-            $path = $image->storeAs('uploads/explanation', $imageName, 'public');
-            $question->explanation_image = 'storage/' . $path;
-        }
 
-        // معالجة الإجابة حسب نوع السؤال
-        if ($request->type === 'tf') {
-            $question->correct_answer = $request->correct_answer === '1' ? 'true' : 'false';
-        } elseif ($request->type === 'numeric') {
-            $question->correct_answer = $request->correct_answer;
-        }
+            if ($request->hasFile('explanation_image')) {
+                if ($question->explanation_image && file_exists(public_path($question->explanation_image))) {
+                    unlink(public_path($question->explanation_image));
+                }
 
-        $question->save();
+                $image = $request->file('explanation_image');
+                $imageName = time() . '_explanation_' . $question->id . '.' . $image->getClientOriginalExtension();
+                $path = $image->storeAs('uploads/explanation', $imageName, 'public');
+                $question->explanation_image = 'storage/' . $path;
+            }
 
-        // ==================== معالجة خيارات MCQ مع حذف الصور ====================
-        if ($request->type === 'mcq') {
-            
-            // ========== الخطوة 1: حذف صور الخيارات المحددة ==========
-            if ($request->has('remove_option_image')) {
-                foreach ($request->remove_option_image as $optionId => $shouldRemove) {
-                    if ($shouldRemove == '1') {
-                        // البحث عن الخيار بواسطة المعرف
-                        $option = TestQuestionOption::find($optionId);
-                        if ($option) {
-                            if ($option->option_image && file_exists(public_path($option->option_image))) {
-                                unlink(public_path($option->option_image));
-                                Log::info('Deleted option image: ' . $option->option_image);
+            if ($request->type === 'tf') {
+                $question->correct_answer = $request->correct_answer === '1' ? 'true' : 'false';
+            } elseif ($request->type === 'numeric') {
+                $question->correct_answer = $request->correct_answer;
+            }
+
+            $question->save();
+
+            if ($request->type === 'mcq') {
+                if ($request->has('remove_option_image')) {
+                    foreach ($request->remove_option_image as $optionId => $shouldRemove) {
+                        if ($shouldRemove == '1') {
+                            $option = TestQuestionOption::find($optionId);
+                            if ($option) {
+                                if ($option->option_image && file_exists(public_path($option->option_image))) {
+                                    unlink(public_path($option->option_image));
+                                    Log::info('Deleted option image: ' . $option->option_image);
+                                }
+                                $option->option_image = null;
+                                $option->save();
                             }
-                            $option->option_image = null;
+                        }
+                    }
+                }
+
+                $existingOptions = $question->options;
+
+                if ($request->has('options')) {
+                    foreach ($existingOptions as $oldOption) {
+                        $isUpdated = false;
+                        foreach ($request->options as $newOption) {
+                            if (isset($newOption['id']) && $newOption['id'] == $oldOption->id) {
+                                $isUpdated = true;
+                                break;
+                            }
+                        }
+
+                        if (!$isUpdated) {
+                            if ($oldOption->option_image && file_exists(public_path($oldOption->option_image))) {
+                                unlink(public_path($oldOption->option_image));
+                            }
+                            $oldOption->delete();
+                        }
+                    }
+
+                    foreach ($request->options as $index => $optionData) {
+                        $optionId = $optionData['id'] ?? null;
+
+                        if ($optionId && ($existingOption = TestQuestionOption::find($optionId))) {
+                            $existingOption->option_text = $optionData['option_text'] ?? '';
+                            $existingOption->is_correct = isset($optionData['is_correct']) && $optionData['is_correct'] == '1' ? 1 : 0;
+
+                            if (isset($optionData['option_image']) && $optionData['option_image'] instanceof \Illuminate\Http\UploadedFile) {
+                                if ($existingOption->option_image && file_exists(public_path($existingOption->option_image))) {
+                                    unlink(public_path($existingOption->option_image));
+                                }
+
+                                $image = $optionData['option_image'];
+                                $imageName = time() . '_option_' . $question->id . '_' . $index . '.' . $image->getClientOriginalExtension();
+                                $path = $image->storeAs('uploads/options', $imageName, 'public');
+                                $existingOption->option_image = 'storage/' . $path;
+                            }
+
+                            $existingOption->save();
+                        } else {
+                            $option = new TestQuestionOption();
+                            $option->test_question_id = $question->id;
+                            $option->option_text = $optionData['option_text'] ?? '';
+                            $option->is_correct = isset($optionData['is_correct']) && $optionData['is_correct'] == '1' ? 1 : 0;
+
+                            if (isset($optionData['option_image']) && $optionData['option_image'] instanceof \Illuminate\Http\UploadedFile) {
+                                $image = $optionData['option_image'];
+                                $imageName = time() . '_option_' . $question->id . '_' . $index . '.' . $image->getClientOriginalExtension();
+                                $path = $image->storeAs('uploads/options', $imageName, 'public');
+                                $option->option_image = 'storage/' . $path;
+                            }
+
                             $option->save();
                         }
                     }
                 }
             }
-            // ==========================================================
-            
-            // جلب الخيارات الحالية
-            $existingOptions = $question->options;
-            
-            // معالجة الخيارات الجديدة
-            if ($request->has('options')) {
-                // حذف الخيارات القديمة مع صورها (التي لم يتم تحديثها)
-                foreach ($existingOptions as $oldOption) {
-                    // التحقق مما إذا كان هذا الخيار قد تم تحديثه في الطلب
-                    $isUpdated = false;
-                    foreach ($request->options as $newOption) {
-                        if (isset($newOption['id']) && $newOption['id'] == $oldOption->id) {
-                            $isUpdated = true;
-                            break;
-                        }
-                    }
-                    
-                    // إذا لم يتم تحديث الخيار، احذفه مع صورته
-                    if (!$isUpdated) {
-                        if ($oldOption->option_image && file_exists(public_path($oldOption->option_image))) {
-                            unlink(public_path($oldOption->option_image));
-                        }
-                        $oldOption->delete();
-                    }
-                }
 
-                // إضافة أو تحديث الخيارات
-                foreach ($request->options as $index => $optionData) {
-                    $optionId = $optionData['id'] ?? null;
-                    
-                    if ($optionId && ($existingOption = TestQuestionOption::find($optionId))) {
-                        // تحديث خيار موجود
-                        $existingOption->option_text = $optionData['option_text'] ?? '';
-                        $existingOption->is_correct = isset($optionData['is_correct']) && $optionData['is_correct'] == '1' ? 1 : 0;
-                        
-                        // رفع صورة جديدة للخيار إذا وجدت
-                        if (isset($optionData['option_image']) && $optionData['option_image'] instanceof \Illuminate\Http\UploadedFile) {
-                            // حذف الصورة القديمة
-                            if ($existingOption->option_image && file_exists(public_path($existingOption->option_image))) {
-                                unlink(public_path($existingOption->option_image));
-                            }
-                            
-                            $image = $optionData['option_image'];
-                            $imageName = time() . '_option_' . $question->id . '_' . $index . '.' . $image->getClientOriginalExtension();
-                            $path = $image->storeAs('uploads/options', $imageName, 'public');
-                            $existingOption->option_image = 'storage/' . $path;
-                        }
-                        
-                        $existingOption->save();
-                    } else {
-                        // إضافة خيار جديد
-                        $option = new TestQuestionOption();
-                        $option->test_question_id = $question->id;
-                        $option->option_text = $optionData['option_text'] ?? '';
-                        $option->is_correct = isset($optionData['is_correct']) && $optionData['is_correct'] == '1' ? 1 : 0;
-                        
-                        if (isset($optionData['option_image']) && $optionData['option_image'] instanceof \Illuminate\Http\UploadedFile) {
-                            $image = $optionData['option_image'];
-                            $imageName = time() . '_option_' . $question->id . '_' . $index . '.' . $image->getClientOriginalExtension();
-                            $path = $image->storeAs('uploads/options', $imageName, 'public');
-                            $option->option_image = 'storage/' . $path;
-                        }
-                        
-                        $option->save();
-                    }
-                }
-            }
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => __('l.question_updated_successfully'),
+                'question' => $question->fresh(['options'])
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error updating question: ' . $e->getMessage(), [
+                'request' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating question: ' . $e->getMessage()
+            ], 500);
         }
-        // ====================================================================
-
-        DB::commit();
-
-        return response()->json([
-            'success' => true,
-            'message' => __('l.question_updated_successfully'),
-            'question' => $question->fresh(['options'])
-        ]);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('Error updating question: ' . $e->getMessage(), [
-            'request' => $request->all(),
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Error updating question: ' . $e->getMessage()
-        ], 500);
     }
-}
-    
-    //  * حذف السؤال
-    //  */
+
     public function deleteQuestion(Request $request)
     {
         try {
             $questionId = $request->input('question_id');
-            
+
             $question = TestQuestion::findOrFail($questionId);
             $testId = $question->test_id;
-            
+
             DB::beginTransaction();
-            
-            // حذف صورة السؤال
+
             if ($question->question_image && file_exists(public_path($question->question_image))) {
                 unlink(public_path($question->question_image));
             }
-            
-            // حذف صورة الشرح
+
             if ($question->explanation_image && file_exists(public_path($question->explanation_image))) {
                 unlink(public_path($question->explanation_image));
             }
-            
-            // حذف الخيارات والصور المرتبطة بها
+
             foreach ($question->options as $option) {
                 if ($option->option_image && file_exists(public_path($option->option_image))) {
                     unlink(public_path($option->option_image));
                 }
                 $option->delete();
             }
-            
-            // حذف الإجابات المرتبطة
+
             \App\Models\StudentTestAnswer::where('question_id', $questionId)->delete();
-            
-            // حذف السؤال
+
             $question->delete();
-            
-            // إعادة ترتيب الأسئلة
+
             $this->reorderQuestions($testId);
-            
+
             DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => __('l.question_deleted_successfully')
             ]);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error deleting question: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error deleting question: ' . $e->getMessage()
@@ -854,35 +871,29 @@ class TestsController extends Controller
         }
     }
 
-    /**
-     * إعادة ترتيب الأسئلة بعد الحذف
-     */
     private function reorderQuestions($testId)
     {
         $questions = TestQuestion::where('test_id', $testId)
             ->orderBy('part')
             ->orderBy('question_order')
             ->get();
-        
+
         $currentOrder = 1;
         $currentPart = null;
-        
+
         foreach ($questions as $question) {
             if ($currentPart !== $question->part) {
                 $currentOrder = 1;
                 $currentPart = $question->part;
             }
-            
+
             $question->question_order = $currentOrder;
             $question->save();
-            
+
             $currentOrder++;
         }
     }
 
-    /**
-     * حذف صورة خيار
-     */
     public function deleteOptionImage(Request $request)
     {
         try {

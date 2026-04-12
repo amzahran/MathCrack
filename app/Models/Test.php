@@ -33,6 +33,26 @@ class Test extends Model
         'break_time_minutes',
         'max_attempts',
         'is_active',
+'module1_easy_score',
+'module1_medium_score',
+'module1_hard_score',
+
+'module2_easy_score',
+'module2_medium_score',
+'module2_hard_score',
+
+'module3_easy_score',
+'module3_medium_score',
+'module3_hard_score',
+
+'module4_easy_score',
+'module4_medium_score',
+'module4_hard_score',
+
+'module5_easy_score',
+'module5_medium_score',
+'module5_hard_score',
+
     ];
 
     protected $casts = [

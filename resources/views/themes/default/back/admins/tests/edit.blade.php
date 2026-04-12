@@ -16,6 +16,21 @@
             font-size: 22px;
             font-weight: 700;
         }
+
+        .module-score-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            background: #f9fafb;
+            margin-bottom: 16px;
+        }
+
+        .module-score-card h6 {
+            margin-bottom: 14px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #2563eb;
+        }
     </style>
 @endsection
 
@@ -58,13 +73,10 @@
             @php
                 $hasStudents = $test->studentTests()->exists();
 
-                // override مبني على نفس الصلاحية التي فتحت الصفحة
                 $adminOverride = Gate::check('edit lectures');
 
-                // لو عندك طلاب + مش معاك override => اقفل
                 $locked = $hasStudents && !$adminOverride;
 
-                // استنتاج عدد الموديولات من عدد الأسئلة
                 $initialModulesCount = 1;
                 for ($i = 5; $i >= 1; $i--) {
                     $field = "part{$i}_questions_count";
@@ -149,37 +161,81 @@
 
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="total_score" class="form-label">@lang('l.total_score') <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="total_score" name="total_score" min="1" max="1000"
-                                           value="{{ old('total_score', $test->total_score) }}"
-                                           {{ $locked ? 'readonly' : '' }} required>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="mb-3">
                                     <label for="initial_score" class="form-label">@lang('l.initial_score') <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="initial_score" name="initial_score" min="0" max="800"
+                                    <input type="number" class="form-control" id="initial_score" name="initial_score" min="0" max="100000"
                                            value="{{ old('initial_score', $test->initial_score) }}" required>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="default_question_score" class="form-label">@lang('l.default_question_score') <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="default_question_score" name="default_question_score" min="1" max="100"
-                                           value="{{ old('default_question_score', $test->default_question_score) }}"
-                                           {{ $locked ? 'readonly' : '' }} required>
                                 </div>
                             </div>
 
                             <div class="col-12">
                                 <div class="alert alert-info">
-                                    <strong>@lang('l.Note'):</strong> @lang('l.total_score_calculation')
+                                    <strong>@lang('l.Note'):</strong>
+                                    Final score will be calculated automatically after adding the test questions based on module scoring settings.
                                     <br>
-                                    <span id="score-calculation" class="fw-bold"></span>
+                                    <span id="score-calculation-preview" class="fw-bold text-success"></span>
                                 </div>
                             </div>
+
+                            <div class="col-12">
+                                <h6 class="text-primary border-bottom pb-2 mb-3">Module Scoring</h6>
+                            </div>
+
+                            @for($i = 1; $i <= 5; $i++)
+                                <div class="col-12 module-score-block" data-module="{{ $i }}">
+                                    <div class="module-score-card">
+                                        <h6>Module {{ $i }} Scoring</h6>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="module{{ $i }}_easy_score" class="form-label">
+                                                        Module {{ $i }} Easy Score <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input type="number"
+                                                           class="form-control module-score-input"
+                                                           id="module{{ $i }}_easy_score"
+                                                           name="module{{ $i }}_easy_score"
+                                                           min="0"
+                                                           max="100000"
+                                                           value="{{ old("module{$i}_easy_score", $test->{"module{$i}_easy_score"} ?? 0) }}"
+                                                           {{ $locked ? 'readonly' : '' }}>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="module{{ $i }}_medium_score" class="form-label">
+                                                        Module {{ $i }} Medium Score <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input type="number"
+                                                           class="form-control module-score-input"
+                                                           id="module{{ $i }}_medium_score"
+                                                           name="module{{ $i }}_medium_score"
+                                                           min="0"
+                                                           max="100000"
+                                                           value="{{ old("module{$i}_medium_score", $test->{"module{$i}_medium_score"} ?? 0) }}"
+                                                           {{ $locked ? 'readonly' : '' }}>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="module{{ $i }}_hard_score" class="form-label">
+                                                        Module {{ $i }} Hard Score <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input type="number"
+                                                           class="form-control module-score-input"
+                                                           id="module{{ $i }}_hard_score"
+                                                           name="module{{ $i }}_hard_score"
+                                                           min="0"
+                                                           max="100000"
+                                                           value="{{ old("module{$i}_hard_score", $test->{"module{$i}_hard_score"} ?? 0) }}"
+                                                           {{ $locked ? 'readonly' : '' }}>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endfor
 
                             <div class="col-12">
                                 <h6 class="text-primary border-bottom pb-2 mb-3">@lang('l.test_structure')</h6>
@@ -296,52 +352,27 @@
                 return parseInt($(selector).val()) || 0;
             }
 
-            function updateScoreCalculation() {
-                const initialScore  = getInt('#initial_score');
-                const questionScore = getInt('#default_question_score');
+            function updateScorePreview() {
+                const modulesCount = getInt('#modules_count');
+                const initialScore = getInt('#initial_score');
 
-                const part1Count = getInt('#part1_questions_count');
-                const part2Count = getInt('#part2_questions_count');
-                const part3Count = getInt('#part3_questions_count');
-                const part4Count = getInt('#part4_questions_count');
-                const part5Count = getInt('#part5_questions_count');
+                let message = `Initial Score: ${initialScore}`;
 
-                const totalQuestions   = part1Count + part2Count + part3Count + part4Count + part5Count;
-                const questionsTotal   = totalQuestions * questionScore;
-                const calculatedTotal  = initialScore + questionsTotal;
+                for (let i = 1; i <= modulesCount; i++) {
+                    const easy = getInt(`#module${i}_easy_score`);
+                    const medium = getInt(`#module${i}_medium_score`);
+                    const hard = getInt(`#module${i}_hard_score`);
 
-                if (!locked) {
-                    $('#total_score').val(calculatedTotal);
-                    let message = `Initial Score: ${initialScore} + (${totalQuestions} Questions × ${questionScore}) = ${calculatedTotal}`;
-                    $('#score-calculation')
-                        .removeClass('text-danger')
-                        .addClass('text-success')
-                        .html(message);
-                } else {
-                    const totalScore = getInt('#total_score');
-                    let message = `Initial Score: ${initialScore} + (${totalQuestions} Questions × ${questionScore}) = ${calculatedTotal}`;
-
-                    if (calculatedTotal !== totalScore) {
-                        message += ` ⚠️ should_be: ${totalScore}`;
-                        $('#score-calculation')
-                            .addClass('text-danger')
-                            .removeClass('text-success');
-                    } else {
-                        message += ` ✅`;
-                        $('#score-calculation')
-                            .removeClass('text-danger')
-                            .addClass('text-success');
-                    }
-
-                    $('#score-calculation').html(message);
+                    message += ` | Module ${i}: Easy ${easy}, Medium ${medium}, Hard ${hard}`;
                 }
+
+                message += ` | Final score will be calculated automatically after adding questions.`;
+
+                $('#score-calculation-preview')
+                    .removeClass('text-danger')
+                    .addClass('text-success')
+                    .html(message);
             }
-
-            $('#initial_score, #default_question_score, ' +
-              '#part1_questions_count, #part2_questions_count, #part3_questions_count, #part4_questions_count, #part5_questions_count'
-            ).on('input', updateScoreCalculation);
-
-            updateScoreCalculation();
 
             function toggleModulesEdit() {
                 let count = parseInt($('#modules_count').val()) || 1;
@@ -359,6 +390,20 @@
                     }
                 });
 
+                $('.module-score-block').each(function () {
+                    const mod = parseInt($(this).data('module'));
+                    if (mod <= count) {
+                        $(this).show();
+                        $(this).find('input').prop('required', true);
+                    } else {
+                        $(this).hide();
+                        $(this).find('input').prop('required', false);
+                        if (!locked) {
+                            $(this).find('input').val(0);
+                        }
+                    }
+                });
+
                 if (count <= 1) {
                     if (!locked) {
                         $('#break_time_minutes').val(0);
@@ -367,10 +412,16 @@
                 } else {
                     $('#break_time_minutes').closest('.col-md-6').show();
                 }
+
+                updateScorePreview();
             }
 
             $('#modules_count').on('change', toggleModulesEdit);
+            $('#initial_score').on('input', updateScorePreview);
+            $(document).on('input', '.module-score-input', updateScorePreview);
+
             toggleModulesEdit();
+            updateScorePreview();
 
             $('#editTestForm').on('submit', function () {
                 if (!locked) {
@@ -378,6 +429,10 @@
                     for (let i = count + 1; i <= 5; i++) {
                         $('#part' + i + '_questions_count').val(0);
                         $('#part' + i + '_time_minutes').val(0);
+
+                        $('#module' + i + '_easy_score').val(0);
+                        $('#module' + i + '_medium_score').val(0);
+                        $('#module' + i + '_hard_score').val(0);
                     }
                 }
             });

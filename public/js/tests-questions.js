@@ -371,7 +371,7 @@ function createNewQuestionHtml(questionId, defaultPartKey = '') {
                             </label>
                             <input type="number" class="form-control question-score"
                                    min="1"
-                                   value="${window.translations?.default_score || '15'}">
+                                   value="0">
                         </div>
 
                         <div class="mt-2">
@@ -1071,3 +1071,27 @@ function renderMath(element) {
         });
     }
 }
+
+
+/* ================================
+   AUTO SCORE FROM TEST SETTINGS
+================================ */
+$(document).on('change', '.question-difficulty, .question-part', function () {
+
+    const questionCard = $(this).closest('.question-card');
+
+    const difficulty = questionCard.find('.question-difficulty').val();
+    const part = questionCard.find('.question-part').val();
+    const scoreInput = questionCard.find('.question-score');
+
+    if (!difficulty || !part) return;
+
+    if (!window.testScoring || !window.testScoring[part]) return;
+
+    const newScore = window.testScoring[part][difficulty];
+
+    if (newScore !== undefined) {
+        scoreInput.val(newScore);
+    }
+
+});
