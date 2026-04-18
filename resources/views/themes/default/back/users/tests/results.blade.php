@@ -769,40 +769,20 @@
         }
     }
 
-    // الدرجة النهائية من current_score فقط
-    // initial score
-$baseScore = (float) ($test->initial_score ?? 0);
+    // ✅ الحل الحقيقي هنا
+    $finalScoreDisplayed = (float) $studentTest->current_score;
 
-// الدرجة الموجودة حاليًا في current_score = الدرجة المكتسبة من الأسئلة
-$earnedScore = (float) ($studentTest->current_score ?? 0);
+    $baseScore = (float) ($test->initial_score ?? 0);
 
-// النهائي المعروض = initial + earned
-$finalScoreDisplayed = $baseScore + $earnedScore;
+    $questionsTotal = (float) $allQuestions->sum('score');
 
-// الماكس = initial + مجموع درجات الأسئلة
-$questionsTotal = (float) $allQuestions->sum('score');
-$maxScore = $baseScore + $questionsTotal;
+    $maxScore = $baseScore + $questionsTotal;
 
-// تقريب لأعلى 10 فقط لهذه المستويات
-$allowedLevels = ['Digital SAT', 'EST I', 'EST II', 'ACT I', 'ACT II'];
-$levelName = $test->course->level->name ?? '';
-
-if (in_array($levelName, $allowedLevels)) {
-    $finalScoreDisplayed = $finalScoreDisplayed > 0
-        ? (int) ceil($finalScoreDisplayed / 10) * 10
-        : 0;
-} else {
-    $finalScoreDisplayed = (int) round($finalScoreDisplayed);
-}
-
-// النسبة بعد التقريب
-$percentage = $maxScore > 0
-    ? ($finalScoreDisplayed / $maxScore) * 100
-    : 0;
-    $earnedScore = (float) ($studentTest->current_score ?? 0);
+    $percentage = 0;
+    if ($maxScore > 0) {
+        $percentage = ($finalScoreDisplayed / $maxScore) * 100;
+    }
 @endphp
-
-
     <div class="main-content">
         <div class="results-header">
             <div class="completion-badge">
@@ -871,9 +851,9 @@ $percentage = $maxScore > 0
                     </div>
 
                     <div class="score-item earned">
-    <div class="score-item-number">{{ $earnedScore }}</div>
-    <div class="score-item-label">Points Earned</div>
-</div>
+                        <div class="score-item-number">{{ $finalScoreDisplayed }}</div>
+                        <div class="score-item-label">@lang('l.points_earned')</div>
+                    </div>
 
                     <div class="score-item">
                         <div class="score-item-number">{{ $baseScore }}</div>

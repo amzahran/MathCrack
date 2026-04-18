@@ -81,80 +81,55 @@ class StudentTestAttempt extends Model
 
     // ✅ التعديل هنا فقط
     public function calculateScore(): array
-{
-    if (!$this->relationLoaded('answers')) {
-        $this->load('answers');
+    {
+        $this->loadMissing('answers', 'test');
+
+        $baseScore = (float) ($this->test->initial_score ?? 0);
+
+        // 🔥 أهم سطر
+        $earnedScore = $this->answers->sum('score_earned');
+
+        $totalScore = $baseScore + $earnedScore;
+
+        $questionsTotal = $this->test->questions()->sum('score');
+
+        $maxScore = $baseScore + $questionsTotal;
+
+        $correctAnswers = $this->answers->where('is_correct', 1)->count();
+
+        $totalQuestions = $this->test->questions()->count();
+
+        $percentage = $maxScore > 0 ? ($totalScore / $maxScore) * 100 : 0;
+
+        $isPassed = $this->test->passing_score
+            ? $percentage >= $this->test->passing_score
+            : $percentage >= 60;
+
+        return [
+            'score' => $totalScore,
+            'max_score' => $maxScore,
+            'percentage' => $percentage,
+            'correct_answers' => $correctAnswers,
+            'total_questions' => $totalQuestions,
+            'is_passed' => $isPassed
+        ];
     }
 
-    $totalScoreFromAnswers = 0;
-    $correctAnswers = 0;
-
-    foreach ($this->answers as $answer) {
-        if ($answer->is_correct) {
-            $totalScoreFromAnswers += (float) ($answer->score_earned ?? 0);
-            $correctAnswers++;
-        }
-    }
-
-    // ✅ initial score
-    $baseScore = (float) ($this->test->initial_score ?? 0);
-
-    // ✅ final raw score
-    $finalScore = $baseScore + $totalScoreFromAnswers;
-
-    // ✅ rounding logic (SAT / EST / ACT)
-    $allowedLevels = ['Digital SAT','EST I','EST II','ACT I','ACT II'];
-    $levelName = $this->test->course->level->name ?? '';
-
-    if (in_array($levelName, $allowedLevels)) {
-        if ($finalScore > 0) {
-            $mod = ((int) round($finalScore)) % 10;
-
-            if ($mod !== 0) {
-                $finalScore = (int) round($finalScore) + (10 - $mod);
-            } else {
-                $finalScore = (int) round($finalScore);
-            }
-        } else {
-            $finalScore = 0;
-        }
-    } else {
-        $finalScore = (int) round($finalScore);
-    }
-
-    // ✅ max score
-    $questionsTotal = (float) $this->test->questions()->sum('score');
-    $maxScore = $baseScore + $questionsTotal;
-
-    // ✅ percentage
-    $percentage = $maxScore > 0
-        ? ($finalScore / $maxScore) * 100
-        : 0;
-
-    return [
-        'score' => $finalScore,
-        'max_score' => $maxScore,
-        'percentage' => $percentage,
-        'correct_answers' => $correctAnswers,
-        'total_questions' => $this->test->questions()->count(),
-        'is_passed' => $percentage >= ($this->test->passing_score ?? 60)
-    ];
-}
     public function updateScore(): bool
-{
-    $scores = $this->calculateScore();
+    {
+        $scores = $this->calculateScore();
 
-    $this->update([
-        'score' => $scores['score'],
-        'current_score' => $scores['score'], // مهم جدًا
-        'max_score' => $scores['max_score'],
-        'percentage' => $scores['percentage'],
-        'is_passed' => $scores['is_passed'],
-        'status' => $scores['is_passed'] ? 'passed' : 'failed'
-    ]);
+        $this->update([
+            'score' => $scores['score'],
+            'max_score' => $scores['max_score'],
+            'percentage' => $scores['percentage'],
+            'is_passed' => $scores['is_passed'],
+            'status' => $scores['is_passed'] ? 'passed' : 'failed'
+        ]);
 
-    return true;
-}
+        return true;
+    }
+
     public function complete(): bool
     {
         $this->updateScore();
