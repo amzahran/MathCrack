@@ -171,42 +171,53 @@ class TestsController extends Controller
     }
 
     public function results(Request $request, $id)
-    {
-        $test = Test::findOrFail($id);
-        $user = auth()->user();
+{
+    $test = Test::findOrFail($id);
+    $user = auth()->user();
 
-        $attemptQuery = StudentTest::where('student_id', $user->id)
-            ->where('test_id', $id);
+    $attemptQuery = StudentTest::where('student_id', $user->id)
+        ->where('test_id', $id);
 
-        if ($request->filled('attempt_id')) {
-            $attemptQuery->where('id', $request->input('attempt_id'));
-        } elseif ($request->filled('student_test_id')) {
-            $attemptQuery->where('id', $request->input('student_test_id'));
-        }
-
-        $studentTest = $attemptQuery
-            ->orderBy('attempt_number', 'desc')
-            ->firstOrFail();
-
-        $allQuestions = TestQuestion::where('test_id', $test->id)
-            ->with([
-                'options',
-                'answers' => function ($query) use ($studentTest) {
-                    $query->where('student_test_id', $studentTest->id);
-                },
-            ])
-            ->orderBy('part')
-            ->orderBy('id')
-            ->get();
-
-        $test->setRelation('questions', $allQuestions);
-
-        return view('themes.default.back.users.tests.results', [
-            'test'        => $test,
-            'studentTest' => $studentTest,
-        ]);
+    // اختيار attempt معين لو موجود
+    if ($request->filled('attempt_id')) {
+        $attemptQuery->where('id', $request->input('attempt_id'));
+    } elseif ($request->filled('student_test_id')) {
+        $attemptQuery->where('id', $request->input('student_test_id'));
     }
 
+    $studentTest = $attemptQuery
+        ->orderBy('attempt_number', 'desc')
+        ->firstOrFail();
+
+    // ✅ مهم جدًا: تحميل العلاقات قبل الحساب
+    $studentTest->loadMissing([
+        'test.course.level',
+        'answers'
+    ]);
+
+    // ✅ هنا يتم الحساب النهائي (مرة واحدة فقط)
+$studentTest->updateCurrentScore();
+
+    // تحميل الأسئلة + إجابات الطالب
+    $allQuestions = TestQuestion::where('test_id', $test->id)
+        ->with([
+            'options',
+            'answers' => function ($query) use ($studentTest) {
+                $query->where('student_test_id', $studentTest->id);
+            },
+        ])
+        ->orderBy('part')
+        ->orderBy('id')
+        ->get();
+
+    // ربط الأسئلة بالـ test
+    $test->setRelation('questions', $allQuestions);
+
+    return view('themes.default.back.users.tests.results', [
+        'test'        => $test,
+        'studentTest' => $studentTest,
+    ]);
+}
     public function start($id)
     {
         $user = auth()->user();
@@ -422,10 +433,15 @@ class TestsController extends Controller
 
             $this->updateCurrentScore($studentTest);
 
+            $studentTest->refresh();
+            $answer->loadMissing('question');
+
             return $this->jsonSuccess([
                 'is_correct'    => $answer->is_correct,
-                'score_earned'  => $answer->score_earned,
-                'current_score' => $studentTest->fresh()->current_score,
+                'score_earned'  => ($answer->is_correct && $answer->question)
+                    ? (float) $answer->question->score
+                    : 0,
+                'current_score' => $studentTest->current_score,
             ]);
         } catch (\Exception $e) {
             Log::error('Error saving answer', [
@@ -718,11 +734,18 @@ class TestsController extends Controller
     }
 
     private function updateCurrentScore($studentTest)
-    {
-        $totalScore = $studentTest->answers()->sum('score_earned');
-        $studentTest->update(['current_score' => $totalScore]);
-    }
+{
+    $studentTest->loadMissing('answers', 'test');
 
+    $baseScore = (float) ($studentTest->test->initial_score ?? 0);
+
+    // ✅ الحساب الصحيح الوحيد
+    $earnedScore = $studentTest->answers->sum('score_earned');
+
+    $studentTest->update([
+        'current_score' => $baseScore + $earnedScore,
+    ]);
+}
     private function validateStudentTestAccess($user, $studentTestId)
     {
         return StudentTest::where('id', $studentTestId)
@@ -851,15 +874,21 @@ public function report(Request $request, $id)
     if ($request->filled('attempt_id')) {
         $attemptQuery->where('id', $request->input('attempt_id'));
     }
+$studentTest = $attemptQuery
+    ->orderBy('attempt_number', 'desc')
+    ->firstOrFail();
 
-    $studentTest = $attemptQuery->orderBy('attempt_number', 'desc')->firstOrFail();
+// ✅ تحميل العلاقات قبل الحساب
+$studentTest->loadMissing(['test.course.level', 'answers']);
 
-    $previousAttempt = \App\Models\StudentTest::where('student_id', $user->id)
-        ->where('test_id', $id)
-        ->where('attempt_number', '<', $studentTest->attempt_number)
-        ->orderBy('attempt_number', 'desc')
-        ->first();
+// ✅ تحديث السكور (أهم سطر)
+$studentTest->updateScore();
 
+$previousAttempt = \App\Models\StudentTest::where('student_id', $user->id)
+    ->where('test_id', $id)
+    ->where('attempt_number', '<', $studentTest->attempt_number)
+    ->orderBy('attempt_number', 'desc')
+    ->first();
     $questions = \App\Models\TestQuestion::where('test_id', $test->id)
         ->with([
             'answers' => function ($query) use ($studentTest) {

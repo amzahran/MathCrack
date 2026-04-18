@@ -696,119 +696,112 @@
 
 @section('content')
     @php
-        $allQuestions = $test->questions()->with([
-            'options',
-            'answers' => function($query) use ($studentTest) {
-                $query->where('student_test_id', $studentTest->id);
+    $allQuestions = $test->questions()->with([
+        'options',
+        'answers' => function($query) use ($studentTest) {
+            $query->where('student_test_id', $studentTest->id);
+        }
+    ])->get();
+
+    $resolveImageUrl = function ($path) {
+        if (empty($path)) return null;
+
+        $path = trim($path);
+
+        if (\Illuminate\Support\Str::startsWith($path, ['http://', 'https://', '//', 'data:'])) {
+            return $path;
+        }
+
+        if (\Illuminate\Support\Str::startsWith($path, 'public/')) {
+            return asset('storage/' . \Illuminate\Support\Str::after($path, 'public/'));
+        }
+
+        if (\Illuminate\Support\Str::startsWith($path, ['storage/', 'assets/', 'uploads/', 'images/', 'back-assets/'])) {
+            return asset($path);
+        }
+
+        return asset('storage/' . ltrim($path, '/'));
+    };
+
+    $sectionsData = $allQuestions->groupBy(function($q) {
+        foreach (['section','module_number','part','part_number'] as $field) {
+            if (!is_null($q->{$field}) && $q->{$field} != '') {
+                return (int) $q->{$field};
             }
-        ])->get();
+        }
+        return 1;
+    })->sortKeys();
 
-        $resolveImageUrl = function ($path) {
-            if (empty($path)) {
-                return null;
-            }
+    if ($sectionsData->count() <= 1) {
+        $modules = collect();
+        $start = 0;
 
-            $path = trim($path);
+        foreach (range(1, 5) as $i) {
+            $count = (int) ($test->{'part'.$i.'_questions_count'} ?? 0);
 
-            if (
-                \Illuminate\Support\Str::startsWith($path, ['http://', 'https://', '//', 'data:'])
-            ) {
-                return $path;
-            }
-
-            if (\Illuminate\Support\Str::startsWith($path, 'public/')) {
-                return asset('storage/' . \Illuminate\Support\Str::after($path, 'public/'));
-            }
-
-            if (\Illuminate\Support\Str::startsWith($path, ['storage/', 'assets/', 'uploads/', 'images/', 'back-assets/'])) {
-                return asset($path);
-            }
-
-            return asset('storage/' . ltrim($path, '/'));
-        };
-
-        $sectionsData = $allQuestions->groupBy(function($q) {
-            $fields = ['section', 'module_number', 'part', 'part_number'];
-            foreach ($fields as $field) {
-                if (!is_null($q->{$field}) && $q->{$field} != '') {
-                    return (int) $q->{$field};
-                }
-            }
-            return 1;
-        })->sortKeys();
-
-        if ($sectionsData->count() <= 1) {
-            $modules = collect();
-            $start   = 0;
-            foreach (range(1, 5) as $i) {
-                $count = (int) ($test->{'part'.$i.'_questions_count'} ?? 0);
-                if ($count > 0) {
-                    $modules[$i] = $allQuestions->slice($start, $count)->values();
-                    $start      += $count;
-                }
-            }
-            if ($modules->isNotEmpty()) {
-                $sectionsData = $modules;
+            if ($count > 0) {
+                $modules[$i] = $allQuestions->slice($start, $count)->values();
+                $start += $count;
             }
         }
 
-        $totalQuestions    = $allQuestions->count();
-        $correctAnswers    = 0;
-        $wrongAnswers      = 0;
-        $answeredQuestions = 0;
-
-        $rawEarnedFromAnswers = 0;
-        foreach ($allQuestions as $q) {
-            $answer = $q->answers->first();
-            if ($answer) {
-                $answeredQuestions++;
-                if ($answer->is_correct) $correctAnswers++;
-                else $wrongAnswers++;
-
-                $rawEarnedFromAnswers += ($answer->score_earned ?? 0);
-            }
+        if ($modules->isNotEmpty()) {
+            $sectionsData = $modules;
         }
+    }
 
-        $baseScore = 200;
-        $maxScore  = 800;
-        $targetQuestionsTotal = $maxScore - $baseScore;
+    $totalQuestions    = $allQuestions->count();
+    $correctAnswers    = 0;
+    $wrongAnswers      = 0;
+    $answeredQuestions = 0;
 
-        $rawQuestionsTotal = (float) $allQuestions->sum('score');
-        $scale = 0;
-        if ($rawQuestionsTotal > 0) {
-            $scale = $targetQuestionsTotal / $rawQuestionsTotal;
-        }
+    foreach ($allQuestions as $q) {
+        $answer = $q->answers->first();
 
-        $earnedFromQuestionsScaled = $rawEarnedFromAnswers * $scale;
+        if ($answer) {
+            $answeredQuestions++;
 
-        $finalScoreDisplayed = $baseScore + $earnedFromQuestionsScaled;
-
-        $allowedLevels = ['Digital SAT','EST I','EST II','ACT I','ACT II'];
-        $levelName = $test->course->level->name ?? '';
-
-        $roundedScore = $finalScoreDisplayed;
-        if ($roundedScore > 0) {
-            $mod = ((int) round($roundedScore)) % 10;
-            if ($mod !== 0) {
-                $roundedScore = (int) round($roundedScore) + (10 - $mod);
+            if ($answer->is_correct) {
+                $correctAnswers++;
             } else {
-                $roundedScore = (int) round($roundedScore);
+                $wrongAnswers++;
             }
-        } else {
-            $roundedScore = 0;
         }
+    }
 
-        if (in_array($levelName, $allowedLevels)) {
-            $finalScoreDisplayed = $roundedScore;
-        } else {
-            $finalScoreDisplayed = (int) round($finalScoreDisplayed);
-        }
+    // الدرجة النهائية من current_score فقط
+    // initial score
+$baseScore = (float) ($test->initial_score ?? 0);
 
-        $percentage = 0;
-        if ($maxScore > 0) {
-            $percentage = ($finalScoreDisplayed / $maxScore) * 100;
-        }
-    @endphp
+// الدرجة الموجودة حاليًا في current_score = الدرجة المكتسبة من الأسئلة
+$earnedScore = (float) ($studentTest->current_score ?? 0);
+
+// النهائي المعروض = initial + earned
+$finalScoreDisplayed = $baseScore + $earnedScore;
+
+// الماكس = initial + مجموع درجات الأسئلة
+$questionsTotal = (float) $allQuestions->sum('score');
+$maxScore = $baseScore + $questionsTotal;
+
+// تقريب لأعلى 10 فقط لهذه المستويات
+$allowedLevels = ['Digital SAT', 'EST I', 'EST II', 'ACT I', 'ACT II'];
+$levelName = $test->course->level->name ?? '';
+
+if (in_array($levelName, $allowedLevels)) {
+    $finalScoreDisplayed = $finalScoreDisplayed > 0
+        ? (int) ceil($finalScoreDisplayed / 10) * 10
+        : 0;
+} else {
+    $finalScoreDisplayed = (int) round($finalScoreDisplayed);
+}
+
+// النسبة بعد التقريب
+$percentage = $maxScore > 0
+    ? ($finalScoreDisplayed / $maxScore) * 100
+    : 0;
+    $earnedScore = (float) ($studentTest->current_score ?? 0);
+@endphp
+
 
     <div class="main-content">
         <div class="results-header">
@@ -878,9 +871,9 @@
                     </div>
 
                     <div class="score-item earned">
-                        <div class="score-item-number">{{ $finalScoreDisplayed }}</div>
-                        <div class="score-item-label">@lang('l.points_earned')</div>
-                    </div>
+    <div class="score-item-number">{{ $earnedScore }}</div>
+    <div class="score-item-label">Points Earned</div>
+</div>
 
                     <div class="score-item">
                         <div class="score-item-number">{{ $baseScore }}</div>
@@ -906,18 +899,17 @@
                             $moduleRawTotal += (float) $q->score;
                             $ans = $q->answers->first();
                             if ($ans) {
-                                if ($ans->is_correct) $moduleCorrect++;
-                                else $moduleWrong++;
-
-                                $moduleRawEarned += (float) ($ans->score_earned ?? 0);
+                                if ($ans->is_correct) {
+                                    $moduleCorrect++;
+                                    $moduleRawEarned += (float) $q->score;
+                                } else {
+                                    $moduleWrong++;
+                                }
                             }
                         }
 
-                        $moduleEarnedScaled = $moduleRawEarned * $scale;
-                        $moduleTotalScaled  = $moduleRawTotal * $scale;
-
-                        $moduleEarnedScaled = (int) round($moduleEarnedScaled);
-                        $moduleTotalScaled  = (int) round($moduleTotalScaled);
+                        $moduleEarnedScaled = (float) $moduleRawEarned;
+                        $moduleTotalScaled = (float) $moduleRawTotal;
                     @endphp
 
                     <div class="part-section">
@@ -946,12 +938,12 @@
                                         $isCorrect  = $answer ? $answer->is_correct : false;
                                         $isAnswered = $answer ? (!is_null($answer->answer_text) || !is_null($answer->selected_option_id)) : false;
 
-                                        $qTotalScaled  = (int) round(((float) $question->score) * $scale);
-                                        $qEarnedScaled = 0;
-                                        if ($answer) {
-                                            $qEarnedScaled = (int) round(((float) ($answer->score_earned ?? 0)) * $scale);
-                                        }
+                                        $qTotalScaled = (float) $question->score;
 
+$qEarnedScaled = 0;
+if ($answer && $answer->is_correct) {
+    $qEarnedScaled = (float) $question->score;
+}
                                         $questionImageUrl    = $resolveImageUrl($question->question_image ?? null);
                                         $explanationImageUrl = $resolveImageUrl($question->explanation_image ?? null);
                                         $difficultyValue     = $question->difficulty ?? null;
