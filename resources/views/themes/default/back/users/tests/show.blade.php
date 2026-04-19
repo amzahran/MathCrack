@@ -424,7 +424,9 @@
 
         foreach ($qs as $q) {
             $ans = $q->answers->first();
-            if ($ans) $raw += (float) ($ans->score_earned ?? 0);
+            if ($ans) {
+                $raw += (float) ($ans->score_earned ?? 0);
+            }
         }
 
         return $raw;
@@ -448,14 +450,53 @@
         $activeScore800  = $calcScaled800($rawEarnedActive);
     }
 
-    $part1Count = (int) ($test->part1_questions_count ?? 0);
-    $part2Count = (int) ($test->part2_questions_count ?? 0);
+    $modules = [];
+    $totalQuestionsUsed = 0;
 
-    $module1Questions = $allQuestions->slice(0, $part1Count);
-    $module2Questions = $allQuestions->slice($part1Count, $part2Count);
+    for ($i = 1; $i <= 5; $i++) {
+        $questionsField = 'part' . $i . '_questions_count';
+        $timeField = 'part' . $i . '_time_minutes';
+        $partName = 'part' . $i;
 
-    $module1MaxPoints = (float) $module1Questions->sum('score');
-    $module2MaxPoints = (float) $module2Questions->sum('score');
+        $questionsCount = (int) ($test->$questionsField ?? 0);
+        $timeMinutes = (int) ($test->$timeField ?? 0);
+
+        $moduleQuestions = $allQuestions->where('part', $partName)->values();
+        $moduleQuestionsCountFromQuestions = $moduleQuestions->count();
+
+        if ($questionsCount <= 0 && $moduleQuestionsCountFromQuestions > 0) {
+            $questionsCount = $moduleQuestionsCountFromQuestions;
+        }
+
+        if ($questionsCount <= 0 && $timeMinutes <= 0 && $moduleQuestionsCountFromQuestions <= 0) {
+            continue;
+        }
+
+        $moduleMaxPoints = (float) $moduleQuestions->sum('score');
+
+        $modules[] = [
+            'number' => $i,
+            'title' => 'Module ' . $i,
+            'questions_count' => $questionsCount,
+            'time_minutes' => $timeMinutes,
+            'max_points' => $moduleMaxPoints,
+        ];
+
+        $totalQuestionsUsed += $questionsCount;
+    }
+
+    if (count($modules) === 0 && $allQuestions->count() > 0) {
+        $modules[] = [
+            'number' => 1,
+            'title' => 'Module 1',
+            'questions_count' => (int) $allQuestions->count(),
+            'time_minutes' => (int) ($test->total_time_minutes ?? 0),
+            'max_points' => (float) $allQuestions->sum('score'),
+        ];
+    }
+
+    $currentModuleNumber = (int) ($activeAttempt->current_module ?? 1);
+    $activeStatus = $activeAttempt->status ?? 'not_started';
 @endphp
 
 <div class="main-content mc-wrap">
@@ -520,68 +561,38 @@
                         </div>
                     </div>
 
-                    <h5 class="mb-3" style="font-weight:900; color:var(--mc-text);">@lang('l.test_parts')</h5>
+                    <h5 class="mb-3" style="font-weight:900; color:var(--mc-text);">
+                        @lang('l.test_parts')
+                    </h5>
 
-                    <div class="part-section">
-                        <div class="part-header">@lang('l.first_part')</div>
-                        <div class="part-content">
-                            <div class="part-stats">
-                                <div class="part-stat-item">
-                                    <span class="part-stat-number">{{ $part1Count }}</span>
-                                    <div class="part-stat-label">@lang('l.questions')</div>
-                                </div>
-                                <div class="part-stat-item">
-                                    <span class="part-stat-number">{{ $test->part1_time_minutes }}</span>
-                                    <div class="part-stat-label">@lang('l.minutes')</div>
-                                </div>
-                                <div class="part-stat-item">
-                                    <span class="part-stat-number">{{ (int) round($module1MaxPoints) }}</span>
-                                    <div class="part-stat-label">@lang('l.max_points')</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    @if(($test->break_time_minutes ?? 0) > 0)
+                    @forelse($modules as $module)
                         <div class="part-section">
-                            <div class="part-header" style="background: linear-gradient(135deg, var(--mc-success) 0%, var(--mc-success-2) 100%);">
-                                @lang('l.break_time')
-                            </div>
+                            <div class="part-header">{{ $module['title'] }}</div>
                             <div class="part-content">
                                 <div class="part-stats">
                                     <div class="part-stat-item">
-                                        <span class="part-stat-number">{{ $test->break_time_minutes }}</span>
+                                        <span class="part-stat-number">{{ $module['questions_count'] }}</span>
+                                        <div class="part-stat-label">@lang('l.questions')</div>
+                                    </div>
+
+                                    <div class="part-stat-item">
+                                        <span class="part-stat-number">{{ $module['time_minutes'] }}</span>
                                         <div class="part-stat-label">@lang('l.minutes')</div>
                                     </div>
+
                                     <div class="part-stat-item">
-                                        <span class="part-stat-number"><i class="fas fa-coffee" style="color:var(--mc-success-2);"></i></span>
-                                        <div class="part-stat-label">@lang('l.optional')</div>
+                                        <span class="part-stat-number">{{ (int) round($module['max_points']) }}</span>
+                                        <div class="part-stat-label">@lang('l.max_points')</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    @endif
-
-                    <div class="part-section">
-                        <div class="part-header">@lang('l.second_part')</div>
-                        <div class="part-content">
-                            <div class="part-stats">
-                                <div class="part-stat-item">
-                                    <span class="part-stat-number">{{ $part2Count }}</span>
-                                    <div class="part-stat-label">@lang('l.questions')</div>
-                                </div>
-                                <div class="part-stat-item">
-                                    <span class="part-stat-number">{{ $test->part2_time_minutes }}</span>
-                                    <div class="part-stat-label">@lang('l.minutes')</div>
-                                </div>
-                                <div class="part-stat-item">
-                                    <span class="part-stat-number">{{ (int) round($module2MaxPoints) }}</span>
-                                    <div class="part-stat-label">@lang('l.max_points')</div>
-                                </div>
-                            </div>
+                    @empty
+                        <div class="alert alert-warning mb-0">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            No modules found for this test.
                         </div>
-                    </div>
-
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -590,57 +601,39 @@
             <div class="status-section">
 
                 @if($activeAttempt)
-                    @switch($activeAttempt->status)
-                        @case('not_started')
-                            <div class="current-status status-not-started">
-                                <div class="status-icon"><i class="fas fa-play"></i></div>
-                                <div class="status-info">
-                                    <h4>@lang('l.ready_to_start')</h4>
-                                    <p>@lang('l.test_ready_to_start_desc')</p>
-                                </div>
+                    @if($activeStatus === 'not_started')
+                        <div class="current-status status-not-started">
+                            <div class="status-icon"><i class="fas fa-play"></i></div>
+                            <div class="status-info">
+                                <h4>@lang('l.ready_to_start')</h4>
+                                <p>@lang('l.test_ready_to_start_desc')</p>
                             </div>
-                            @break
-
-                        @case('part1_in_progress')
-                            <div class="current-status status-in-progress">
-                                <div class="status-icon"><i class="fas fa-clock"></i></div>
-                                <div class="status-info">
-                                    <h4>@lang('l.first_part_in_progress')</h4>
-                                    <p>@lang('l.continue_where_you_left')</p>
-                                </div>
+                        </div>
+                    @elseif($activeStatus === 'break_time')
+                        <div class="current-status status-in-progress">
+                            <div class="status-icon"><i class="fas fa-coffee"></i></div>
+                            <div class="status-info">
+                                <h4>@lang('l.break_time')</h4>
+                                <p>Ready for Module {{ $currentModuleNumber + 1 }}</p>
                             </div>
-                            @break
-
-                        @case('in_break')
-                            <div class="current-status status-in-progress">
-                                <div class="status-icon"><i class="fas fa-coffee"></i></div>
-                                <div class="status-info">
-                                    <h4>@lang('l.break_time')</h4>
-                                    <p>@lang('l.ready_for_second_part')</p>
-                                </div>
+                        </div>
+                    @elseif(in_array($activeStatus, ['part1_in_progress', 'part2_in_progress']))
+                        <div class="current-status status-in-progress">
+                            <div class="status-icon"><i class="fas fa-clock"></i></div>
+                            <div class="status-info">
+                                <h4>Module {{ $currentModuleNumber }} in progress</h4>
+                                <p>@lang('l.continue_where_you_left')</p>
                             </div>
-                            @break
-
-                        @case('part2_in_progress')
-                            <div class="current-status status-in-progress">
-                                <div class="status-icon"><i class="fas fa-clock"></i></div>
-                                <div class="status-info">
-                                    <h4>@lang('l.second_part_in_progress')</h4>
-                                    <p>@lang('l.continue_where_you_left')</p>
-                                </div>
+                        </div>
+                    @elseif($activeStatus === 'completed')
+                        <div class="current-status status-completed">
+                            <div class="status-icon"><i class="fas fa-check"></i></div>
+                            <div class="status-info">
+                                <h4>@lang('l.test_completed')</h4>
+                                <p>@lang('l.final_score') {{ (int) ($activeScore800 ?? $baseScore) }}/{{ $maxScore }}</p>
                             </div>
-                            @break
-
-                        @case('completed')
-                            <div class="current-status status-completed">
-                                <div class="status-icon"><i class="fas fa-check"></i></div>
-                                <div class="status-info">
-                                    <h4>@lang('l.test_completed')</h4>
-                                    <p>@lang('l.final_score') {{ (int) ($activeScore800 ?? $baseScore) }}/{{ $maxScore }}</p>
-                                </div>
-                            </div>
-                            @break
-                    @endswitch
+                        </div>
+                    @endif
                 @else
                     <div class="current-status status-not-started">
                         <div class="status-icon"><i class="fas fa-play"></i></div>
@@ -651,7 +644,7 @@
                     </div>
                 @endif
 
-                @if(!$activeAttempt || $activeAttempt->status === 'not_started')
+                @if(!$activeAttempt || $activeStatus === 'not_started')
                     <div class="warning-notice">
                         <div class="notice-header">
                             <i class="fas fa-exclamation-triangle notice-icon"></i>
@@ -663,36 +656,28 @@
 
                 <div class="action-buttons">
                     @if($activeAttempt)
-                        @switch($activeAttempt->status)
-                            @case('not_started')
+                        @if($activeStatus === 'not_started')
+                            <button type="button" class="btn-action btn-primary-action" onclick="startTest()">
+                                <i class="fas fa-play"></i>
+                                @lang('l.start_test')
+                            </button>
+                        @elseif(in_array($activeStatus, ['part1_in_progress', 'part2_in_progress', 'break_time']))
+                            <a href="{{ route('dashboard.users.tests.take', $test->id) }}" class="btn-action btn-warning-action">
+                                <i class="fas fa-play"></i>
+                                @lang('l.continue_test')
+                            </a>
+                        @elseif($activeStatus === 'completed')
+                            @if($remainingAttempts > 0)
                                 <button type="button" class="btn-action btn-primary-action" onclick="startTest()">
-                                    <i class="fas fa-play"></i>
-                                    @lang('l.start_test')
+                                    <i class="fas fa-redo"></i>
+                                    @lang('l.start_new_attempt')
                                 </button>
-                                @break
-
-                            @case('part1_in_progress')
-                            @case('in_break')
-                            @case('part2_in_progress')
-                                <a href="{{ route('dashboard.users.tests.take', $test->id) }}" class="btn-action btn-warning-action">
-                                    <i class="fas fa-play"></i>
-                                    @lang('l.continue_test')
-                                </a>
-                                @break
-
-                            @case('completed')
-                                @if($remainingAttempts > 0)
-                                    <button type="button" class="btn-action btn-primary-action" onclick="startTest()">
-                                        <i class="fas fa-redo"></i>
-                                        @lang('l.start_new_attempt')
-                                    </button>
-                                @endif
-                                <a href="{{ route('dashboard.users.tests.results', $test->id) }}" class="btn-action btn-success-action">
-                                    <i class="fas fa-chart-line"></i>
-                                    @lang('l.view_results')
-                                </a>
-                                @break
-                        @endswitch
+                            @endif
+                            <a href="{{ route('dashboard.users.tests.results', $test->id) }}" class="btn-action btn-success-action">
+                                <i class="fas fa-chart-line"></i>
+                                @lang('l.view_results')
+                            </a>
+                        @endif
                     @else
                         @if($remainingAttempts > 0)
                             <button type="button" class="btn-action btn-primary-action" onclick="startTest()">
@@ -744,9 +729,13 @@
                                             $score800  = $calcScaled800($rawEarned);
                                             $percentage = round(($score800 / $maxScore) * 100, 1);
 
-                                            if ($percentage >= 80) $badgeClass = 'excellent';
-                                            elseif ($percentage >= 60) $badgeClass = 'good';
-                                            else $badgeClass = 'needs-improvement';
+                                            if ($percentage >= 80) {
+                                                $badgeClass = 'excellent';
+                                            } elseif ($percentage >= 60) {
+                                                $badgeClass = 'good';
+                                            } else {
+                                                $badgeClass = 'needs-improvement';
+                                            }
                                         @endphp
                                         <tr class="attempt-row">
                                             <td><span class="attempt-number-badge">{{ $attempt->attempt_number }}</span></td>
