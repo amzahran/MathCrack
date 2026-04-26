@@ -37,20 +37,19 @@ class StudentTest extends Model
     ];
 
     protected $casts = [
-        'started_at'               => 'datetime',
-        'current_module_started_at'=> 'datetime',
-        'paused_at'                => 'datetime',
-        'part1_started_at'         => 'datetime',
-        'part1_ended_at'           => 'datetime',
-        'break_started_at'         => 'datetime',
-        'part2_started_at'         => 'datetime',
-        'completed_at'             => 'datetime',
-        'submitted_at'             => 'datetime',
-        'progress_data'            => 'array',
-        'is_paused'                => 'boolean',
+        'started_at'                => 'datetime',
+        'current_module_started_at' => 'datetime',
+        'paused_at'                 => 'datetime',
+        'part1_started_at'          => 'datetime',
+        'part1_ended_at'            => 'datetime',
+        'break_started_at'          => 'datetime',
+        'part2_started_at'          => 'datetime',
+        'completed_at'              => 'datetime',
+        'submitted_at'              => 'datetime',
+        'progress_data'             => 'array',
+        'is_paused'                 => 'boolean',
     ];
 
-    // العلاقات
     public function student(): BelongsTo
     {
         return $this->belongsTo(User::class, 'student_id');
@@ -66,7 +65,6 @@ class StudentTest extends Model
         return $this->hasMany(StudentTestAnswer::class);
     }
 
-    // أسئلة الجزء الأول
     public function part1Answers(): HasMany
     {
         return $this->answers()
@@ -75,7 +73,6 @@ class StudentTest extends Model
             });
     }
 
-    // أسئلة الجزء الثاني
     public function part2Answers(): HasMany
     {
         return $this->answers()
@@ -84,7 +81,6 @@ class StudentTest extends Model
             });
     }
 
-    // حالات الاختبار
     public function isInPart1(): bool
     {
         return $this->status === 'part1_in_progress';
@@ -114,10 +110,10 @@ class StudentTest extends Model
         ]);
     }
 
-    // حساب الوقت المتبقي (ثواني)
     public function getRemainingTimeSeconds(): int
     {
         $test = $this->test;
+
         if (!$test) {
             return 0;
         }
@@ -126,6 +122,7 @@ class StudentTest extends Model
 
         if ($this->isInPart1()) {
             $start = $this->part1_started_at ?? $this->started_at;
+
             if (!$start) {
                 return 0;
             }
@@ -138,6 +135,7 @@ class StudentTest extends Model
 
         if ($this->isInBreak()) {
             $start = $this->break_started_at;
+
             if (!$start) {
                 return 0;
             }
@@ -150,6 +148,7 @@ class StudentTest extends Model
 
         if ($this->isInPart2()) {
             $start = $this->part2_started_at;
+
             if (!$start) {
                 return 0;
             }
@@ -163,25 +162,49 @@ class StudentTest extends Model
         return 0;
     }
 
-    // هل الوقت انتهى
     public function isTimeUp(): bool
     {
         return $this->getRemainingTimeSeconds() <= 0;
     }
 
-    // حساب الدرجة الحالية
-    public function calculateCurrentScore(): float
+    public function calculateRawPoints(): float
     {
-        $earned = $this->answers()->sum('score_earned');
-
-        return (float) $earned;
+        return (float) $this->answers()->sum('score_earned');
     }
 
-    // تحديث الدرجة الحالية
+    public function calculateCurrentScore(): float
+    {
+        $rawPoints = $this->calculateRawPoints();
+
+        if ($rawPoints <= 0) {
+            return 0;
+        }
+
+        $roundedPoints = ceil($rawPoints / 10) * 10;
+
+        return (float) min(600, $roundedPoints);
+    }
+
+    public function calculateFinalScore(): float
+    {
+        $pointsEarned = $this->calculateCurrentScore();
+
+        return (float) min(800, 200 + $pointsEarned);
+    }
+
     public function updateCurrentScore(): void
     {
+        $pointsEarned = $this->calculateCurrentScore();
+        $finalScore = min(800, 200 + $pointsEarned);
+
         $this->update([
-            'current_score' => $this->calculateCurrentScore(),
+            'current_score' => $pointsEarned,
+            'final_score'   => $finalScore,
         ]);
+    }
+
+    public function updateScore(): void
+    {
+        $this->updateCurrentScore();
     }
 }
