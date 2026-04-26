@@ -882,7 +882,7 @@ $studentTest = $attemptQuery
 $studentTest->loadMissing(['test.course.level', 'answers']);
 
 // ✅ تحديث السكور (أهم سطر)
-$studentTest->updateScore();
+$studentTest->updateCurrentScore();
 
 $previousAttempt = \App\Models\StudentTest::where('student_id', $user->id)
     ->where('test_id', $id)
