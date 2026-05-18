@@ -1158,6 +1158,498 @@
       color: var(--primary-color);
     }
 
+    /* Homepage refinement overrides */
+    body {
+      color: #24313f;
+      background: #f5f7fb;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .main-header {
+      border-bottom: 1px solid rgba(44,62,80,0.08);
+    }
+
+    .main-header__inner {
+      min-height: 82px;
+      gap: 18px;
+    }
+
+    .logo img {
+      max-width: 170px;
+      object-fit: contain;
+    }
+
+    .main-menu-wrapper {
+      max-width: calc(100% - 470px);
+    }
+
+    .main-menu__list {
+      gap: clamp(14px, 2vw, 30px);
+    }
+
+    .main-menu__list a {
+      font-size: 0.98rem;
+      letter-spacing: 0;
+    }
+
+    .header-right {
+      flex: 0 0 auto;
+    }
+
+    .header-login-btn,
+    .header-join-btn,
+    .btn-hero,
+    .cta-button {
+      min-height: 46px;
+      justify-content: center;
+      line-height: 1.2;
+    }
+
+    .header-join-btn,
+    .btn-hero,
+    .cta-button,
+    .contact-main-card .btn-primary {
+      background: linear-gradient(135deg, #f7c948, #f39c12);
+      color: #172331;
+      border: 0;
+      box-shadow: 0 14px 28px rgba(243,156,18,0.24);
+    }
+
+    .header-join-btn:hover,
+    .btn-hero:hover,
+    .cta-button:hover,
+    .contact-main-card .btn-primary:hover {
+      background: linear-gradient(135deg, #3498db, #1f6fa8);
+      color: #fff;
+      box-shadow: 0 16px 32px rgba(52,152,219,0.28);
+    }
+
+    .hero-section {
+      min-height: calc(100vh - 80px);
+      display: flex;
+      align-items: center;
+      padding: clamp(82px, 12vw, 140px) 0 clamp(72px, 10vw, 120px);
+      background:
+        linear-gradient(135deg, rgba(18, 31, 45, 0.94), rgba(44, 62, 80, 0.76)),
+        url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hero-section .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-section .fade-in {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .hero-title {
+      font-size: clamp(2.45rem, 6vw, 5rem);
+      line-height: 1.05;
+      margin-bottom: 24px;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 2.1vw, 1.55rem);
+      line-height: 1.65;
+      max-width: 760px;
+      margin-bottom: 32px;
+    }
+
+    .hero-subtitle span {
+      display: block;
+    }
+
+    .hero-highlight::after {
+      bottom: 3px;
+      height: 10px;
+      border-radius: 999px;
+    }
+
+    .professor-name-hero {
+      line-height: 1.15;
+      text-wrap: balance;
+    }
+
+    .btn-hero {
+      padding: 15px 30px;
+      min-width: 178px;
+    }
+
+    .section-title {
+      margin-bottom: clamp(34px, 5vw, 58px);
+    }
+
+    .section-title h2,
+    .contact-main-title,
+    .cta-title {
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      line-height: 1.15;
+      text-wrap: balance;
+    }
+
+    .section-title p,
+    .contact-main-subtitle,
+    .cta-section .lead {
+      line-height: 1.75;
+    }
+
+    .professor-section,
+    .courses-section,
+    .contact-main-section {
+      padding: clamp(58px, 7vw, 92px) 0;
+    }
+
+    .stats-section,
+    .cta-section {
+      padding: clamp(62px, 8vw, 96px) 0;
+    }
+
+    .professor-card,
+    .course-card,
+    .flip-card-front,
+    .flip-card-back,
+    .contact-info-box {
+      border-radius: 18px;
+      box-shadow: 0 18px 45px rgba(31, 50, 70, 0.08);
+      border-color: rgba(44, 62, 80, 0.08);
+    }
+
+    .professor-header {
+      padding: clamp(34px, 5vw, 64px);
+      border-radius: 18px 18px 0 0;
+    }
+
+    .professor-name {
+      font-size: clamp(2rem, 4.5vw, 2.8rem);
+      text-wrap: balance;
+    }
+
+    .experience-content {
+      padding: clamp(22px, 4vw, 42px);
+    }
+
+    .course-card {
+      padding: clamp(26px, 3vw, 40px) clamp(20px, 3vw, 30px);
+    }
+
+    .course-card h4,
+    .flip-card-front h4,
+    .flip-card-back h4,
+    .stat-label,
+    .footer-links h5,
+    .no-break {
+      white-space: normal;
+    }
+
+    .course-icon {
+      width: 74px;
+      height: 74px;
+      border-radius: 18px;
+      margin: 0 auto 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(52, 152, 219, 0.1);
+      font-size: 2.4rem;
+    }
+
+    .flip-card {
+      min-height: 340px;
+      height: auto;
+    }
+
+    .flip-card-inner {
+      min-height: 340px;
+    }
+
+    .flip-card-front,
+    .flip-card-back {
+      min-height: 340px;
+    }
+
+    .flip-course-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .flip-course-link {
+      min-height: 52px;
+      border-radius: 14px;
+    }
+
+    .stat-item {
+      height: 100%;
+      padding: 34px 18px;
+      border-radius: 18px;
+    }
+
+    .stat-number {
+      font-size: clamp(2.4rem, 5vw, 3.5rem);
+    }
+
+    .contact-main-card {
+      padding: clamp(20px, 3vw, 32px);
+      border-radius: 22px;
+      background: linear-gradient(135deg, #eef7ff, #d8ecfb);
+      border: 1px solid rgba(52,152,219,0.16);
+    }
+
+    .contact-info-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .contact-info-box {
+      padding: 30px 22px;
+    }
+
+    .main-footer {
+      padding: clamp(50px, 7vw, 76px) 0 28px;
+      background: linear-gradient(135deg, #1d2b38, #2c3e50);
+    }
+
+    .main-footer .row {
+      row-gap: 18px;
+    }
+
+    .footer-logo img {
+      max-width: 210px;
+      height: auto;
+      max-height: 64px;
+      object-fit: contain;
+    }
+
+    .footer-links a,
+    .footer-links li {
+      line-height: 1.5;
+    }
+
+    .footer-links a:hover {
+      @if(app()->getLocale() == 'ar') transform: translateX(-5px); @else transform: translateX(5px); @endif
+    }
+
+    .copyright {
+      margin-top: 34px;
+    }
+
+    @media (max-width: 1199.98px) {
+      body {
+        padding-top: 74px;
+      }
+
+      .main-header__inner {
+        min-height: 74px;
+      }
+
+      .main-menu-wrapper {
+        position: static;
+        transform: none;
+        max-width: none;
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+        padding: 8px 0 2px;
+      }
+
+      .main-header__inner {
+        flex-wrap: wrap;
+      }
+
+      .main-menu__list {
+        justify-content: center;
+        gap: 18px;
+      }
+
+      .hero-section {
+        min-height: auto;
+        background-attachment: scroll;
+      }
+
+      .contact-info-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 767.98px) {
+      body {
+        padding-top: 72px;
+      }
+
+      .main-header__inner {
+        min-height: 72px;
+        padding: 10px 0;
+      }
+
+      .logo img {
+        max-width: 134px;
+        height: auto;
+        max-height: 46px;
+      }
+
+      .header-right {
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .language-switch {
+        margin-left: 0;
+        margin-right: 0;
+      }
+
+      .language-switch .btn,
+      .header-login-btn,
+      .header-join-btn {
+        min-height: 38px;
+        padding: 8px 12px;
+        font-size: 0.88rem;
+      }
+
+      .main-menu-wrapper {
+        margin-top: 4px;
+      }
+
+      .main-menu__list {
+        justify-content: flex-start;
+        gap: 16px;
+        padding: 0 2px 8px;
+      }
+
+      [dir="rtl"] .main-menu__list {
+        justify-content: flex-start;
+      }
+
+      .hero-section {
+        text-align: start;
+        padding: 64px 0 70px;
+      }
+
+      .hero-section .fade-in {
+        max-width: 100%;
+      }
+
+      .hero-subtitle {
+        margin-left: 0;
+        margin-right: 0;
+      }
+
+      .hero-section .d-flex {
+        justify-content: flex-start !important;
+      }
+
+      .btn-hero,
+      .cta-button,
+      .contact-main-card .btn-primary {
+        width: 100%;
+        max-width: 360px;
+        padding: 14px 20px;
+      }
+
+      .professor-name-hero {
+        text-align: start;
+      }
+
+      .section-title,
+      .contact-main-title,
+      .contact-main-subtitle {
+        text-align: start;
+      }
+
+      .section-title p,
+      .contact-main-subtitle {
+        margin-left: 0;
+        margin-right: 0;
+      }
+
+      .professor-card {
+        border-radius: 16px;
+      }
+
+      .professor-header {
+        border-radius: 16px 16px 0 0;
+        text-align: center;
+      }
+
+      .professor-image-container {
+        width: 148px;
+        height: 168px;
+      }
+
+      .cv-list li {
+        gap: 10px;
+      }
+
+      .flip-card,
+      .flip-card-inner,
+      .flip-card-front,
+      .flip-card-back {
+        min-height: 360px;
+      }
+
+      .flip-course-grid,
+      .contact-info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-title {
+        white-space: normal;
+      }
+
+      .stats-section .section-title,
+      .cta-section,
+      .main-footer {
+        text-align: center;
+      }
+
+      .main-footer .row > [class*="col-"] {
+        margin-bottom: 12px;
+      }
+
+      .footer-links a,
+      .footer-links li {
+        justify-content: center;
+      }
+
+      .social-icons {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .header-login-btn span,
+      .header-join-btn span {
+        display: none;
+      }
+
+      .header-login-btn,
+      .header-join-btn {
+        width: 38px;
+        padding: 8px;
+        border-radius: 50%;
+      }
+
+      .hero-title {
+        font-size: 2.25rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1rem;
+      }
+
+      .flip-card,
+      .flip-card-inner,
+      .flip-card-front,
+      .flip-card-back {
+        min-height: 390px;
+      }
+    }
   </style>
 </head>
 
@@ -1207,12 +1699,12 @@
 
         <a href="{{ route('login') }}" class="header-login-btn">
           <i class="fas fa-user-circle me-1"></i>
-          Login
+          <span>Login</span>
         </a>
 
         <a href="{{ route('register') }}?action=mock&redirect=mock-test" class="header-join-btn">
   <i class="fas fa-play me-1"></i>
-  Start Free Mock
+  <span>Start Free Mock</span>
 </a>
       </div>
     </div>
