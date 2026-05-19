@@ -521,10 +521,10 @@ function createNumericAnswer(questionId) {
             <label class="form-label fw-bold">
                 ${window.translations?.correct_numeric_answer || 'the correct numeric answer'}:
             </label>
-            <input type="number" class="form-control numeric-answer" step="any"
-                   placeholder="${window.translations?.enter_correct_number || 'enter the correct number'}">
+            <input type="text" class="form-control numeric-answer" inputmode="text"
+                   placeholder="e.g. 0.5, 1/2, or 3 2">
             <small class="text-muted mt-1 d-block">
-                ${window.translations?.decimal_numbers_allowed || 'يُسمح بالأرقام العشرية'}
+                Accepted formats: 0.5, 1/2, 3 2, or 1/2 3/4
             </small>
         </div>
     `;

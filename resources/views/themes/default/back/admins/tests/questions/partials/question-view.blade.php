@@ -283,8 +283,9 @@
 
     <div class="numeric-options" style="{{ $question->type === 'numeric' ? '' : 'display: none;' }}">
         <label class="form-label fw-bold">@lang('l.numeric_answer_label'):</label>
-        <input type="number" class="form-control numeric-input numeric-answer" step="any"
-            value="{{ $question->correct_answer }}">
+        <input type="text" class="form-control numeric-input numeric-answer" inputmode="text"
+            placeholder="e.g. 0.5, 1/2, or 3 2" value="{{ $question->correct_answer }}">
+        <small class="text-muted mt-1 d-block">Accepted formats: 0.5, 1/2, 3 2, or 1/2 3/4</small>
     </div>
 </div>
 

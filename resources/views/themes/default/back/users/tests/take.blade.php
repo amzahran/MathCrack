@@ -1145,9 +1145,10 @@
                           <input
                             class="numeric-answer-input"
                             type="text"
-                            inputmode="decimal"
+                            inputmode="text"
                             dir="ltr"
                             autocomplete="off"
+                            placeholder="e.g. 0.5, 1/2, or 3 2"
                             oninput="
                               this.value = sanitizeSatNumeric(this.value);
                               updateAnswerPreview({{ $q->id }}, this.value);
@@ -1926,8 +1927,7 @@ setTimeout(() => this.desmosCalc?.resize?.(), 150);
   };
 
   function sanitizeSatNumeric(v) {
-    v = String(v ?? '').trim();
-    v = v.replace(/\s+/g, '');
+    v = String(v ?? '').replace(/^\s+/, '');
     v = v
       .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
       .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
@@ -1937,24 +1937,7 @@ setTimeout(() => this.desmosCalc?.resize?.(), 150);
       .replace(/\u066C/g, '')
       .replace(/[⁄／]/g, '/');
 
-    v = v.replace(/[^0-9\-./]/g, '');
-    v = v.replace(/(?!^)-/g, '');
-
-    const slashCount = (v.match(/\//g) || []).length;
-    if (slashCount > 1) {
-      const firstSlash = v.indexOf('/');
-      v = v.slice(0, firstSlash + 1) + v.slice(firstSlash + 1).replace(/\//g, '');
-    }
-
-    if (v.includes('/')) {
-      v = v.replace(/\./g, '');
-    } else {
-      const dotCount = (v.match(/\./g) || []).length;
-      if (dotCount > 1) {
-        const firstDot = v.indexOf('.');
-        v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, '');
-      }
-    }
+    v = v.replace(/[^0-9\-./ ]/g, '');
 
     return v;
   }
