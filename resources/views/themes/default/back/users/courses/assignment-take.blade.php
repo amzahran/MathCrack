@@ -1197,9 +1197,10 @@
                                                 <input
                                                     class="numeric-answer-input"
                                                     type="text"
-                                                    inputmode="decimal"
+                                                    inputmode="text"
                                                     dir="ltr"
                                                     autocomplete="off"
+                                                    placeholder="e.g. 0.5, 1/2, or 3 2"
                                                     oninput="
                                                         this.value = sanitizeSatNumeric(this.value);
                                                         saveNumericAnswer(this, {{ $q->id }});
@@ -1437,7 +1438,7 @@
     }
 
     function saveNumericAnswer(el, questionId) {
-        saveAnswerByQuestionId(questionId, el.value);
+        saveAnswerByQuestionId(questionId, el.value.trim());
     }
 
     const NavigationSystem = {
@@ -1811,8 +1812,7 @@
     };
 
     function sanitizeSatNumeric(value) {
-        value = String(value ?? '').trim();
-        value = value.replace(/\s+/g, '');
+        value = String(value ?? '').replace(/^\s+/, '');
         value = value
             .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
             .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
@@ -1822,26 +1822,7 @@
             .replace(/\u066C/g, '')
             .replace(/[⁄／]/g, '/');
 
-        value = value.replace(/[^0-9\-./]/g, '');
-        value = value.replace(/(?!^)-/g, '');
-
-        const slashCount = (value.match(/\//g) || []).length;
-
-        if (slashCount > 1) {
-            const firstSlash = value.indexOf('/');
-            value = value.slice(0, firstSlash + 1) + value.slice(firstSlash + 1).replace(/\//g, '');
-        }
-
-        if (value.includes('/')) {
-            value = value.replace(/\./g, '');
-        } else {
-            const dotCount = (value.match(/\./g) || []).length;
-
-            if (dotCount > 1) {
-                const firstDot = value.indexOf('.');
-                value = value.slice(0, firstDot + 1) + value.slice(firstDot + 1).replace(/\./g, '');
-            }
-        }
+        value = value.replace(/[^0-9\-./ ]/g, '');
 
         return value;
     }

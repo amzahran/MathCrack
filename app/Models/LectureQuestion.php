@@ -52,7 +52,16 @@ class LectureQuestion extends Model
                 return strtolower($answer) === strtolower($this->correct_answer);
 
             case 'numeric':
-                return (float)$answer === (float)$this->correct_answer;
+                $correctAlternatives = $this->parseNumericCorrectAnswerAlternatives($this->correct_answer);
+                $studentTokens = $this->parseNumericAnswerTokens($answer);
+
+                foreach ($correctAlternatives as $correctTokens) {
+                    if ($this->numericAnswerTokensMatch($correctTokens, $studentTokens)) {
+                        return true;
+                    }
+                }
+
+                return false;
 
             case 'essay':
                 // المقالي يحتاج تقييم يدوي
@@ -61,5 +70,97 @@ class LectureQuestion extends Model
             default:
                 return false;
         }
+    }
+
+    private function parseNumericCorrectAnswerAlternatives($answer): array
+    {
+        $answer = trim((string) $answer);
+
+        if ($answer === '') {
+            return [];
+        }
+
+        $alternatives = preg_split('/\s+\bor\b\s+|[,;|]+/i', $answer);
+        $parsedAlternatives = [];
+
+        foreach ($alternatives as $alternative) {
+            $tokens = $this->parseNumericAnswerTokens($alternative);
+
+            if ($tokens !== null) {
+                $parsedAlternatives[] = $tokens;
+            }
+        }
+
+        return $parsedAlternatives;
+    }
+
+    private function parseNumericAnswerTokens($answer): ?array
+    {
+        $answer = trim((string) $answer);
+
+        if ($answer === '') {
+            return null;
+        }
+
+        $tokens = preg_split('/\s+/', $answer);
+        $values = [];
+
+        foreach ($tokens as $token) {
+            $value = $this->parseNumericAnswerToken($token);
+
+            if ($value === null) {
+                return null;
+            }
+
+            $values[] = $value;
+        }
+
+        return $values;
+    }
+
+    private function parseNumericAnswerToken(string $token): ?float
+    {
+        $token = trim($token);
+
+        if ($token === '') {
+            return null;
+        }
+
+        if (preg_match('/^-?(?:\d+(?:\.\d*)?|\.\d+)$/', $token)) {
+            return (float) $token;
+        }
+
+        if (preg_match('/^(-?(?:\d+(?:\.\d*)?|\.\d+))\/(-?(?:\d+(?:\.\d*)?|\.\d+))$/', $token, $matches)) {
+            $denominator = (float) $matches[2];
+
+            if (abs($denominator) < 0.000000000001) {
+                return null;
+            }
+
+            return (float) $matches[1] / $denominator;
+        }
+
+        return null;
+    }
+
+    private function numericAnswerTokensMatch(?array $correctTokens, ?array $studentTokens): bool
+    {
+        if ($correctTokens === null || $studentTokens === null) {
+            return false;
+        }
+
+        if (count($correctTokens) !== count($studentTokens)) {
+            return false;
+        }
+
+        $tolerance = 0.000001;
+
+        foreach ($correctTokens as $index => $correctValue) {
+            if (abs($correctValue - $studentTokens[$index]) > $tolerance) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

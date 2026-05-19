@@ -719,9 +719,9 @@ function createEssayAnswer(questionId) {
 function createNumericAnswer(questionId) {
     return `
         <label class="form-label fw-bold">@lang('l.correct_numeric_answer'):</label>
-        <input type="number" class="form-control numeric-answer-input"
-               placeholder="@lang('l.enter_correct_number')" step="any">
-        <small class="text-muted mt-1">@lang('l.decimal_numbers_allowed')</small>
+        <input type="text" class="form-control numeric-answer-input" inputmode="text"
+               placeholder="e.g. 0.5, 1/2, or 3 2">
+        <small class="text-muted mt-1">Accepted formats: 0.5, 1/2, 3 2, 1/2 3/4, or 0.4 or 2/5</small>
     `;
 }
 
@@ -1042,10 +1042,6 @@ function validateQuestionData(data) {
     if (data.type === 'numeric') {
         if (!data.correct_answer || data.correct_answer.trim() === '') {
             showErrorMessage('@lang('l.numeric_answer_required')');
-            return false;
-        }
-        if (isNaN(data.correct_answer)) {
-            showErrorMessage('@lang('l.numeric_answer_invalid')');
             return false;
         }
     }

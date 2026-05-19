@@ -334,7 +334,7 @@
         }
 
         .question-text {
-            font-size: 1rem;
+            font-size: 1.08rem;
             color: #1f2937;
             line-height: 1.65;
             margin-bottom: 10px;
@@ -455,7 +455,7 @@
             align-items: flex-start;
             gap: 15px;
             padding: 8px 0;
-            font-size: 0.9rem;
+            font-size: 0.96rem;
             border-bottom: 1px solid #eef2f7;
         }
 
@@ -489,7 +489,7 @@
             padding: 8px 12px;
             border-radius: 6px;
             margin-bottom: 5px;
-            font-size: 0.9rem;
+            font-size: 0.96rem;
             display: flex;
             align-items: flex-start;
             gap: 8px;
