@@ -625,6 +625,267 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Assignments section polish, visually aligned with student tests cards */
+        #Assignments.lesson-card {
+            padding: clamp(20px, 3vw, 30px);
+        }
+
+        #Assignments .lesson-card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        #Assignments .lesson-card-title .badge {
+            border-radius: 999px;
+            padding: 7px 11px;
+            background: #e0ecff !important;
+            color: #1e40af;
+        }
+
+        #Assignments .assignment-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            border-left: 0;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        #Assignments .assignment-card:hover {
+            transform: translateY(-4px);
+            border-color: #bfdbfe;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+        }
+
+        #Assignments .assignment-header {
+            margin-bottom: 0;
+            padding: 22px;
+            gap: 18px;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #Assignments .assignment-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -70px;
+            width: 150px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.12);
+            transform: skewX(-15deg);
+        }
+
+        #Assignments .assignment-header > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        #Assignments .assignment-title {
+            color: #ffffff;
+            font-size: clamp(1.12rem, 2vw, 1.38rem);
+            font-weight: 900;
+            line-height: 1.25;
+            margin-bottom: 6px;
+            text-wrap: balance;
+        }
+
+        #Assignments .assignment-description {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        #Assignments .assignment-status {
+            justify-content: center;
+            gap: 8px;
+            min-height: 38px;
+            padding: 9px 14px;
+            font-size: 0.86rem;
+            font-weight: 900;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        }
+
+        #Assignments .status-not-started {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #475569;
+        }
+
+        #Assignments .status-in-progress {
+            background: linear-gradient(135deg, #fef3c7 0%, #f59e0b 100%);
+            color: #78350f;
+        }
+
+        #Assignments .status-completed {
+            background: linear-gradient(135deg, #dcfce7 0%, #10b981 100%);
+            color: #064e3b;
+        }
+
+        #Assignments .assignment-meta {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin: 0;
+            padding: 18px 22px 0;
+        }
+
+        #Assignments .assignment-meta-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            font-weight: 800;
+            min-width: 0;
+        }
+
+        #Assignments .assignment-meta-icon {
+            border-radius: 12px;
+            background: #e0ecff;
+            color: #1e40af;
+        }
+
+        #Assignments .progress-line {
+            margin: 16px 22px 18px;
+        }
+
+        #Assignments .progress-fill {
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+        }
+
+        #Assignments .score-box {
+            margin: 0 22px 18px;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #f8fafc 0%, #eef6ff 100%);
+        }
+
+        #Assignments .score-box strong {
+            display: inline-block;
+            font-size: 1.2rem;
+            margin-bottom: 3px;
+        }
+
+        #Assignments .score-box small {
+            color: #64748b;
+            font-weight: 700;
+        }
+
+        .assignment-actions {
+            display: flex;
+            justify-content: flex-end;
+            padding: 0 22px 22px;
+        }
+
+        .assignment-action-btn {
+            min-height: 46px;
+            min-width: 190px;
+            border-radius: 12px !important;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 900 !important;
+            line-height: 1.15;
+            text-decoration: none !important;
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .assignment-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(15, 23, 42, 0.16);
+            text-decoration: none !important;
+        }
+
+        .empty-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 22px;
+            background: #ffffff;
+            box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+            padding: clamp(34px, 6vw, 58px) 20px;
+        }
+
+        .empty-card i {
+            width: 82px;
+            height: 82px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 24px;
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 2.5rem !important;
+        }
+
+        .empty-card h5 {
+            color: #0f172a;
+            font-weight: 900;
+            margin-top: 16px;
+        }
+
+        .empty-card p {
+            color: #64748b;
+            line-height: 1.65;
+        }
+
+        [dir="rtl"] #Assignments .assignment-header::before {
+            right: auto;
+            left: -70px;
+            transform: skewX(15deg);
+        }
+
+        [dir="rtl"] .assignment-actions {
+            justify-content: flex-start;
+        }
+
+        @media (max-width: 767.98px) {
+            #Assignments .assignment-header {
+                align-items: stretch;
+                padding: 20px;
+            }
+
+            #Assignments .assignment-status {
+                width: 100%;
+            }
+
+            #Assignments .assignment-meta {
+                grid-template-columns: 1fr;
+                padding: 16px 18px 0;
+            }
+
+            #Assignments .progress-line {
+                margin-left: 18px;
+                margin-right: 18px;
+            }
+
+            #Assignments .score-box {
+                margin-left: 18px;
+                margin-right: 18px;
+            }
+
+            #Assignments .score-box .row {
+                row-gap: 12px;
+            }
+
+            #Assignments .score-box .col-4 {
+                width: 100%;
+                flex: 0 0 100%;
+            }
+
+            .assignment-actions {
+                justify-content: stretch;
+                padding: 0 18px 18px;
+            }
+
+            .assignment-action-btn {
+                width: 100%;
+                min-width: 0;
+            }
+        }
     </style>
 @endsection
 
@@ -918,14 +1179,14 @@
                                         </div>
                                     @endif
 
-                                    <div class="mt-3 text-end">
+                                    <div class="mt-3 text-end assignment-actions">
                                         @if (!$userAssignment || !$userAssignment->submitted_at)
-                                            <a href="{{ route('dashboard.users.assignments-start', ['id' => encrypt($assignment->id)]) }}" class="btn-custom btn-primary-custom">
+                                            <a href="{{ route('dashboard.users.assignments-start', ['id' => encrypt($assignment->id)]) }}" class="btn-custom btn-primary-custom assignment-action-btn">
                                                 <i class="fas fa-play"></i>
                                                 {{ $userAssignment && $userAssignment->started_at ? __('l.continue_assignment') : __('l.start_assignment') }}
                                             </a>
                                         @else
-                                            <a href="{{ route('dashboard.users.assignments-results', ['id' => encrypt($userAssignment->id)]) }}" class="btn-custom btn-success-custom">
+                                            <a href="{{ route('dashboard.users.assignments-results', ['id' => encrypt($userAssignment->id)]) }}" class="btn-custom btn-success-custom assignment-action-btn">
                                                 <i class="fas fa-chart-bar"></i>
                                                 @lang('l.view_results')
                                             </a>
