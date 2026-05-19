@@ -418,18 +418,21 @@ class TestQuestion extends Model
                 break;
 
             case $this->isNumeric():
-                $correctAnswer = (float) $this->correct_answer;
-                $studentAnswer = (float) $answer;
+                $correctAlternatives = $this->parseNumericCorrectAnswerAlternatives($this->correct_answer);
+                $studentTokens = $this->parseNumericAnswerTokens($answer);
 
-                $margin = 0.01;
-                if (abs($correctAnswer - $studentAnswer) <= $margin) {
-                    $isCorrect = true;
-                    $scoreEarned = $this->score;
+                foreach ($correctAlternatives as $correctTokens) {
+                    if ($this->numericAnswerTokensMatch($correctTokens, $studentTokens)) {
+                        $isCorrect = true;
+                        $scoreEarned = $this->score;
+                        break;
+                    }
                 }
 
-                $details['correct'] = $correctAnswer;
-                $details['student'] = $studentAnswer;
-                $details['difference'] = abs($correctAnswer - $studentAnswer);
+                $details['correct'] = (string) $this->correct_answer;
+                $details['student'] = (string) $answer;
+                $details['correct_alternatives'] = $correctAlternatives;
+                $details['student_tokens'] = $studentTokens;
                 break;
 
             default:
@@ -453,6 +456,98 @@ class TestQuestion extends Model
             'details' => $details,
             'feedback' => $isCorrect ? 'إجابة صحيحة!' : 'إجابة خاطئة. حاول مرة أخرى.'
         ];
+    }
+
+    private function parseNumericCorrectAnswerAlternatives($answer): array
+    {
+        $answer = trim((string) $answer);
+
+        if ($answer === '') {
+            return [];
+        }
+
+        $alternatives = preg_split('/\s+\bor\b\s+|[,;|]+/i', $answer);
+        $parsedAlternatives = [];
+
+        foreach ($alternatives as $alternative) {
+            $tokens = $this->parseNumericAnswerTokens($alternative);
+
+            if ($tokens !== null) {
+                $parsedAlternatives[] = $tokens;
+            }
+        }
+
+        return $parsedAlternatives;
+    }
+
+    private function parseNumericAnswerTokens($answer): ?array
+    {
+        $answer = trim((string) $answer);
+
+        if ($answer === '') {
+            return null;
+        }
+
+        $tokens = preg_split('/\s+/', $answer);
+        $values = [];
+
+        foreach ($tokens as $token) {
+            $value = $this->parseNumericAnswerToken($token);
+
+            if ($value === null) {
+                return null;
+            }
+
+            $values[] = $value;
+        }
+
+        return $values;
+    }
+
+    private function parseNumericAnswerToken(string $token): ?float
+    {
+        $token = trim($token);
+
+        if ($token === '') {
+            return null;
+        }
+
+        if (preg_match('/^-?(?:\d+(?:\.\d*)?|\.\d+)$/', $token)) {
+            return (float) $token;
+        }
+
+        if (preg_match('/^(-?(?:\d+(?:\.\d*)?|\.\d+))\/(-?(?:\d+(?:\.\d*)?|\.\d+))$/', $token, $matches)) {
+            $denominator = (float) $matches[2];
+
+            if (abs($denominator) < 0.000000000001) {
+                return null;
+            }
+
+            return (float) $matches[1] / $denominator;
+        }
+
+        return null;
+    }
+
+    private function numericAnswerTokensMatch(?array $correctTokens, ?array $studentTokens): bool
+    {
+        if ($correctTokens === null || $studentTokens === null) {
+            return false;
+        }
+
+        if (count($correctTokens) !== count($studentTokens)) {
+            return false;
+        }
+
+        $tolerance = 0.000001;
+
+        foreach ($correctTokens as $index => $correctValue) {
+            if (abs($correctValue - $studentTokens[$index]) > $tolerance) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
