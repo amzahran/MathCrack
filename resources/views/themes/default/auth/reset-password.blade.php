@@ -22,13 +22,19 @@
                     <div class="card-body p-sm-5">
                         <h2 class="fs-20 fw-bolder mb-4">@lang('l.Reset Password')</h2>
 
-                        <form class="w-100 mt-4 pt-2" method="POST" action="{{ route('password.store') }}">
+                        <form class="w-100 mt-4 pt-2" method="POST" action="{{ route('password.update') }}">
                             @csrf
                             <!-- Password Reset Token -->
-                            <input type="hidden" name="token" value="{{ $request->route('token') }}">
+                            <input type="hidden" name="token" value="{{ old('token', $token) }}">
 
                             <!-- Email Address -->
-                            <input type="hidden" name="email" value="{{ old('email', $request->email) }}">
+                            <input type="hidden" name="email" value="{{ old('email', $email) }}">
+
+                            @if ($errors->has('token') || $errors->has('email'))
+                                <div class="mb-4" style="color: red; padding-left: 10px; padding-right: 10px;">
+                                    {{ $errors->first('token') ?: $errors->first('email') }}
+                                </div>
+                            @endif
 
                             <div class="mb-4">
                                 <input type="password" id="password" class="form-control" name="password" required

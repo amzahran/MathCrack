@@ -35,7 +35,7 @@
                                 @endif
                                 @if (session('status'))
                                     <div class="mt-2" style="color: green; padding-left: 10px; padding-right: 10px;">
-                                        @lang('l.We have sent you a link to reset your password')
+                                        {{ session('status') }}
                                     </div>
                                 @endif
                             </div>

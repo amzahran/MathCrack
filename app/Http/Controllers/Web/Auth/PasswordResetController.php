@@ -6,9 +6,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Validation\Rules;
 
 class PasswordResetController extends Controller
 {
+    private const RESET_LINK_STATUS = 'If an account exists for this email, a password reset link has been sent.';
+
     public function showForgot()
     {
         return view('themes.default.auth.forgot-password');
@@ -18,20 +21,11 @@ class PasswordResetController extends Controller
     {
         $request->validate([
             'email' => ['required', 'email'],
-            'method' => ['nullable', 'in:email,sms'],
         ]);
 
-        $method = $request->input('method', 'email');
+        Password::sendResetLink($request->only('email'));
 
-        if ($method !== 'email') {
-            return back()->withErrors(['method' => 'SMS is not enabled now']);
-        }
-
-        $status = Password::sendResetLink($request->only('email'));
-
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with('status', __($status))
-            : back()->withErrors(['email' => __($status)]);
+        return back()->with('status', __(self::RESET_LINK_STATUS));
     }
 
     public function showReset(Request $request, string $token)
@@ -47,7 +41,8 @@ class PasswordResetController extends Controller
         $request->validate([
             'token' => ['required'],
             'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', 'min:8'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password_confirmation' => ['required'],
         ]);
 
         $status = Password::reset(
@@ -64,7 +59,8 @@ class PasswordResetController extends Controller
 
         return $status === Password::PASSWORD_RESET
             ? redirect()->route('login')->with('status', __($status))
-            : back()->withErrors(['email' => __($status)]);
+            : back()->withInput($request->only('email'))
+                ->withErrors(['email' => __($status)]);
     }
 
     
