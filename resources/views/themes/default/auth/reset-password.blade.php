@@ -8,6 +8,36 @@
 @endsection
 
 @section('page-css')
+    <style>
+        .password-toggle-wrap {
+            position: relative;
+        }
+
+        .password-toggle-wrap .form-control {
+            padding-right: 3.25rem;
+        }
+
+        .password-toggle-btn {
+            position: absolute;
+            top: 50%;
+            right: 0.75rem;
+            transform: translateY(-50%);
+            border: 0;
+            background: transparent;
+            color: #6c757d;
+            font-size: 0.875rem;
+            font-weight: 600;
+            line-height: 1;
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        .password-toggle-btn:hover,
+        .password-toggle-btn:focus {
+            color: #0d6efd;
+            outline: none;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -37,9 +67,14 @@
                             @endif
 
                             <div class="mb-4">
-                                <input type="password" id="password" class="form-control" name="password" required
-                                    placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                    aria-describedby="password" />
+                                <div class="password-toggle-wrap">
+                                    <input type="password" id="password" class="form-control" name="password" required
+                                        placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                                        aria-describedby="password" />
+                                    <button type="button" class="password-toggle-btn" data-password-toggle="password" aria-label="@lang('l.Show password')">
+                                        Show
+                                    </button>
+                                </div>
                                 @if ($errors->has('password'))
                                     <div class="mt-2" style="color: red; padding-left: 10px; padding-right: 10px;">
                                         {{ $errors->first('password') }}
@@ -48,9 +83,14 @@
                             </div>
 
                             <div class="mb-4">
-                                <input type="password" id="password_confirmation" class="form-control" name="password_confirmation" required
-                                    placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                    aria-describedby="password_confirmation" />
+                                <div class="password-toggle-wrap">
+                                    <input type="password" id="password_confirmation" class="form-control" name="password_confirmation" required
+                                        placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                                        aria-describedby="password_confirmation" />
+                                    <button type="button" class="password-toggle-btn" data-password-toggle="password_confirmation" aria-label="@lang('l.Show password confirmation')">
+                                        Show
+                                    </button>
+                                </div>
                                 @if ($errors->has('password_confirmation'))
                                     <div class="mt-2" style="color: red; padding-left: 10px; padding-right: 10px;">
                                         {{ $errors->first('password_confirmation') }}
@@ -78,4 +118,17 @@
 
 @section('page-scripts')
     <script src="{{ asset('assets/themes/default/js/pages-auth.js') }}"></script>
+    <script>
+        document.querySelectorAll('[data-password-toggle]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var input = document.getElementById(button.getAttribute('data-password-toggle'));
+                if (!input) return;
+
+                var isVisible = input.type === 'text';
+                input.type = isVisible ? 'password' : 'text';
+                button.textContent = isVisible ? 'Show' : 'Hide';
+                button.setAttribute('aria-label', isVisible ? 'Show password' : 'Hide password');
+            });
+        });
+    </script>
 @endsection
