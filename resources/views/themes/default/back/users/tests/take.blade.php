@@ -902,14 +902,14 @@
 
   /* === Readability Upgrade === */
   .stem{
-    font-size: 20px !important;
+    font-size: 18px !important;
     line-height: 1.85 !important;
     color: #111827 !important;
     font-weight: 500;
   }
 
   .stem p{
-    font-size: 20px !important;
+    font-size: 18px !important;
     line-height: 1.85 !important;
   }
 
@@ -921,14 +921,14 @@
   }
 
   .option-text{
-    font-size: 19px !important;
+    font-size: 18px !important;
     line-height: 1.8 !important;
     color: #111827 !important;
     font-weight: 500;
   }
 
   .option-text p{
-    font-size: 19px !important;
+    font-size: 18px !important;
     line-height: 1.8 !important;
   }
 
