@@ -269,7 +269,87 @@
             gap: 20px;
             align-items: start;
             justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .workspace.no-calc {
             grid-template-columns: minmax(620px, 820px);
+        }
+
+        .workspace.with-calc {
+            grid-template-columns: 480px minmax(520px, 1fr);
+        }
+
+        .calc-pane {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            overflow: hidden;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .calc-pane.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .calc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--line);
+            background: #f8fafc;
+        }
+
+        .calc-controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .calc-body {
+            height: 560px;
+            transition: height 0.3s ease;
+            background: #fff;
+        }
+
+        .calc-body.expanded {
+            height: 680px;
+        }
+
+        .calc-iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
+
+        .calc-loading {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            color: #666;
+            font-size: 16px;
+            font-weight: 800;
+            text-align: center;
+            padding: 24px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .q-card {
@@ -872,6 +952,19 @@
                 grid-template-columns: minmax(300px,1fr);
             }
 
+            .workspace.with-calc {
+                grid-template-columns: minmax(300px,1fr);
+            }
+
+            .calc-pane {
+                order: -1;
+            }
+
+            .calc-body,
+            .calc-body.expanded {
+                height: min(520px, 70vh);
+            }
+
             .q-head {
                 flex-direction: column;
                 gap: 10px;
@@ -948,6 +1041,7 @@
             }
         };
     </script>
+    <script src="https://www.desmos.com/api/v1.10/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 
@@ -970,6 +1064,7 @@
                 <button type="button" class="timer-btn resume-btn" id="resumeTimerBtn" style="display:none">Resume</button>
 
                 <a href="{{ $courseBackUrl }}" class="btn-sm">← Course</a>
+                <button type="button" class="btn-sm" id="btnCalc">🧮 Calculator</button>
                 <button type="button" class="btn-sm" onclick="saveProgress(true)">💾 Save</button>
             </div>
         </div>
@@ -993,7 +1088,22 @@
                 <span class="meta-pill">💾 Auto-save every 30 seconds</span>
             </div>
 
-            <div class="workspace" id="workspace">
+            <div class="workspace no-calc" id="workspace">
+                <aside id="calcPane" class="calc-pane" aria-label="Calculator">
+                    <div class="calc-header">
+                        <div class="calc-controls">
+                            <button type="button" id="btnExpandCalc" class="btn-sm">↕️ Expand</button>
+                        </div>
+                        <button type="button" id="btnCloseCalc" class="btn" style="background:#111827">Close</button>
+                    </div>
+
+                    <div class="calc-body" id="calcBody">
+                        <div id="desmosCalc" class="calc-loading">
+                            Loading Calculator...
+                        </div>
+                    </div>
+                </aside>
+
                 <div class="q-card" id="qCard">
                     <div class="q-head">
                         <div class="q-head-left">
@@ -1563,6 +1673,108 @@
         }
     };
 
+    const CalculatorSystem = {
+        desmosCalc: null,
+        calculatorInitialized: false,
+        keypadVisible: true,
+        DESMOS_FALLBACK_MS: 2000,
+
+        init() {
+            const btnOpen = document.getElementById('btnCalc');
+            const btnClose = document.getElementById('btnCloseCalc');
+            const btnExpandCalc = document.getElementById('btnExpandCalc');
+
+            if (btnOpen) btnOpen.addEventListener('click', () => this.open());
+            if (btnClose) btnClose.addEventListener('click', () => this.close());
+            if (btnExpandCalc) btnExpandCalc.addEventListener('click', () => this.toggleExpand());
+        },
+
+        open() {
+            const pane = document.getElementById('calcPane');
+            const workspace = document.getElementById('workspace');
+            if (!pane || !workspace) return;
+
+            pane.classList.add('show');
+            workspace.classList.remove('no-calc');
+            workspace.classList.add('with-calc');
+
+            this.ensureInit();
+        },
+
+        ensureInit() {
+            if (this.calculatorInitialized) {
+                setTimeout(() => this.desmosCalc?.resize?.(), 120);
+                return;
+            }
+
+            const el = document.getElementById('desmosCalc');
+            if (!el) return;
+
+            const waitForDesmos = () => {
+                if (window.Desmos && window.Desmos.GraphingCalculator) {
+                    el.innerHTML = '';
+
+                    this.desmosCalc = Desmos.GraphingCalculator(el, {
+                        keypad: true,
+                        expressions: true,
+                        settingsMenu: true,
+                        expressionsCollapsed: true
+                    });
+
+                    this.calculatorInitialized = true;
+                    this.keypadVisible = true;
+
+                    setTimeout(() => this.desmosCalc?.resize?.(), 150);
+                } else {
+                    setTimeout(waitForDesmos, 200);
+                }
+            };
+
+            waitForDesmos();
+
+            setTimeout(() => {
+                if (!this.calculatorInitialized) this.fallback();
+            }, this.DESMOS_FALLBACK_MS);
+        },
+
+        close() {
+            const pane = document.getElementById('calcPane');
+            const workspace = document.getElementById('workspace');
+            if (!pane || !workspace) return;
+
+            pane.classList.remove('show');
+            workspace.classList.remove('with-calc');
+            workspace.classList.add('no-calc');
+        },
+
+        fallback() {
+            const el = document.getElementById('desmosCalc');
+            if (!el || el.__iframeMounted) return;
+
+            el.innerHTML = '';
+            const frame = document.createElement('iframe');
+            frame.src = 'https://www.desmos.com/calculator?embed&lang=en';
+            frame.title = 'Desmos Calculator';
+            frame.allow = 'fullscreen';
+            frame.className = 'calc-iframe';
+            el.appendChild(frame);
+            el.__iframeMounted = true;
+        },
+
+        toggleExpand() {
+            const calcBody = document.getElementById('calcBody');
+            if (!calcBody) return;
+
+            const isExpanded = calcBody.classList.contains('expanded');
+            calcBody.classList.toggle('expanded', !isExpanded);
+
+            const btn = document.getElementById('btnExpandCalc');
+            if (btn) btn.textContent = isExpanded ? '↕️ Expand' : '↕️ Collapse';
+
+            setTimeout(() => this.desmosCalc?.resize?.(), 250);
+        }
+    };
+
     const ImageZoomSystem = {
         init() {
             const modal = document.getElementById('imgZoom');
@@ -1703,6 +1915,7 @@
         TimerSystem.init();
         MarkSystem.init();
         EliminationSystem.init();
+        CalculatorSystem.init();
         ImageZoomSystem.init();
         restoreSavedAnswers();
 
@@ -1716,6 +1929,12 @@
 
         if (window.MathJax?.typesetPromise) {
             MathJax.typesetPromise();
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        if (CalculatorSystem.desmosCalc && CalculatorSystem.calculatorInitialized) {
+            setTimeout(() => CalculatorSystem.desmosCalc.resize(), 150);
         }
     });
 
