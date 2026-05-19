@@ -2,7 +2,7 @@
 <script>
     window.primaryColor = "{{ $settings['primary_color'] ?? '#FFAB1D' }}";
 </script>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 
     <head>
         <meta charset="utf-8" />
@@ -617,6 +617,271 @@
   .student-user-dropdown .dropdown-toggle{ padding: 6px 12px !important; }
 }
 </style>
+
+<!-- Student layout responsive polish -->
+<style>
+    :root {
+        --student-primary: #1e40af;
+        --student-primary-soft: rgba(59, 130, 246, 0.16);
+        --student-surface: #ffffff;
+        --student-border: rgba(15, 23, 42, 0.1);
+        --student-text: #172033;
+    }
+
+    .student-navbar {
+        padding: 12px 0 !important;
+        background: linear-gradient(135deg, #102a6b 0%, #2563eb 100%) !important;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14) !important;
+    }
+
+    .student-navbar .container-fluid {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding-left: clamp(14px, 3vw, 32px);
+        padding-right: clamp(14px, 3vw, 32px);
+    }
+
+    .student-topbar {
+        gap: 16px;
+        min-height: 70px;
+    }
+
+    .student-desktop-nav {
+        min-width: 0;
+        padding: 0 18px;
+    }
+
+    .student-nav-links {
+        gap: 8px !important;
+    }
+
+    .student-nav-link {
+        min-height: 46px;
+        padding: 11px 16px !important;
+        margin: 0 !important;
+        border-radius: 999px !important;
+        gap: 8px;
+        line-height: 1.15;
+        white-space: nowrap;
+        background: transparent;
+    }
+
+    .student-nav-link i {
+        margin-right: 0 !important;
+        flex: 0 0 auto;
+    }
+
+    [dir="rtl"] .student-nav-link i {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .student-nav-link:hover,
+    .student-nav-link.active {
+        background: rgba(255,255,255,0.18) !important;
+        box-shadow: 0 10px 24px rgba(15,23,42,0.16) !important;
+        transform: translateY(-1px) !important;
+    }
+
+    .student-user-dropdown {
+        flex: 0 0 auto;
+    }
+
+    .student-user-dropdown .dropdown-toggle {
+        min-height: 48px;
+        border-radius: 999px !important;
+        background: rgba(255,255,255,0.18) !important;
+        border: 1px solid rgba(255,255,255,0.34) !important;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.16);
+    }
+
+    .student-user-dropdown .dropdown-toggle img {
+        width: 34px !important;
+        height: 34px !important;
+        border: 2px solid rgba(255,255,255,0.58);
+        box-shadow: 0 4px 12px rgba(15,23,42,0.18);
+    }
+
+    .student-user-dropdown .dropdown-menu {
+        min-width: 220px;
+        padding: 8px;
+        border-radius: 16px !important;
+        border: 1px solid var(--student-border) !important;
+        box-shadow: 0 18px 40px rgba(15,23,42,0.18) !important;
+    }
+
+    .student-user-dropdown .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 12px;
+        padding: 10px 12px;
+        color: var(--student-text);
+        font-weight: 600;
+    }
+
+    .student-user-dropdown .dropdown-item:hover,
+    .student-user-dropdown .dropdown-item:focus {
+        background: var(--student-primary-soft);
+        color: var(--student-primary);
+    }
+
+    [dir="rtl"] .student-user-dropdown .dropdown-menu {
+        text-align: right;
+    }
+
+    [dir="rtl"] .student-user-dropdown .dropdown-menu-end {
+        left: 0 !important;
+        right: auto !important;
+    }
+
+    .student-menu-toggle {
+        width: 46px;
+        height: 46px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px !important;
+        background: rgba(255,255,255,0.16) !important;
+        border: 1px solid rgba(255,255,255,0.28) !important;
+    }
+
+    .student-content {
+        padding: clamp(18px, 2.5vw, 34px) !important;
+    }
+
+    .student-content > .container-fluid {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .student-content .btn {
+        min-height: 42px;
+        border-radius: 10px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        line-height: 1.15;
+    }
+
+    .student-content .btn-sm {
+        min-height: 34px;
+        border-radius: 9px;
+    }
+
+    .student-content .card {
+        border-radius: 16px;
+    }
+
+    .student-content .card-header {
+        padding: 16px 18px;
+    }
+
+    @media (max-width: 1199.98px) {
+        .student-desktop-nav {
+            padding: 0 10px;
+        }
+
+        .student-nav-link {
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+            font-size: 0.92rem !important;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .student-navbar {
+            padding: 10px 0 !important;
+        }
+
+        .student-topbar {
+            min-height: 60px;
+            gap: 10px;
+        }
+
+        .student-navbar .navbar-brand::before {
+            inset: -5px -7px;
+        }
+
+        .student-navbar .navbar-brand img {
+            height: 42px !important;
+        }
+
+        .student-user-dropdown {
+            margin-left: auto !important;
+            margin-right: 0 !important;
+            order: 0 !important;
+        }
+
+        [dir="rtl"] .student-user-dropdown {
+            margin-left: 0 !important;
+            margin-right: auto !important;
+        }
+
+        .student-user-dropdown .dropdown-toggle {
+            min-height: 42px;
+            padding: 6px 10px !important;
+        }
+
+        .student-user-dropdown .dropdown-toggle img {
+            width: 30px !important;
+            height: 30px !important;
+        }
+
+        #mobileNav {
+            margin-top: 10px;
+        }
+
+        #mobileNav .student-nav-links {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px !important;
+            padding: 12px !important;
+            margin-top: 0 !important;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.14);
+        }
+
+        #mobileNav .student-nav-link {
+            min-height: 72px;
+            padding: 12px 10px !important;
+            border-radius: 14px !important;
+            background: rgba(255,255,255,0.12);
+            flex-direction: column;
+            text-align: center;
+            white-space: normal;
+        }
+
+        #mobileNav .student-nav-link i {
+            font-size: 1.25rem !important;
+        }
+
+        .student-content {
+            padding: 16px 12px 28px !important;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .student-navbar .container-fluid {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        #mobileNav .student-nav-links {
+            grid-template-columns: 1fr;
+        }
+
+        #mobileNav .student-nav-link {
+            min-height: 58px;
+            flex-direction: row;
+        }
+    }
+</style>
 </head>
 
     <body class="student-layout">
@@ -624,14 +889,14 @@
             <!-- Student Navigation Bar -->
             <nav class="student-navbar">
                 <div class="container-fluid">
-                    <div class="d-flex align-items-center justify-content-between w-100">
+                    <div class="student-topbar d-flex align-items-center justify-content-between w-100">
                         <!-- Brand -->
                         <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
                             <img src="{{ asset($settings['logo']) }}" alt="Logo" />
                         </a>
 
                         <!-- Navigation Links - Centered -->
-                        <div class="d-flex justify-content-center flex-grow-1 d-none d-md-block">
+                        <div class="student-desktop-nav d-flex justify-content-center flex-grow-1 d-none d-md-block">
                             <ul class="student-nav-links">
                                 <li class="student-nav-item">
                                     <a href="{{ route('dashboard.users.courses') }}" class="student-nav-link {{ request()->is('dashboard/users/courses*') ? 'active' : '' }}">
@@ -695,7 +960,7 @@
                         </div>
 
                         <!-- Mobile Menu Toggle -->
-                        <button class="btn d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav"
+                        <button class="btn student-menu-toggle d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav"
                                 style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 8px 12px;">
                             <i class="feather-menu text-white"></i>
                         </button>

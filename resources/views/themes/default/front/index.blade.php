@@ -32,6 +32,18 @@
 
     .no-break { white-space: nowrap; display: inline-block; }
 
+    .digital-sat-nowrap {
+      white-space: nowrap;
+      display: inline-block;
+    }
+
+    .hero-copy-line {
+      display: inline-block;
+      max-width: 100%;
+      text-align: center;
+      white-space: nowrap;
+    }
+
     .main-header {
       background: white;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -809,7 +821,7 @@
       .header-right { flex-direction: column; gap: 10px; }
     }
 
-    .hero-subtitle span { display: block; }
+    .hero-subtitle > span { display: block; }
 
     [dir="rtl"] .dropdown-menu { text-align: right; }
     [dir="rtl"] .me-2 { margin-left: 0.5rem; margin-right: 0; }
@@ -1243,16 +1255,20 @@
     }
 
     .hero-section .fade-in {
-      max-width: 920px;
+      max-width: 1120px;
       margin: 0 auto;
+      text-align: center;
     }
 
     .hero-title {
-      font-size: clamp(2.45rem, 6vw, 5rem);
+      font-size: clamp(2.3rem, 4.35vw, 4.05rem);
       line-height: 1.05;
       margin-bottom: 24px;
       letter-spacing: 0;
       text-wrap: balance;
+      text-align: center;
+      white-space: normal;
+      width: 100%;
     }
 
     .hero-subtitle {
@@ -1262,8 +1278,15 @@
       margin-bottom: 32px;
     }
 
-    .hero-subtitle span {
+    .hero-subtitle > span {
       display: block;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .hero-subtitle .hero-copy-line,
+    .hero-subtitle .digital-sat-nowrap {
+      display: inline-block;
     }
 
     .hero-highlight::after {
@@ -1527,7 +1550,7 @@
       }
 
       .hero-section {
-        text-align: start;
+        text-align: center;
         padding: 64px 0 70px;
       }
 
@@ -1538,10 +1561,11 @@
       .hero-subtitle {
         margin-left: 0;
         margin-right: 0;
+        text-align: center;
       }
 
       .hero-section .d-flex {
-        justify-content: flex-start !important;
+        justify-content: center !important;
       }
 
       .btn-hero,
@@ -1553,7 +1577,7 @@
       }
 
       .professor-name-hero {
-        text-align: start;
+        text-align: center;
       }
 
       .section-title,
@@ -1636,11 +1660,20 @@
       }
 
       .hero-title {
-        font-size: 2.25rem;
+        white-space: normal;
+        font-size: clamp(1.35rem, 5.4vw, 2rem);
       }
 
       .hero-subtitle {
         font-size: 1rem;
+      }
+
+      .hero-copy-line {
+        white-space: normal;
+      }
+
+      .hero-subtitle > span {
+        white-space: normal;
       }
 
       .flip-card,
@@ -1714,11 +1747,11 @@
 <section class="hero-section" id="home">
   <div class="container">
     <div class="fade-in">
-      <h1 class="hero-title">{{ __('front.hero_dsat_title') }}</h1>
+      <h1 class="hero-title"><span class="hero-copy-line">{!! str_replace('Digital SAT', 'Digital&nbsp;SAT', e(__('front.hero_dsat_title'))) !!}</span></h1>
 
       <p class="hero-subtitle">
-        <span>{{ __('front.hero_dsat_line1') }}</span>
-        <span>{{ __('front.hero_dsat_line2') }}</span>
+        <span>{!! str_replace('Digital SAT', 'Digital&nbsp;SAT', e(__('front.hero_dsat_line1'))) !!}</span>
+        <span>{!! str_replace('Digital SAT', 'Digital&nbsp;SAT', e(__('front.hero_dsat_line2'))) !!}</span>
       </p>
 
       <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
@@ -2031,7 +2064,7 @@
                       aria-disabled="{{ $isAvailable ? 'false' : 'true' }}"
                     >
                       <i class="{{ $isAvailable ? 'fas fa-book-open' : 'fas fa-clock' }}"></i>
-                      <span>{{ $course['label'] }}</span>
+                      <span class="{{ $course['label'] === 'Digital SAT' ? 'digital-sat-nowrap' : '' }}">{{ $course['label'] }}</span>
                     </a>
                   @endforeach
                 </div>
