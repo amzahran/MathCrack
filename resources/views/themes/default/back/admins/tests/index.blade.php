@@ -289,6 +289,10 @@
                 </div>
 
                 <div class="admin-header-actions">
+                    <a href="{{ route('dashboard.admins.tests-latex-import') }}" class="btn btn-light">
+                        <i class="fa fa-file-import ti-xs me-1"></i>
+                        Import LaTeX
+                    </a>
                     @can('add tests')
                         <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addTestModal">
                             <i class="fa fa-plus ti-xs me-1"></i>

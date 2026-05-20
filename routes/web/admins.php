@@ -28,6 +28,7 @@ use App\Http\Controllers\Web\Back\Admins\Levels\LevelsController;
 use App\Http\Controllers\Web\Back\Admins\Courses\CoursesController;
 use App\Http\Controllers\Web\Back\Admins\Lectures\LecturesController;
 use App\Http\Controllers\Web\Back\Admins\Lives\LivesController;
+use App\Http\Controllers\Web\Back\Admins\Tests\LatexTestImportController;
 use App\Http\Controllers\Web\Back\Admins\Tests\TestsController;
 use App\Http\Controllers\Web\Back\Admins\Tests\TestQuestionsController;
 
@@ -350,6 +351,12 @@ Route::prefix('admins/tests')->controller(\App\Http\Controllers\Web\Back\Admins\
 
 Route::get('/preview', 'preview')->name('dashboard.admins.tests-preview');
     
+});
+
+Route::prefix('admins/tests/latex-import')->controller(LatexTestImportController::class)->group(function () {
+    Route::get('/', 'create')->name('dashboard.admins.tests-latex-import');
+    Route::post('/preview', 'preview')->name('dashboard.admins.tests-latex-import-preview');
+    Route::post('/store', 'store')->name('dashboard.admins.tests-latex-import-store');
 });
 
 // صفحة أسئلة الاختبار نفس الاستايل القديم عندك
