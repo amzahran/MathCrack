@@ -49,6 +49,35 @@
                 }
             }
         }
+
+        $hasImageReferences = collect($parsedQuestionLookup)->contains(function ($parsedQuestion) {
+            return !empty($parsedQuestion['question_image_source']) || !empty($parsedQuestion['explanation_image_source']);
+        });
+
+        $allErrors = array_values(array_unique(array_merge($parsedErrors, $validationErrors)));
+
+        $imageReferenceStatus = function ($sourceIndex, $imageSource) use ($allErrors) {
+            if (empty($imageSource)) {
+                return 'None';
+            }
+
+            $needle = 'Question ' . $sourceIndex . ':';
+
+            foreach ($allErrors as $error) {
+                if (
+                    str_contains($error, $needle)
+                    && str_contains($error, (string) $imageSource)
+                    && (
+                        str_contains($error, 'image not found')
+                        || str_contains($error, 'unsupported image path')
+                    )
+                ) {
+                    return 'Not resolved';
+                }
+            }
+
+            return 'Resolved';
+        };
     @endphp
 
     <div class="main-content">
@@ -90,7 +119,7 @@
                     <div class="alert alert-danger">
                         <strong>Errors</strong>
                         <ul class="mb-0 mt-2">
-                            @foreach (array_values(array_unique(array_merge($parsedErrors, $validationErrors))) as $error)
+                            @foreach ($allErrors as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
                         </ul>
@@ -154,6 +183,10 @@
                                         <th>Content</th>
                                         <th>Score</th>
                                         <th>Text</th>
+                                        @if ($hasImageReferences)
+                                            <th>Question Image</th>
+                                            <th>Explanation Image</th>
+                                        @endif
                                         <th>Answer / Options</th>
                                         <th>Status</th>
                                     </tr>
@@ -171,6 +204,10 @@
                                                 ? count($choices) . ' options, ' . $correctChoices . ' correct'
                                                 : (($parsedQuestion['answer'] ?? '') !== '' ? 'Answer provided' : 'Missing answer');
                                             $excerpt = \Illuminate\Support\Str::limit($parsedQuestion['text'] ?? '', 120);
+                                            $questionImageSource = $parsedQuestion['question_image_source'] ?? null;
+                                            $explanationImageSource = $parsedQuestion['explanation_image_source'] ?? null;
+                                            $questionImageStatus = $imageReferenceStatus($sourceIndex, $questionImageSource);
+                                            $explanationImageStatus = $imageReferenceStatus($sourceIndex, $explanationImageSource);
                                         @endphp
                                         <tr>
                                             <td>{{ $question['module_number'] ?? '' }}</td>
@@ -180,6 +217,28 @@
                                             <td>{{ $question['content'] ?? '' }}</td>
                                             <td>{{ $question['calculated_score'] ?? '' }}</td>
                                             <td class="text-excerpt">{{ $excerpt }}</td>
+                                            @if ($hasImageReferences)
+                                                <td>
+                                                    @if ($questionImageSource)
+                                                        <div>{{ $questionImageSource }}</div>
+                                                        <span class="badge {{ $questionImageStatus === 'Resolved' ? 'bg-success' : 'bg-danger' }}">
+                                                            {{ $questionImageStatus }}
+                                                        </span>
+                                                    @else
+                                                        <span class="text-muted">None</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($explanationImageSource)
+                                                        <div>{{ $explanationImageSource }}</div>
+                                                        <span class="badge {{ $explanationImageStatus === 'Resolved' ? 'bg-success' : 'bg-danger' }}">
+                                                            {{ $explanationImageStatus }}
+                                                        </span>
+                                                    @else
+                                                        <span class="text-muted">None</span>
+                                                    @endif
+                                                </td>
+                                            @endif
                                             <td>{{ $answerStatus }}</td>
                                             <td>
                                                 @if (($question['status'] ?? '') === 'valid')
@@ -191,7 +250,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="9" class="text-center text-muted">No questions found.</td>
+                                            <td colspan="{{ $hasImageReferences ? 11 : 9 }}" class="text-center text-muted">No questions found.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -212,8 +271,8 @@
                                 <input type="hidden" name="test_id" value="{{ $test->id }}">
 
                                 <div class="mb-3">
-                                    <label for="latex_file" class="form-label fw-bold">Confirm LaTeX File</label>
-                                    <input type="file" class="form-control" id="latex_file" name="latex_file" accept=".tex,.txt" required>
+                                    <label for="latex_file" class="form-label fw-bold">Confirm LaTeX File or ZIP Archive</label>
+                                    <input type="file" class="form-control" id="latex_file" name="latex_file" accept=".tex,.txt,.zip" required>
                                 </div>
 
                                 <button type="submit" class="btn btn-success">

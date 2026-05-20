@@ -52,7 +52,7 @@
                 <div class="latex-import-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <div>
                         <h4 class="mb-1 text-white">Import LaTeX Test</h4>
-                        <p class="mb-0">Upload a controlled text-only LaTeX file into an existing test.</p>
+                        <p class="mb-0">Upload a controlled LaTeX file, or a ZIP with LaTeX and optional images, into an existing test.</p>
                     </div>
                     <a href="{{ route('dashboard.admins.tests') }}" class="btn btn-light">
                         <i class="fas fa-arrow-left me-1"></i> Back to Tests
@@ -103,9 +103,9 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="latex_file" class="form-label fw-bold">LaTeX File</label>
-                                        <input type="file" class="form-control" id="latex_file" name="latex_file" accept=".tex,.txt" required>
-                                        <small class="form-text text-muted">Accepted file types: .tex, .txt</small>
+                                        <label for="latex_file" class="form-label fw-bold">LaTeX File or ZIP Archive</label>
+                                        <input type="file" class="form-control" id="latex_file" name="latex_file" accept=".tex,.txt,.zip" required>
+                                        <small class="form-text text-muted">Accepted file types: .tex, .txt, .zip</small>
                                     </div>
 
                                     <div class="import-note mb-3">
@@ -136,8 +136,25 @@
 \end{question}
 \end{module}</code>
                                 </div>
+                                <h6 class="mb-2">ZIP with optional images</h6>
+                                <div class="format-reference mb-3">
+                                    <code>test-import.zip
+ ├── test.tex
+ └── images/
+      ├── module1_q5.png
+      ├── module1_q7.png
+      └── module2_q10.png</code>
+                                </div>
+                                <h6 class="mb-2">Supported image commands</h6>
+                                <div class="format-reference mb-3">
+                                    <code>\questionimage{images/module1_q5.png}
+\explanationimage{images/module1_q5_solution.png}</code>
+                                </div>
+                                <div class="alert alert-info mb-3">
+                                    Images are optional and are validated securely before import. Text-only .tex and .txt imports still work without image references.
+                                </div>
                                 <div class="alert alert-warning mb-0">
-                                    Images, <code>\includegraphics</code>, and TikZ are not supported in the MVP.
+                                    TikZ and raw <code>\includegraphics</code> are still unsupported.
                                 </div>
                             </div>
                         </div>
