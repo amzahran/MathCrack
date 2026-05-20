@@ -100,6 +100,30 @@
                         </div>
 
                         <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="easy_points" class="form-label">Easy points</label>
+                                    <input type="number" class="form-control" id="easy_points" name="easy_points" min="0" max="100" value="{{ old('easy_points', 1) }}">
+                                    <x-input-error class="mt-2 error-message" :messages="$errors->get('easy_points')" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="medium_points" class="form-label">Medium points</label>
+                                    <input type="number" class="form-control" id="medium_points" name="medium_points" min="0" max="100" value="{{ old('medium_points', 2) }}">
+                                    <x-input-error class="mt-2 error-message" :messages="$errors->get('medium_points')" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="hard_points" class="form-label">Hard points</label>
+                                    <input type="number" class="form-control" id="hard_points" name="hard_points" min="0" max="100" value="{{ old('hard_points', 3) }}">
+                                    <x-input-error class="mt-2 error-message" :messages="$errors->get('hard_points')" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-6">
                                 <input type="hidden" name="show_answers" value="0">
                                 <div class="form-check">

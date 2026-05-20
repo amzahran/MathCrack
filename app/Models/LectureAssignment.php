@@ -14,6 +14,9 @@ class LectureAssignment extends Model
         'description',
         'lecture_id',
         'time_limit',
+        'easy_points',
+        'medium_points',
+        'hard_points',
         'show_answers',
         'is_active',
     ];

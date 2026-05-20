@@ -43,6 +43,7 @@
         <div class="col-md-4">
             <label class="form-label fw-bold">@lang('l.question_image_optional'):</label>
             <input type="file" class="form-control question-image" accept="image/*">
+            <div class="selected-image-preview mt-2" data-preview-for="question_image"></div>
             @if($question->question_image)
                 <div class="mt-2">
                     <img src="{{ asset($question->question_image) }}"
@@ -52,6 +53,7 @@
             @endif
             <label class="form-label fw-bold mt-2">@lang('l.explanation_image_optional'):</label>
             <input type="file" class="form-control explanation-image" accept="image/*">
+            <div class="selected-image-preview mt-2" data-preview-for="explanation_image"></div>
             @if($question->explanation_image)
                 <div class="mt-2">
                     <img src="{{ asset($question->explanation_image) }}"
@@ -61,7 +63,7 @@
             @endif
             <div class="mt-2">
                 <label class="form-label fw-bold">@lang('l.points'):</label>
-                <input type="number" class="form-control question-points" min="1" value="{{ $question->points }}">
+                <input type="number" class="form-control question-points" min="0" value="{{ $question->points }}">
             </div>
             <div class="mt-2">
                 <label class="form-label fw-bold">Difficulty:</label>

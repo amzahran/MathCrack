@@ -465,8 +465,38 @@ window.MathJax = {
 
 let questionCounter = {{ $assignment->questions->count() }};
 let currentEditingQuestion = null;
+const assignmentDifficultyPoints = {
+    easy: {{ (int) ($assignment->easy_points ?? 1) }},
+    medium: {{ (int) ($assignment->medium_points ?? 2) }},
+    hard: {{ (int) ($assignment->hard_points ?? 3) }}
+};
 
 // تهيئة الصفحة
+function previewSelectedQuestionImage(input) {
+    const file = input.files && input.files[0] ? input.files[0] : null;
+    const $input = $(input);
+    let $preview = $input.next('.selected-image-preview');
+
+    if (!$preview.length) {
+        $preview = $('<div class="selected-image-preview mt-2"></div>');
+        $input.after($preview);
+    }
+
+    if (!file || !file.type || !file.type.startsWith('image/')) {
+        $preview.empty();
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        $preview.html(`
+            <img src="${event.target.result}" alt="Selected image preview" class="img-thumbnail" style="max-height: 100px;">
+            <small class="d-block text-muted">Selected image preview</small>
+        `);
+    };
+    reader.readAsDataURL(file);
+}
+
 $(document).ready(function() {
     @if($assignment->questions->count() === 0)
         $('#emptyState').show();
@@ -553,11 +583,13 @@ function createNewQuestionHtml(questionId) {
                     <div class="col-md-4">
                         <label class="form-label fw-bold">@lang('l.question_image_optional'):</label>
                         <input type="file" class="form-control question-image" accept="image/*">
+                        <div class="selected-image-preview mt-2" data-preview-for="question_image"></div>
                         <label class="form-label fw-bold">@lang('l.explanation_image_optional'):</label>
                         <input type="file" class="form-control explanation-image" accept="image/*">
+                        <div class="selected-image-preview mt-2" data-preview-for="explanation_image"></div>
                         <div class="mt-2">
                             <label class="form-label fw-bold">@lang('l.points'):</label>
-                            <input type="number" class="form-control question-points" min="1" value="1">
+                            <input type="number" class="form-control question-points" min="0" value="${assignmentDifficultyPoints.medium ?? 2}">
                         </div>
                         <div class="mt-2">
                             <label class="form-label fw-bold">Difficulty:</label>
@@ -808,7 +840,7 @@ function saveQuestion(questionId) {
                     formData.append(`options[${index}][option_image]`, option.image);
                 }
             });
-        } else if (key === 'question_image' && questionData[key]) {
+        } else if ((key === 'question_image' || key === 'explanation_image') && questionData[key]) {
             formData.append(key, questionData[key]);
         } else {
             formData.append(key, questionData[key]);
@@ -909,10 +941,12 @@ function extractQuestionData(questionCard) {
         });
         console.log('Question Type Check - Type:', questionType, 'Valid types:', ['mcq', 'tf', 'essay', 'numeric']);
 
+        const parsedPoints = parseInt(points, 10);
+
         const data = {
             question_text: questionText || '',
             type: questionType || 'mcq',
-            points: parseInt(points) || 1,
+            points: Number.isNaN(parsedPoints) ? 1 : parsedPoints,
             difficulty: difficulty || 'medium',
             explanation: explanation || ''
         };
@@ -1155,7 +1189,8 @@ function updateStatistics() {
     let numericCount = 0;
 
     questions.each(function() {
-        const points = parseInt($(this).find('.question-points').val()) || 1;
+        const parsedPoints = parseInt($(this).find('.question-points').val(), 10);
+        const points = Number.isNaN(parsedPoints) ? 1 : parsedPoints;
         totalPoints += points;
 
         const type = $(this).find('.question-type-select').val();
@@ -1309,8 +1344,23 @@ $(document).ready(function() {
     });
 
     // تحديث الإحصائيات عند تغيير نوع السؤال أو النقاط
-    $(document).on('change', '.question-type-select, .question-points, .question-difficulty', function() {
+    $(document).on('change', '.question-type-select, .question-points', function() {
         updateStatistics();
+    });
+
+    $(document).on('change', '.question-difficulty', function() {
+        const questionCard = $(this).closest('.question-card');
+        const points = assignmentDifficultyPoints[$(this).val()];
+
+        if (points !== undefined) {
+            questionCard.find('.question-points').val(points);
+        }
+
+        updateStatistics();
+    });
+
+    $(document).on('change', '.question-image, .explanation-image', function() {
+        previewSelectedQuestionImage(this);
     });
 
     // Auto-save للأسئلة (كل 30 ثانية)
@@ -1384,7 +1434,7 @@ function saveQuestionSilent(questionId, questionData) {
                     formData.append(`options[${index}][option_image]`, option.image);
                 }
             });
-        } else if (key === 'question_image' && questionData[key]) {
+        } else if ((key === 'question_image' || key === 'explanation_image') && questionData[key]) {
             formData.append(key, questionData[key]);
         } else {
             formData.append(key, questionData[key]);
