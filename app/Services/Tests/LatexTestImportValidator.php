@@ -15,7 +15,7 @@ class LatexTestImportValidator
         'geometry_and_trigonometry',
     ];
 
-    public function validate(Test $test, array $parsed): array
+    public function validate(Test $test, array $parsed, ?array $archiveImages = null): array
     {
         $result = [
             'valid' => true,
@@ -81,11 +81,20 @@ class LatexTestImportValidator
                 $text = $question['text'] ?? null;
                 $choices = is_array($question['choices'] ?? null) ? $question['choices'] : [];
                 $answer = $question['answer'] ?? null;
+                $questionImageSource = $question['question_image_source'] ?? null;
+                $explanationImageSource = $question['explanation_image_source'] ?? null;
 
                 $label = $sourceIndex ? "Question {$sourceIndex}" : "Question in module {$moduleNumber}";
 
                 $this->validateRequiredQuestionFields($label, $type, $difficulty, $content, $text, $result['errors']);
                 $this->validateQuestionTypePayload($label, $type, $choices, $answer, $result['errors']);
+                $this->validateImageReferences(
+                    $label,
+                    $questionImageSource,
+                    $explanationImageSource,
+                    $archiveImages,
+                    $result['errors']
+                );
 
                 $calculatedScore = null;
                 if ($moduleNumber >= 1 && $moduleNumber <= 5 && in_array($difficulty, self::VALID_DIFFICULTIES, true)) {
@@ -179,6 +188,40 @@ class LatexTestImportValidator
         }
     }
 
+    private function validateImageReferences(
+        string $label,
+        mixed $questionImageSource,
+        mixed $explanationImageSource,
+        ?array $archiveImages,
+        array &$errors
+    ): void {
+        if ($archiveImages === null) {
+            return;
+        }
+
+        foreach ([$questionImageSource, $explanationImageSource] as $imageSource) {
+            if ($imageSource === null || $imageSource === '') {
+                continue;
+            }
+
+            if (!is_string($imageSource)) {
+                $errors[] = "{$label}: unsupported image path.";
+                continue;
+            }
+
+            $imagePath = trim($imageSource);
+
+            if (!$this->isSafeRelativeImagePath($imagePath)) {
+                $errors[] = "{$label}: unsupported image path: {$imagePath}";
+                continue;
+            }
+
+            if (!array_key_exists($imagePath, $archiveImages)) {
+                $errors[] = "{$label}: image not found: {$imagePath}";
+            }
+        }
+    }
+
     private function countIncomingQuestionsByModule(array $parsed, array &$errors): array
     {
         $counts = [];
@@ -251,6 +294,27 @@ class LatexTestImportValidator
         }
 
         return strtolower(trim($value));
+    }
+
+    private function isSafeRelativeImagePath(string $path): bool
+    {
+        if ($path === '') {
+            return false;
+        }
+
+        if (str_contains($path, '\\') || str_contains($path, '..')) {
+            return false;
+        }
+
+        if (str_starts_with($path, '/') || preg_match('/^[A-Za-z]:\//', $path) === 1) {
+            return false;
+        }
+
+        if (preg_match('/^(?:https?:)?\/\//i', $path) === 1) {
+            return false;
+        }
+
+        return true;
     }
 
     private function asInteger(mixed $value): ?int
