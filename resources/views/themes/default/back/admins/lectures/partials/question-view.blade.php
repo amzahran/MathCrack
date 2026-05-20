@@ -51,16 +51,6 @@
                     <small class="d-block text-muted">@lang('l.current_image')</small>
                 </div>
             @endif
-            <label class="form-label fw-bold mt-2">@lang('l.explanation_image_optional'):</label>
-            <input type="file" class="form-control explanation-image" accept="image/*">
-            <div class="selected-image-preview mt-2" data-preview-for="explanation_image"></div>
-            @if($question->explanation_image)
-                <div class="mt-2">
-                    <img src="{{ asset($question->explanation_image) }}"
-                         alt="@lang('l.explanation_image_optional')" class="img-thumbnail" style="max-height: 100px;">
-                    <small class="d-block text-muted">@lang('l.current_image')</small>
-                </div>
-            @endif
             <div class="mt-2">
                 <label class="form-label fw-bold">@lang('l.points'):</label>
                 <input type="number" class="form-control question-points" min="0" value="{{ $question->points }}">
@@ -73,14 +63,6 @@
                     <option value="hard" {{ ($question->difficulty ?? 'medium') === 'hard' ? 'selected' : '' }}>Hard</option>
                 </select>
             </div>
-        </div>
-    </div>
-
-    <div class="row mt-3">
-        <div class="col-12">
-            <label class="form-label fw-bold">@lang('l.answer_explanation_optional'):</label>
-            <textarea class="form-control question-explanation" rows="2"
-                    placeholder="@lang('l.answer_explanation_placeholder')">{{ $question->explanation }}</textarea>
         </div>
     </div>
 </div>
@@ -154,6 +136,24 @@
                placeholder="e.g. 0.5, 1/2, or 3 2" value="{{ $question->correct_answer }}">
         <small class="text-muted mt-1">Accepted formats: 0.5, 1/2, 3 2, 1/2 3/4, or 0.4 or 2/5</small>
     @endif
+</div>
+
+<div class="explanation-section border rounded p-3 mt-3 bg-light">
+    <label class="form-label fw-bold">Answer Explanation (Optional)</label>
+    <textarea class="form-control question-explanation" rows="3"
+            placeholder="@lang('l.answer_explanation_placeholder')">{{ $question->explanation }}</textarea>
+    <div class="mt-3">
+        <label class="form-label fw-bold">Explanation Image (Optional)</label>
+        <input type="file" class="form-control explanation-image" accept="image/*">
+        <div class="selected-image-preview mt-2" data-preview-for="explanation_image"></div>
+        @if($question->explanation_image)
+            <div class="mt-2">
+                <img src="{{ asset($question->explanation_image) }}"
+                     alt="Explanation Image (Optional)" class="img-thumbnail" style="max-height: 100px;">
+                <small class="d-block text-muted">@lang('l.current_image')</small>
+            </div>
+        @endif
+    </div>
 </div>
 
 <div class="d-flex justify-content-between align-items-center mt-3 mb-3">

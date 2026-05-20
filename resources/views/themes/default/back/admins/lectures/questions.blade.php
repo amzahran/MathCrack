@@ -584,9 +584,6 @@ function createNewQuestionHtml(questionId) {
                         <label class="form-label fw-bold">@lang('l.question_image_optional'):</label>
                         <input type="file" class="form-control question-image" accept="image/*">
                         <div class="selected-image-preview mt-2" data-preview-for="question_image"></div>
-                        <label class="form-label fw-bold">@lang('l.explanation_image_optional'):</label>
-                        <input type="file" class="form-control explanation-image" accept="image/*">
-                        <div class="selected-image-preview mt-2" data-preview-for="explanation_image"></div>
                         <div class="mt-2">
                             <label class="form-label fw-bold">@lang('l.points'):</label>
                             <input type="number" class="form-control question-points" min="0" value="${assignmentDifficultyPoints.medium ?? 2}">
@@ -601,18 +598,20 @@ function createNewQuestionHtml(questionId) {
                         </div>
                     </div>
                 </div>
-
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <label class="form-label fw-bold">@lang('l.answer_explanation_optional'):</label>
-                        <textarea class="form-control question-explanation" rows="2"
-                                placeholder="@lang('l.answer_explanation_placeholder')" onblur="renderMath(this)"></textarea>
-                    </div>
-                </div>
             </div>
 
             <div class="options-container" id="options-${questionId}">
                 ${createMCQOptions(questionId)}
+            </div>
+            <div class="explanation-section border rounded p-3 mt-3 bg-light">
+                <label class="form-label fw-bold">Answer Explanation (Optional)</label>
+                <textarea class="form-control question-explanation" rows="3"
+                        placeholder="@lang('l.answer_explanation_placeholder')" onblur="renderMath(this)"></textarea>
+                <div class="mt-3">
+                    <label class="form-label fw-bold">Explanation Image (Optional)</label>
+                    <input type="file" class="form-control explanation-image" accept="image/*">
+                    <div class="selected-image-preview mt-2" data-preview-for="explanation_image"></div>
+                </div>
             </div>
             <div class="d-flex justify-content-end mt-3">
                 <button class="btn btn-success" onclick="saveQuestion('new-${questionId}')">@lang('l.save')</button>
