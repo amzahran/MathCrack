@@ -352,6 +352,10 @@
                         <i class="fas fa-plus me-2"></i>
                         @lang('l.Add Question')
                     </button>
+                    <a href="{{ route('dashboard.admins.lectures-assignments-latex-import') }}" class="btn btn-primary waves-effect waves-light me-2">
+                        <i class="fas fa-file-import me-2"></i>
+                        Import LaTeX
+                    </a>
                     <a href="{{ route('dashboard.admins.lectures-assignments-preview', ['id' => encrypt($assignment->id)]) }}" class="btn btn-info waves-effect waves-light me-2" target="_blank">
                         <i class="fas fa-eye me-2"></i>
                         @lang('l.Preview Assignment')

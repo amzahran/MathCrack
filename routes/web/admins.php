@@ -26,6 +26,7 @@ use App\Http\Controllers\Web\Back\Admins\Pages\Teams\TeamsController;
 use App\Http\Controllers\Web\Back\Admins\Pages\PagesController;
 use App\Http\Controllers\Web\Back\Admins\Levels\LevelsController;
 use App\Http\Controllers\Web\Back\Admins\Courses\CoursesController;
+use App\Http\Controllers\Web\Back\Admins\Lectures\LatexAssignmentImportController;
 use App\Http\Controllers\Web\Back\Admins\Lectures\LecturesController;
 use App\Http\Controllers\Web\Back\Admins\Lives\LivesController;
 use App\Http\Controllers\Web\Back\Admins\Tests\LatexTestImportController;
@@ -65,6 +66,11 @@ use App\Http\Controllers\Web\Back\Admins\Tests\TestQuestionsController;
         Route::get('/questions/edit', 'editQuestion')->name('dashboard.admins.lectures-questions-edit');
         Route::patch('/questions/update', 'updateQuestion')->name('dashboard.admins.lectures-questions-update');
         Route::get('/questions/delete', 'deleteQuestion')->name('dashboard.admins.lectures-questions-delete');
+    });
+    Route::prefix('admins/lectures/assignments/latex-import')->controller(LatexAssignmentImportController::class)->group(function () {
+        Route::get('/', 'create')->name('dashboard.admins.lectures-assignments-latex-import');
+        Route::post('/preview', 'preview')->name('dashboard.admins.lectures-assignments-latex-import-preview');
+        Route::post('/store', 'store')->name('dashboard.admins.lectures-assignments-latex-import-store');
     });
     // --------------------------------------------------lives-------------------------------------------------------------------------------------------------------------
     Route::prefix('admins/lives')->controller(LivesController::class)->group(function () {
