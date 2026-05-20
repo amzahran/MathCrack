@@ -56,7 +56,8 @@ class LatexTestParser
                     $questionSourceIndex,
                     $moduleNumber,
                     "part{$moduleNumber}",
-                    $result['errors']
+                    $result['errors'],
+                    $result['warnings']
                 );
 
                 $module['questions'][] = $question;
@@ -74,7 +75,8 @@ class LatexTestParser
         int $sourceIndex,
         int $moduleNumber,
         string $part,
-        array &$errors
+        array &$errors,
+        array &$warnings
     ): array {
         $type = $this->normalizeToken($this->extractCommandValue($block, 'type'));
         $difficulty = $this->normalizeToken($this->extractCommandValue($block, 'difficulty'));
@@ -85,6 +87,20 @@ class LatexTestParser
         $choices = $this->extractChoices($block);
 
         $prefix = "Question {$sourceIndex}";
+        $questionImageSource = $this->extractFirstImageSource(
+            $block,
+            ['questionimage', 'image'],
+            $prefix,
+            'question image',
+            $warnings
+        );
+        $explanationImageSource = $this->extractFirstImageSource(
+            $block,
+            ['explanationimage'],
+            $prefix,
+            'explanation image',
+            $warnings
+        );
 
         if ($type === null || $type === '') {
             $errors[] = "{$prefix}: missing type.";
@@ -137,6 +153,8 @@ class LatexTestParser
             'choices' => $choices,
             'answer' => $type === 'mcq' ? null : $answer,
             'explanation' => $explanation,
+            'question_image_source' => $questionImageSource,
+            'explanation_image_source' => $explanationImageSource,
         ];
     }
 
@@ -232,6 +250,68 @@ class LatexTestParser
         }
 
         return null;
+    }
+
+    private function extractFirstImageSource(
+        string $block,
+        array $commands,
+        string $questionPrefix,
+        string $label,
+        array &$warnings
+    ): ?string {
+        $matches = [];
+
+        foreach ($commands as $command) {
+            foreach ($this->extractCommandValuesWithPositions($block, $command) as $match) {
+                $matches[] = $match;
+            }
+        }
+
+        if (empty($matches)) {
+            return null;
+        }
+
+        usort($matches, static fn (array $a, array $b): int => $a['position'] <=> $b['position']);
+
+        if (count($matches) > 1) {
+            $warnings[] = "{$questionPrefix}: multiple {$label} references found; keeping the first.";
+        }
+
+        return $matches[0]['value'];
+    }
+
+    private function extractCommandValuesWithPositions(string $text, string $command): array
+    {
+        $matches = [];
+        $offset = 0;
+        $needle = '\\' . $command;
+
+        while (($position = strpos($text, $needle, $offset)) !== false) {
+            $cursor = $position + strlen($needle);
+
+            while (isset($text[$cursor]) && ctype_space($text[$cursor])) {
+                $cursor++;
+            }
+
+            if (!isset($text[$cursor]) || $text[$cursor] !== '{') {
+                $offset = $cursor;
+                continue;
+            }
+
+            $value = $this->readBalancedBraces($text, $cursor);
+
+            if ($value !== null) {
+                $matches[] = [
+                    'position' => $position,
+                    'value' => $this->cleanValue($value),
+                ];
+            }
+
+            $expressionEnd = $this->findBalancedExpressionEnd($text, $cursor);
+            $offset = $expressionEnd ?? ($cursor + 1);
+        }
+
+        return $matches;
     }
 
     private function readBalancedBraces(string $text, int $openBracePosition): ?string
