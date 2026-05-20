@@ -14,9 +14,10 @@ class LectureQuestion extends Model
         'type',
         'lecture_assignment_id',
         'points',
+        'difficulty',
         'correct_answer',
         'explanation',
-        'question_image',
+        'explanation_image',
         'question_image',
         'order',
     ];
