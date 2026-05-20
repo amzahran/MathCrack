@@ -63,6 +63,14 @@
                 <label class="form-label fw-bold">@lang('l.points'):</label>
                 <input type="number" class="form-control question-points" min="1" value="{{ $question->points }}">
             </div>
+            <div class="mt-2">
+                <label class="form-label fw-bold">Difficulty:</label>
+                <select class="form-select question-difficulty">
+                    <option value="easy" {{ ($question->difficulty ?? 'medium') === 'easy' ? 'selected' : '' }}>Easy</option>
+                    <option value="medium" {{ ($question->difficulty ?? 'medium') === 'medium' ? 'selected' : '' }}>Medium</option>
+                    <option value="hard" {{ ($question->difficulty ?? 'medium') === 'hard' ? 'selected' : '' }}>Hard</option>
+                </select>
+            </div>
         </div>
     </div>
 

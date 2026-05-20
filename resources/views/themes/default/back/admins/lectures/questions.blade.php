@@ -559,6 +559,14 @@ function createNewQuestionHtml(questionId) {
                             <label class="form-label fw-bold">@lang('l.points'):</label>
                             <input type="number" class="form-control question-points" min="1" value="1">
                         </div>
+                        <div class="mt-2">
+                            <label class="form-label fw-bold">Difficulty:</label>
+                            <select class="form-select question-difficulty">
+                                <option value="easy">Easy</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -893,10 +901,11 @@ function extractQuestionData(questionCard) {
         const questionImage = questionCard.find('.question-image')[0]?.files[0];
         const explanationImage = questionCard.find('.explanation-image')[0]?.files[0];
         const points = questionCard.find('.question-points').val();
+        const difficulty = questionCard.find('.question-difficulty').val() || 'medium';
         const explanation = questionCard.find('.question-explanation').val();
 
         console.log('Extracted basic data:', {
-            questionType, questionText, points, explanation
+            questionType, questionText, points, difficulty, explanation
         });
         console.log('Question Type Check - Type:', questionType, 'Valid types:', ['mcq', 'tf', 'essay', 'numeric']);
 
@@ -904,6 +913,7 @@ function extractQuestionData(questionCard) {
             question_text: questionText || '',
             type: questionType || 'mcq',
             points: parseInt(points) || 1,
+            difficulty: difficulty || 'medium',
             explanation: explanation || ''
         };
 
@@ -1299,7 +1309,7 @@ $(document).ready(function() {
     });
 
     // تحديث الإحصائيات عند تغيير نوع السؤال أو النقاط
-    $(document).on('change', '.question-type-select, .question-points', function() {
+    $(document).on('change', '.question-type-select, .question-points, .question-difficulty', function() {
         updateStatistics();
     });
 
@@ -1448,6 +1458,7 @@ function duplicateQuestion(questionId) {
     const newCard = $(`#question-${questionCounter}`);
     newCard.find('.question-text-editor').val(questionData.question_text + ' (نسخة)');
     newCard.find('.question-points').val(questionData.points);
+    newCard.find('.question-difficulty').val(questionData.difficulty || 'medium');
     newCard.find('.question-explanation').val(questionData.explanation);
     newCard.find('.question-type-select').val(questionData.type).trigger('change');
 
