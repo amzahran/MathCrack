@@ -157,11 +157,16 @@ class PaymentController extends Controller
                 return $this->kashierGatewayUnavailableResponse();
             }
 
+            $sourceMethods = 'card,bank_installments,wallet,fawry';
+            $this->logKashierPaymentCreation('before_pay', $request, $user, $amount, $gatewayPercentage, $gatewayFee, $total, $sourceMethods);
+
             $payment = new KashierPayment();
             $response = $payment
                 ->setAmount(round($total, 2))
-                ->setSource('card,bank_installments,wallet,fawry')
+                ->setSource($sourceMethods)
                 ->pay();
+
+            $this->logKashierPaymentCreation('after_pay', $request, $user, $amount, $gatewayPercentage, $gatewayFee, $total, $sourceMethods, $response);
 
             // إنشاء الفاتورة مع بيانات الدفع
             $invoice = $this->createInvoiceWithPayment($user, $lecture, $request->payment_type, $total, $response['payment_id'] ?? null);
@@ -256,11 +261,16 @@ class PaymentController extends Controller
                 return $this->kashierGatewayUnavailableResponse();
             }
 
+            $sourceMethods = 'card,bank_installments,wallet,fawry';
+            $this->logKashierPaymentCreation('before_pay', $request, $user, $amount, $gatewayPercentage, $gatewayFee, $total, $sourceMethods);
+
             $payment = new KashierPayment();
             $response = $payment
                 ->setAmount(round($total, 2))
-                ->setSource('card,bank_installments,wallet,fawry')
+                ->setSource($sourceMethods)
                 ->pay();
+
+            $this->logKashierPaymentCreation('after_pay', $request, $user, $amount, $gatewayPercentage, $gatewayFee, $total, $sourceMethods, $response);
 
             // إنشاء الفاتورة مع بيانات الدفع
             $invoice = $this->createTestInvoiceWithPayment(
@@ -342,11 +352,16 @@ class PaymentController extends Controller
                 return $this->kashierGatewayUnavailableResponse();
             }
 
+            $sourceMethods = 'card,bank_installments,wallet,fawry';
+            $this->logKashierPaymentCreation('before_pay', $request, $user, $amount, $gatewayPercentage, $gatewayFee, $total, $sourceMethods);
+
             $payment = new KashierPayment();
             $response = $payment
                 ->setAmount(round($total, 2))
-                ->setSource('card,bank_installments,wallet,fawry')
+                ->setSource($sourceMethods)
                 ->pay();
+
+            $this->logKashierPaymentCreation('after_pay', $request, $user, $amount, $gatewayPercentage, $gatewayFee, $total, $sourceMethods, $response);
 
             // إنشاء الفاتورة مع بيانات الدفع
             $invoice = $this->createLiveInvoiceWithPayment(
@@ -674,6 +689,59 @@ class PaymentController extends Controller
         }
 
         return $data;
+    }
+
+    private function logKashierPaymentCreation(
+        string $stage,
+        Request $request,
+        $user,
+        $amount,
+        $gatewayPercentage,
+        $gatewayFee,
+        $total,
+        string $sourceMethods,
+        ?array $response = null
+    ): void {
+        $webhookUrl = (string) config('nafezly-payments.KASHIER_WEBHOOK_URL');
+
+        logger('Kashier payment creation ' . $stage, [
+            'flow_type' => $this->getPaymentFlowTypeForLog($request),
+            'base_amount' => $amount,
+            'gateway_percentage' => $gatewayPercentage,
+            'gateway_fee' => $gatewayFee,
+            'final_total_sent_to_kashier' => round($total, 2),
+            'payment_type' => $request->input('payment_type'),
+            'lecture_id' => $request->input('lecture_id'),
+            'test_id' => $request->input('test_id'),
+            'course_id' => $request->input('course_id'),
+            'live_id' => $request->input('live_id'),
+            'user_id' => $user?->id,
+            'returned_payment_id' => $response['payment_id'] ?? null,
+            'html_exists' => isset($response['html']) && $response['html'] !== '',
+            'source_methods' => $sourceMethods,
+            'kashier_mode' => config('nafezly-payments.KASHIER_MODE'),
+            'kashier_currency' => config('nafezly-payments.KASHIER_CURRENCY'),
+            'webhook_url_host' => parse_url($webhookUrl, PHP_URL_HOST),
+            'redirect_route_name' => config('nafezly-payments.VERIFY_ROUTE_NAME'),
+            'redirect_url' => route(config('nafezly-payments.VERIFY_ROUTE_NAME'), ['payment' => 'kashier']),
+        ]);
+    }
+
+    private function getPaymentFlowTypeForLog(Request $request): string
+    {
+        if ($request->has('live_id')) {
+            return 'live';
+        }
+
+        if ($request->has('test_id') || in_array($request->input('payment_type'), ['single_test', 'course_tests'], true)) {
+            return 'test';
+        }
+
+        if ($request->has('lecture_id')) {
+            return 'lecture';
+        }
+
+        return 'unknown';
     }
 
     private function configureKashierGatewayFromDatabase(): bool
