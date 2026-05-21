@@ -548,7 +548,19 @@ class PaymentController extends Controller
     public function verify($payment, Request $request)
     {
         try {
-            if (!$this->configureKashierGatewayFromDatabase()) {
+            logger('Kashier payment verification started', [
+                'route_payment_parameter' => $payment,
+                'request_keys' => array_keys($request->all()),
+                'request_data' => $this->sanitizePaymentLogData($request->all()),
+            ]);
+
+            $kashierConfigured = $this->configureKashierGatewayFromDatabase();
+
+            logger('Kashier payment verification configuration result', [
+                'configured_from_database' => $kashierConfigured,
+            ]);
+
+            if (!$kashierConfigured) {
                 return redirect()->route('dashboard.users.payment-failed')
                     ->with('error', 'Payment gateway is not available. Please contact support.');
             }
@@ -556,8 +568,22 @@ class PaymentController extends Controller
             $payment = new KashierPayment();
             $response = $payment->verify($request);
 
+            logger('Kashier payment verification response', [
+                'response' => $this->sanitizePaymentLogData($response),
+                'success_value' => $response['success'] ?? null,
+                'success_type' => isset($response['success']) ? gettype($response['success']) : null,
+                'payment_id' => $response['payment_id'] ?? null,
+            ]);
+
             // جلب الفاتورة من قاعدة البيانات باستخدام معرف الدفع
             $invoice = Invoice::where('pid', $response['payment_id'])->first();
+
+            logger('Kashier payment verification invoice lookup', [
+                'payment_id' => $response['payment_id'] ?? null,
+                'invoice_found' => (bool) $invoice,
+                'invoice_id' => $invoice?->id,
+                'invoice_status' => $invoice?->status,
+            ]);
 
             if ($response['success'] == 'true' && $invoice) {
                 if ($invoice->status != 'paid') {
@@ -615,6 +641,39 @@ class PaymentController extends Controller
     public function paymentCancelled(Request $request)
     {
         return view('themes/default/back.users.payment.cancelled');
+    }
+
+    private function sanitizePaymentLogData(array $data): array
+    {
+        $sensitivePatterns = [
+            'card',
+            'cvv',
+            'cvc',
+            'pan',
+            'token',
+            'secret',
+            'key',
+            'password',
+            'authorization',
+            'signature',
+        ];
+
+        foreach ($data as $key => $value) {
+            $normalizedKey = strtolower((string) $key);
+
+            foreach ($sensitivePatterns as $pattern) {
+                if (str_contains($normalizedKey, $pattern)) {
+                    $data[$key] = '[filtered]';
+                    continue 2;
+                }
+            }
+
+            if (is_array($value)) {
+                $data[$key] = $this->sanitizePaymentLogData($value);
+            }
+        }
+
+        return $data;
     }
 
     private function configureKashierGatewayFromDatabase(): bool
