@@ -306,16 +306,19 @@
                 @endif
 
                 {{-- الشرح --}}
-                {{-- @if ($question->explanation)
+                @if ($question->explanation || $question->explanation_image)
                     <div class="explanation tex2jax_process">
-                        <h6>@lang('l.Explanation')</h6>
-                        <p>{!! $question->explanation !!}</p>
+                        <h6>Answer Explanation</h6>
+                        @if ($question->explanation)
+                            <p>{!! $question->explanation !!}</p>
+                        @endif
                         @if ($question->explanation_image)
+                            <h6 class="mt-3">Explanation Image</h6>
                             <img src="{{ asset($question->explanation_image) }}" class="explanation-image"
                                 alt="Explanation Image">
                         @endif
                     </div>
-                @endif --}}
+                @endif
             </div>
         @empty
             <div class="alert alert-info text-center">@lang('l.no_questions_yet')</div>
