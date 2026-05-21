@@ -153,6 +153,10 @@ class PaymentController extends Controller
             $total = $amount + $gatewayFee;
 
             // إعداد بوابة الدفع Kashier
+            if (!$this->configureKashierGatewayFromDatabase()) {
+                return $this->kashierGatewayUnavailableResponse();
+            }
+
             $payment = new KashierPayment();
             $response = $payment
                 ->setAmount(round($total, 2))
@@ -248,6 +252,10 @@ class PaymentController extends Controller
             $total = $amount + $gatewayFee;
 
             // إعداد بوابة الدفع Kashier
+            if (!$this->configureKashierGatewayFromDatabase()) {
+                return $this->kashierGatewayUnavailableResponse();
+            }
+
             $payment = new KashierPayment();
             $response = $payment
                 ->setAmount(round($total, 2))
@@ -330,6 +338,10 @@ class PaymentController extends Controller
             $total = $amount + $gatewayFee;
 
             // إعداد بوابة الدفع Kashier
+            if (!$this->configureKashierGatewayFromDatabase()) {
+                return $this->kashierGatewayUnavailableResponse();
+            }
+
             $payment = new KashierPayment();
             $response = $payment
                 ->setAmount(round($total, 2))
@@ -536,6 +548,11 @@ class PaymentController extends Controller
     public function verify($payment, Request $request)
     {
         try {
+            if (!$this->configureKashierGatewayFromDatabase()) {
+                return redirect()->route('dashboard.users.payment-failed')
+                    ->with('error', 'Payment gateway is not available. Please contact support.');
+            }
+
             $payment = new KashierPayment();
             $response = $payment->verify($request);
 
@@ -600,5 +617,49 @@ class PaymentController extends Controller
         return view('themes/default/back.users.payment.cancelled');
     }
 
+    private function configureKashierGatewayFromDatabase(): bool
+    {
+        $gateway = PaymentGateway::with('settings')
+            ->where('name', 'kashier')
+            ->first();
+
+        $settings = $gateway
+            ? $gateway->settings->pluck('value', 'key')
+            : collect();
+
+        $accountKey = trim((string) $settings->get('KASHIER_ACCOUNT_KEY'));
+        $iframeKey = trim((string) $settings->get('KASHIER_IFRAME_KEY'));
+        $token = trim((string) $settings->get('KASHIER_TOKEN'));
+        $isActive = (bool) ($gateway?->status);
+
+        logger('Kashier gateway configuration check', [
+            'gateway_exists' => (bool) $gateway,
+            'gateway_active' => $isActive,
+            'account_key_present' => $accountKey !== '',
+            'iframe_key_present' => $iframeKey !== '',
+            'token_present' => $token !== '',
+            'mode' => config('nafezly-payments.KASHIER_MODE'),
+        ]);
+
+        if (!$gateway || !$isActive || $accountKey === '' || $iframeKey === '' || $token === '') {
+            return false;
+        }
+
+        config([
+            'nafezly-payments.KASHIER_ACCOUNT_KEY' => $accountKey,
+            'nafezly-payments.KASHIER_IFRAME_KEY' => $iframeKey,
+            'nafezly-payments.KASHIER_TOKEN' => $token,
+        ]);
+
+        return true;
+    }
+
+    private function kashierGatewayUnavailableResponse()
+    {
+        logger('Kashier payment blocked because gateway is inactive or credentials are missing.');
+
+        return redirect()->back()
+            ->with('error', 'Payment gateway is not available. Please contact support.');
+    }
 
 }

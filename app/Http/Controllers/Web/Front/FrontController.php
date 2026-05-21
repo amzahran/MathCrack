@@ -23,6 +23,7 @@ use App\Models\Level;
 use App\Models\Course;
 use App\Models\Test;
 use App\Models\Lecture;
+use App\Models\PaymentGateway;
 
 class FrontController extends Controller
 {
@@ -381,7 +382,9 @@ class FrontController extends Controller
             }
         }
 
-        $paymentApiKey = config('nafezly-payments.KASHIER_IFRAME_KEY');
+        $paymentApiKey = $this->configureKashierGatewayFromDatabase()
+            ? config('nafezly-payments.KASHIER_IFRAME_KEY')
+            : '';
         $queryString = http_build_query($data, "", '&', PHP_QUERY_RFC3986);
         $signature = hash_hmac('sha256', $queryString, (string) $paymentApiKey, false);
 
@@ -399,5 +402,42 @@ class FrontController extends Controller
         echo 'invalid signature';
         http_response_code(400);
         return;
+    }
+
+    private function configureKashierGatewayFromDatabase(): bool
+    {
+        $gateway = PaymentGateway::with('settings')
+            ->where('name', 'kashier')
+            ->first();
+
+        $settings = $gateway
+            ? $gateway->settings->pluck('value', 'key')
+            : collect();
+
+        $accountKey = trim((string) $settings->get('KASHIER_ACCOUNT_KEY'));
+        $iframeKey = trim((string) $settings->get('KASHIER_IFRAME_KEY'));
+        $token = trim((string) $settings->get('KASHIER_TOKEN'));
+        $isActive = (bool) ($gateway?->status);
+
+        logger('Kashier webhook configuration check', [
+            'gateway_exists' => (bool) $gateway,
+            'gateway_active' => $isActive,
+            'account_key_present' => $accountKey !== '',
+            'iframe_key_present' => $iframeKey !== '',
+            'token_present' => $token !== '',
+            'mode' => config('nafezly-payments.KASHIER_MODE'),
+        ]);
+
+        if (!$gateway || !$isActive || $accountKey === '' || $iframeKey === '' || $token === '') {
+            return false;
+        }
+
+        config([
+            'nafezly-payments.KASHIER_ACCOUNT_KEY' => $accountKey,
+            'nafezly-payments.KASHIER_IFRAME_KEY' => $iframeKey,
+            'nafezly-payments.KASHIER_TOKEN' => $token,
+        ]);
+
+        return true;
     }
 }
