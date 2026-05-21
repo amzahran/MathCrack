@@ -44,9 +44,10 @@
         $allErrors = array_values(array_unique(array_merge($parsedErrors, $validationErrors)));
         $isValid = (bool) ($validation['valid'] ?? false);
         $summary = $validation['summary'] ?? [];
+        $parsedQuestions = array_values($parsed['questions'] ?? []);
         $parsedQuestionLookup = [];
 
-        foreach (($parsed['questions'] ?? []) as $parsedQuestion) {
+        foreach ($parsedQuestions as $parsedQuestion) {
             if (isset($parsedQuestion['source_index'])) {
                 $parsedQuestionLookup[$parsedQuestion['source_index']] = $parsedQuestion;
             }
@@ -160,7 +161,6 @@
                                         <th>Points</th>
                                         <th>Text</th>
                                         <th>Answer / Options</th>
-                                        <th>Explanation</th>
                                         <th>Question Image</th>
                                         <th>Explanation Image</th>
                                     </tr>
@@ -170,12 +170,15 @@
                                         @php
                                             $sourceIndex = $question['source_index'] ?? null;
                                             $parsedQuestion = $sourceIndex ? ($parsedQuestionLookup[$sourceIndex] ?? []) : [];
-                                            $text = $parsedQuestion['text'] ?? '';
-                                            $choices = $parsedQuestion['choices'] ?? [];
-                                            $answer = $parsedQuestion['answer'] ?? null;
-                                            $explanation = $parsedQuestion['explanation'] ?? null;
-                                            $questionImage = $parsedQuestion['question_image_source'] ?? null;
-                                            $explanationImage = $parsedQuestion['explanation_image_source'] ?? null;
+                                            $parsedQuestion = $parsedQuestion ?: ($parsedQuestions[$loop->index] ?? []);
+                                            $mergedQuestion = array_merge($parsedQuestion, $question);
+                                            $sourceIndex = $mergedQuestion['source_index'] ?? $sourceIndex;
+                                            $text = $mergedQuestion['text'] ?? '';
+                                            $choices = $mergedQuestion['choices'] ?? [];
+                                            $answer = $mergedQuestion['answer'] ?? null;
+                                            $explanation = $mergedQuestion['explanation'] ?? null;
+                                            $questionImage = $mergedQuestion['question_image_source'] ?? null;
+                                            $explanationImage = $mergedQuestion['explanation_image_source'] ?? null;
                                         @endphp
                                         <tr>
                                             <td>{{ $question['question_order'] ?? '-' }}</td>
@@ -193,17 +196,6 @@
                                                     {{ $answer ? \Illuminate\Support\Str::limit($answer, 80) : 'Missing answer' }}
                                                 @endif
                                             </td>
-                                            <td class="text-excerpt">
-                                                <div>
-                                                    {{ $explanation ? \Illuminate\Support\Str::limit($explanation, 120) : 'No explanation' }}
-                                                </div>
-                                                @if ($explanationImage)
-                                                    <div class="mt-2 small text-muted">
-                                                        Image: {{ $explanationImage }}
-                                                        <span class="badge bg-secondary d-block mt-1">{{ $imageReferenceStatus($sourceIndex, $explanationImage) }}</span>
-                                                    </div>
-                                                @endif
-                                            </td>
                                             <td>
                                                 {{ $questionImage ?: 'None' }}
                                                 <span class="badge bg-secondary d-block mt-1">{{ $imageReferenceStatus($sourceIndex, $questionImage) }}</span>
@@ -213,9 +205,21 @@
                                                 <span class="badge bg-secondary d-block mt-1">{{ $imageReferenceStatus($sourceIndex, $explanationImage) }}</span>
                                             </td>
                                         </tr>
+                                        <tr class="table-light">
+                                            <td colspan="8">
+                                                <strong>Explanation:</strong>
+                                                <span class="ms-1">{{ $explanation ? \Illuminate\Support\Str::limit($explanation, 180) : 'No explanation' }}</span>
+                                                @if ($explanationImage)
+                                                    <div class="mt-2 small text-muted">
+                                                        Explanation image: {{ $explanationImage }}
+                                                        <span class="badge bg-secondary ms-1">{{ $imageReferenceStatus($sourceIndex, $explanationImage) }}</span>
+                                                    </div>
+                                                @endif
+                                            </td>
+                                        </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="9" class="text-center text-muted">No questions found in the uploaded file.</td>
+                                            <td colspan="8" class="text-center text-muted">No questions found in the uploaded file.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
