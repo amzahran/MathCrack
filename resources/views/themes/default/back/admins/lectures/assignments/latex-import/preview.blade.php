@@ -160,6 +160,7 @@
                                         <th>Points</th>
                                         <th>Text</th>
                                         <th>Answer / Options</th>
+                                        <th>Explanation</th>
                                         <th>Question Image</th>
                                         <th>Explanation Image</th>
                                     </tr>
@@ -172,6 +173,7 @@
                                             $text = $parsedQuestion['text'] ?? '';
                                             $choices = $parsedQuestion['choices'] ?? [];
                                             $answer = $parsedQuestion['answer'] ?? null;
+                                            $explanation = $parsedQuestion['explanation'] ?? null;
                                             $questionImage = $parsedQuestion['question_image_source'] ?? null;
                                             $explanationImage = $parsedQuestion['explanation_image_source'] ?? null;
                                         @endphp
@@ -191,6 +193,17 @@
                                                     {{ $answer ? \Illuminate\Support\Str::limit($answer, 80) : 'Missing answer' }}
                                                 @endif
                                             </td>
+                                            <td class="text-excerpt">
+                                                <div>
+                                                    {{ $explanation ? \Illuminate\Support\Str::limit($explanation, 120) : 'No explanation' }}
+                                                </div>
+                                                @if ($explanationImage)
+                                                    <div class="mt-2 small text-muted">
+                                                        Image: {{ $explanationImage }}
+                                                        <span class="badge bg-secondary d-block mt-1">{{ $imageReferenceStatus($sourceIndex, $explanationImage) }}</span>
+                                                    </div>
+                                                @endif
+                                            </td>
                                             <td>
                                                 {{ $questionImage ?: 'None' }}
                                                 <span class="badge bg-secondary d-block mt-1">{{ $imageReferenceStatus($sourceIndex, $questionImage) }}</span>
@@ -202,7 +215,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="8" class="text-center text-muted">No questions found in the uploaded file.</td>
+                                            <td colspan="9" class="text-center text-muted">No questions found in the uploaded file.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
