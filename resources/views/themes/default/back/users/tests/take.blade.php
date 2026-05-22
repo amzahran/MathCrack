@@ -251,30 +251,86 @@
     justify-content:center;
     transition: all 0.3s ease;
   }
-  .workspace.no-calc{ grid-template-columns:minmax(620px, 820px) }
-  .workspace.with-calc{ grid-template-columns:480px 1fr }
+  .workspace.no-calc,
+  .workspace.with-calc{ grid-template-columns:minmax(620px, 820px) }
 
   .calc-pane{
     background:#fff;
-    border:1px solid var(--line);
+    border:1px solid #111827;
     border-radius:12px;
     overflow:hidden;
     display:none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 22px 60px rgba(15,23,42,0.34);
+    position:fixed;
+    top:92px;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(760px, calc(100vw - 32px));
+    max-height:calc(100vh - 126px);
+    z-index:12000;
   }
-  .calc-pane.show{ display:block; animation: slideIn 0.3s ease; }
+  .calc-pane.show{ display:flex; flex-direction:column; animation: slideIn 0.18s ease; }
   .calc-header{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:12px 16px;
-    border-bottom:1px solid var(--line);
-    background:#f8fafc;
+    padding:10px 12px;
+    border-bottom:0;
+    background:#111827;
+    color:#fff;
   }
-  .calc-controls{display:flex;gap:8px}
-  .calc-body{ height:560px; transition:height 0.3s ease; background:#fff; }
-  .calc-body.expanded{height:680px}
+  .calc-title{display:flex;align-items:center;gap:8px;color:#fff;font-size:0.98rem;font-weight:800}
+  .calc-controls{display:flex;gap:8px;align-items:center}
+  .calc-header .btn-sm,
+  .calc-header .btn{
+    min-height:30px;
+    padding:6px 10px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.18);
+    background:#1f2937 !important;
+    color:#fff !important;
+    font-size:0.78rem;
+    font-weight:800;
+  }
+  .calc-header .calc-close-btn{background:#0b1120 !important}
+  .calc-subheader{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    min-height:40px;
+    padding:9px 14px;
+    background:#0f8a3b;
+    color:#fff;
+    font-weight:800;
+  }
+  .calc-subheader small{color:rgba(255,255,255,0.88);font-size:0.75rem;font-weight:700}
+  .calc-shell{padding:12px;background:#e5e7eb}
+  .calc-body{
+    height:560px;
+    transition:height 0.3s ease;
+    background:#fff;
+    border:1px solid #cbd5e1;
+    border-radius:10px;
+    overflow:hidden;
+  }
+  .calc-body.expanded{height:min(680px, calc(100vh - 230px))}
+  #desmosCalc{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#f8fafc;
+    color:#475569;
+    font-size:16px;
+  }
   .calc-iframe{ width:100%; height:100%; border:0; display:block }
+  .calc-footer{display:flex;justify-content:space-between;gap:10px;padding:8px 12px 12px;background:#e5e7eb;color:#475569;font-size:0.74rem;font-weight:700}
+  .calc-keypad-preview{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+  .calc-key{min-width:26px;height:22px;padding:0 6px;border:1px solid #cbd5e1;border-radius:5px;background:#f8fafc;color:#334155;display:inline-flex;align-items:center;justify-content:center;font-size:0.72rem}
+  .calc-key.operator{background:#e2e8f0}
+  .calc-key.action{background:#2454d6;color:#fff;border-color:#2454d6}
 
   .q-card{
     background:#fff;
@@ -787,8 +843,8 @@
   .answer-preview-empty{ display:none; }
 
   @media (max-width:768px){
-    .workspace.no-calc{grid-template-columns:minmax(300px, 1fr)}
-    .workspace.with-calc{grid-template-columns:1fr}
+    .workspace.no-calc,
+    .workspace.with-calc{grid-template-columns:minmax(300px, 1fr)}
     .q-head{ flex-direction:column; gap:10px; align-items:stretch; }
     .q-head-left, .q-head-right{justify-content:center}
     .option-row{ gap:6px; }
@@ -798,6 +854,11 @@
     .numeric-answer-box{ width:70%; }
     .timer-controls{ flex-direction:row; flex-wrap:wrap; }
     .container{ padding: 0 16px; }
+    .calc-pane{top:72px;width:calc(100vw - 18px);max-height:calc(100vh - 92px)}
+    .calc-body,
+    .calc-body.expanded{height:min(520px, calc(100vh - 230px))}
+    .calc-footer{flex-direction:column}
+    .calc-keypad-preview{justify-content:flex-start}
   }
 
   @media (max-width:640px){
@@ -1047,15 +1108,38 @@
 
         <aside id="calcPane" class="calc-pane" aria-label="Calculator">
           <div class="calc-header">
+            <div class="calc-title">
+              <i class="fas fa-calculator"></i>
+              <span>Calculator</span>
+            </div>
             <div class="calc-controls">
               <button type="button" id="btnExpandCalc" class="btn-sm">↕️ Expand</button>
+              <button type="button" id="btnCloseCalc" class="btn calc-close-btn">Close</button>
             </div>
-            <button type="button" id="btnCloseCalc" class="btn" style="background:#111827">Close</button>
           </div>
 
-          <div class="calc-body" id="calcBody">
-            <div id="desmosCalc" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f8fafc;color:#666;font-size:16px;">
-              Loading Calculator...
+          <div class="calc-subheader">
+            <span>Graphing Calculator</span>
+            <small>Use the graph area and keypad for calculations</small>
+          </div>
+
+          <div class="calc-shell">
+            <div class="calc-body" id="calcBody">
+              <div id="desmosCalc">
+                Loading Calculator...
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-footer">
+            <span>Keyboard and expressions remain powered by the embedded calculator.</span>
+            <div class="calc-keypad-preview" aria-hidden="true">
+              <span class="calc-key">7</span>
+              <span class="calc-key">8</span>
+              <span class="calc-key">9</span>
+              <span class="calc-key operator">+</span>
+              <span class="calc-key operator">−</span>
+              <span class="calc-key action">graph</span>
             </div>
           </div>
         </aside>
