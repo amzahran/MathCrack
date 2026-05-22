@@ -38,7 +38,7 @@ class AiExplanationService
                     'messages' => [
                         [
                             'role' => 'system',
-                            'content' => 'You are a concise SAT math tutor. Return only short plain-text explanations. Use this exact structure: Step 1: ..., Step 2: ..., Step 3: ..., Final answer: .... Do not use Markdown symbols like **, ###, or bullet-heavy formatting. Do not mention AI.',
+                            'content' => 'You are a concise SAT math tutor. Return short plain-text explanations with this exact structure: Step 1: ..., Step 2: ..., Step 3: ..., Final answer: .... Format all mathematical expressions as LaTeX for MathJax: use \\( ... \\) for inline math and \\[ ... \\] for important equations. Do not use Markdown symbols like **, ###, or bullet-heavy formatting. Do not mention AI.',
                         ],
                         [
                             'role' => 'user',
@@ -117,7 +117,7 @@ class AiExplanationService
             'Question text: ' . trim(strip_tags((string) $question->question_text)),
             $choices ? "Answer choices:\n" . $choices : null,
             $correctAnswer ? 'Correct answer: ' . $correctAnswer : null,
-            'Write a concise SAT-style explanation using exactly this structure: Step 1: ..., Step 2: ..., Step 3: ..., Final answer: .... Keep it short. Do not use Markdown symbols such as **, ###, or bullet-heavy formatting. Do not mention that the explanation is AI-generated.',
+            "Write a concise SAT-style explanation using exactly this structure: Step 1: ..., Step 2: ..., Step 3: ..., Final answer: .... Format every mathematical expression with LaTeX for MathJax. Use \\( ... \\) for inline math and use displayed equations like:\n\\[\n...\n\\]\nfor important equations. Keep it short. Do not use Markdown symbols such as **, ###, or bullet-heavy formatting. Do not mention that the explanation is AI-generated.",
         ]));
     }
 
