@@ -593,6 +593,114 @@
                 align-items: stretch;
             }
         }
+
+        /* Final student course card visual overrides */
+        .main-content > .row {
+            row-gap: 18px;
+        }
+
+        .main-content .course-card {
+            background: #ffffff !important;
+            border: 2px solid #b8c9e6 !important;
+            border-top: 4px solid #2454d6 !important;
+            border-radius: 14px !important;
+            box-shadow: 0 10px 24px rgba(31, 73, 125, 0.12) !important;
+            overflow: hidden !important;
+        }
+
+        .main-content .course-card:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 14px 30px rgba(31, 73, 125, 0.16) !important;
+        }
+
+        .main-content .course-card .course-image {
+            height: 92px !important;
+            background: #f6f9ff !important;
+            border-bottom: 1px solid #d9e5f7;
+        }
+
+        .main-content .course-card .course-image img {
+            object-fit: cover;
+        }
+
+        .main-content .course-card .course-image .fa-graduation-cap {
+            font-size: 2rem !important;
+            color: #2454d6 !important;
+            opacity: 0.34 !important;
+        }
+
+        .main-content .course-card .overlay {
+            background: rgba(36, 84, 214, 0.64) !important;
+        }
+
+        .main-content .course-card .card-body {
+            min-height: 142px !important;
+            padding: 10px !important;
+        }
+
+        .main-content .course-card .course-title {
+            color: #123066 !important;
+            font-size: 0.96rem !important;
+            line-height: 1.22 !important;
+            margin-bottom: 7px !important;
+        }
+
+        .main-content .course-card .course-meta {
+            gap: 5px !important;
+            font-size: 0.72rem !important;
+        }
+
+        .main-content .course-card .course-meta .d-flex {
+            min-height: 23px !important;
+            padding: 3px 7px !important;
+            border-radius: 999px !important;
+            background: #eef6ff !important;
+            border: 1px solid #bdd4f2 !important;
+            color: #52657f !important;
+        }
+
+        .main-content .course-card .course-meta i {
+            font-size: 0.72rem !important;
+            color: #2454d6 !important;
+        }
+
+        .main-content .course-card .course-stats {
+            gap: 6px !important;
+            margin-top: auto !important;
+            padding-top: 8px !important;
+            border-top: 1px solid #d9e5f7 !important;
+        }
+
+        .main-content .course-card .stat-item {
+            padding: 5px 3px !important;
+            border-radius: 8px;
+            background: #f6f9ff;
+            border: 1px solid #d9e5f7;
+        }
+
+        .main-content .course-card .stat-number {
+            color: #2454d6 !important;
+            font-size: 0.82rem !important;
+            line-height: 1.08 !important;
+            margin-bottom: 1px !important;
+        }
+
+        .main-content .course-card .stat-label {
+            color: #52657f !important;
+            font-size: 0.58rem !important;
+            line-height: 1.1 !important;
+            margin-top: 1px !important;
+        }
+
+        @media (max-width: 768px) {
+            .main-content .course-card .course-image {
+                height: 82px !important;
+            }
+
+            .main-content .course-card .card-body {
+                min-height: auto !important;
+            }
+        }
     </style>
 @endsection
 
