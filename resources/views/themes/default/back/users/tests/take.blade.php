@@ -209,23 +209,33 @@
     background:#0f172a;
     color:#fff;
     border-radius:12px;
-    padding:14px 20px;
-    text-align:center;
+    padding:12px 18px;
     font-weight:700;
     margin-bottom:20px;
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:16px;
+    min-height:58px;
   }
+  .banner-title{
+    grid-column:2;
+    text-align:center;
+    letter-spacing:0.02em;
+  }
+  .banner-balance{grid-column:3}
 
   .module-indicator{
     display:inline-flex;
     align-items:center;
-    padding:10px 22px;
+    justify-self:start;
+    padding:7px 12px;
     border-radius:999px;
-    background:#020617;
+    background:#111827;
     color:#e5e7eb;
-    margin-bottom:20px;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.45);
-    border:1px solid #1e293b;
-    gap:12px;
+    box-shadow:none;
+    border:1px solid #334155;
+    gap:8px;
   }
 
   .module-indicator-dot{
@@ -237,11 +247,11 @@
     flex-shrink:0;
   }
 
-  .module-indicator-text{ display:flex; flex-direction:column; line-height:1.2; }
-  .module-indicator-label{ text-transform:uppercase; letter-spacing:0.15em; font-size:11px; color:#9ca3af; font-weight:600; }
-  .module-indicator-value{ font-size:16px; font-weight:700; color:#f9fafb; }
+  .module-indicator-text{ display:flex; align-items:center; gap:7px; line-height:1.2; }
+  .module-indicator-label{ text-transform:uppercase; letter-spacing:0.12em; font-size:10px; color:#9ca3af; font-weight:700; }
+  .module-indicator-value{ font-size:13px; font-weight:700; color:#f9fafb; }
   .module-indicator-number{ font-weight:800; color:#facc15; margin-left:4px; }
-  .module-indicator-total{ font-size:13px; font-weight:500; color:#9ca3af; margin-left:6px; }
+  .module-indicator-total{ font-size:12px; font-weight:500; color:#cbd5e1; margin-left:5px; }
 
   .workspace{
     margin-top:16px;
@@ -851,6 +861,14 @@
   .answer-preview-empty{ display:none; }
 
   @media (max-width:1100px){
+    .banner{
+      grid-template-columns:1fr;
+      justify-items:center;
+      text-align:center;
+    }
+    .banner-title,
+    .banner-balance{grid-column:auto}
+    .module-indicator{justify-self:center}
     .workspace.no-calc,
     .workspace.with-calc,
     .workspace.calculator-open{grid-template-columns:minmax(300px, 1fr)}
@@ -899,6 +917,7 @@
   }
 
   @media (max-width:480px){
+    .module-indicator-text{flex-direction:column;gap:2px}
     .option-item{ grid-template-columns:36px 1fr; gap:10px; padding:12px; }
     .q-head{ padding:12px 16px; }
     .questions-bar{ padding:12px 16px; }
@@ -1084,6 +1103,19 @@
     }
   }
 
+  /* Final test-taking readability tune */
+  .stem,
+  .stem p{
+    font-size:17px !important;
+    line-height:1.72 !important;
+  }
+
+  .option-text,
+  .option-text p{
+    font-size:17px !important;
+    line-height:1.72 !important;
+  }
+
 </style>
 
   <script src="https://www.desmos.com/api/v1.10/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
@@ -1116,19 +1148,21 @@
 
   <div class="content-wrapper">
     <div class="container">
-      <div class="banner">THIS IS A PRACTICE TEST</div>
-
-      <div class="module-indicator">
-        <div class="module-indicator-dot"></div>
-        <div class="module-indicator-text">
-          <span class="module-indicator-label">Current module</span>
-          <span class="module-indicator-value">
-            Module <span class="module-indicator-number">{{ $moduleNumber }}</span>
-            @if($maxModule > 1)
-              <span class="module-indicator-total">of {{ $maxModule }}</span>
-            @endif
-          </span>
+      <div class="banner">
+        <div class="module-indicator">
+          <div class="module-indicator-dot"></div>
+          <div class="module-indicator-text">
+            <span class="module-indicator-label">Current module</span>
+            <span class="module-indicator-value">
+              Module <span class="module-indicator-number">{{ $moduleNumber }}</span>
+              @if($maxModule > 1)
+                <span class="module-indicator-total">of {{ $maxModule }}</span>
+              @endif
+            </span>
+          </div>
         </div>
+        <div class="banner-title">THIS IS A PRACTICE TEST</div>
+        <div class="banner-balance" aria-hidden="true"></div>
       </div>
 
       <div class="workspace no-calc" id="workspace">
