@@ -5,6 +5,8 @@
 @endsection
 
 @section('css')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script>
         window.MathJax = {
@@ -1217,13 +1219,20 @@ if ($answer && $answer->is_correct) {
             explanationDiv.dataset.loading = '1';
             textContainer.textContent = generatingExplanationText;
 
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+            if (!csrfToken) {
+                textContainer.textContent = 'AI explanation could not be generated. Please refresh the page and try again.';
+                explanationDiv.dataset.loading = '0';
+                return;
+            }
+
             try {
                 const response = await fetch(testAiExplanationUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        'X-CSRF-TOKEN': csrfToken
                     },
                     body: JSON.stringify({
                         student_test_id: studentTestId,
