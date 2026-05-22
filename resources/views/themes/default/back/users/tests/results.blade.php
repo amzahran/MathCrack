@@ -1217,8 +1217,15 @@ if ($answer && $answer->is_correct) {
                 .replace(/^\s*[-*]\s+/gm, '');
         }
 
+        function normalizeExplanationSteps(value) {
+            return String(value ?? '')
+                .replace(/\s+(Step\s+[1-4]:)/gi, '\n$1')
+                .replace(/\s+(Final answer:)/gi, '\n$1')
+                .replace(/^\n+/, '');
+        }
+
         function renderExplanationText(value) {
-            return escapeHtml(cleanExplanationText(value)).replace(/\n/g, '<br>');
+            return escapeHtml(normalizeExplanationSteps(cleanExplanationText(value))).replace(/\n/g, '<br>');
         }
 
         async function loadAiExplanation(explanationDiv) {
