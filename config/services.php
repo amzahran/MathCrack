@@ -45,5 +45,13 @@ return [
         'client_secret' => env('TWITTER_CLIENT_API_SECRET_KEY'),
         'redirect' => env('TWITTER_CALLBACK_URL'),
     ],
+
+    'ai_explanation' => [
+        'enabled' => env('AI_EXPLANATION_ENABLED', false),
+        'provider' => env('AI_EXPLANATION_PROVIDER', 'openai'),
+        'api_key' => env('AI_EXPLANATION_API_KEY'),
+        'model' => env('AI_EXPLANATION_MODEL', 'gpt-4o-mini'),
+        'timeout' => env('AI_EXPLANATION_TIMEOUT', 30),
+    ],
     
 ];

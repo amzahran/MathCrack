@@ -11,6 +11,7 @@ use App\Models\{
     TestQuestion,
     StudentTestAnswer
 };
+use App\Services\Ai\AiExplanationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{
     DB,
@@ -523,6 +524,80 @@ $studentTest->updateCurrentScore();
         ]);
 
         return $this->jsonSuccess(['message' => 'Timer updated']);
+    }
+
+    public function aiExplanation(Request $request, AiExplanationService $aiExplanationService)
+    {
+        $validated = $request->validate([
+            'student_test_id' => 'required|integer|exists:student_tests,id',
+            'question_id' => 'required|integer|exists:test_questions,id',
+        ]);
+
+        $user = auth()->user();
+        $studentTest = StudentTest::where('id', $validated['student_test_id'])
+            ->where('student_id', $user->id)
+            ->with('test')
+            ->firstOrFail();
+
+        $question = TestQuestion::where('id', $validated['question_id'])
+            ->where('test_id', $studentTest->test_id)
+            ->with('options')
+            ->first();
+
+        Log::info('AI explanation requested', [
+            'question_type' => 'test',
+            'question_id' => (int) $validated['question_id'],
+            'user_id' => $user->id,
+        ]);
+
+        if (!$question || !$studentTest->isCompleted() || !$this->canUserAccessTest($user, $studentTest->test)) {
+            Log::warning('AI explanation access denied', [
+                'question_type' => 'test',
+                'question_id' => (int) $validated['question_id'],
+                'user_id' => $user->id,
+            ]);
+
+            return response()->json(['success' => false, 'message' => 'AI explanation is currently unavailable.'], 403);
+        }
+
+        if (filled($question->explanation)) {
+            return response()->json([
+                'success' => true,
+                'explanation' => $question->explanation,
+                'cached' => true,
+            ]);
+        }
+
+        $result = $aiExplanationService->generate($question, 'test');
+
+        if (!$result['success']) {
+            Log::warning('AI explanation failed', [
+                'question_type' => 'test',
+                'question_id' => $question->id,
+                'user_id' => $user->id,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'],
+            ], !empty($result['unavailable']) ? 503 : 500);
+        }
+
+        $explanation = trim(strip_tags($result['explanation']));
+
+        TestQuestion::whereKey($question->id)->update(['explanation' => $explanation]);
+
+        Log::info('AI explanation generated', [
+            'question_type' => 'test',
+            'question_id' => $question->id,
+            'user_id' => $user->id,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'explanation' => $explanation,
+            'cached' => false,
+        ]);
     }
 
     private function canUserAccessTest($user, $test)

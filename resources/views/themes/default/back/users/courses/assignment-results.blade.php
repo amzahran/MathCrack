@@ -1069,32 +1069,34 @@
                                         @endif
                                 @endswitch
 
-                                @if($question->explanation || $explanationImageUrl)
-                                    <button type="button"
-                                            class="explanation-btn"
-                                            onclick="toggleExplanation({{ $index }}, this)">
-                                        <i class="fas fa-lightbulb"></i>
-                                        @lang('l.show_explanation')
-                                    </button>
+                                <button type="button"
+                                        class="explanation-btn"
+                                        onclick="toggleExplanation({{ $index }}, this)">
+                                    <i class="fas fa-lightbulb"></i>
+                                    @lang('l.show_explanation')
+                                </button>
 
-                                    <div class="question-explanation" id="explanation-{{ $index }}">
-                                        @if($explanationImageUrl)
-                                            <div class="explanation-image">
-                                                <img src="{{ $explanationImageUrl }}"
-                                                     alt="Explanation Image"
-                                                     class="zoomable-image"
-                                                     loading="lazy">
-                                            </div>
-                                        @endif
+                                <div class="question-explanation"
+                                     id="explanation-{{ $index }}"
+                                     data-question-id="{{ $question->id }}"
+                                     data-has-saved-explanation="{{ ($question->explanation || $explanationImageUrl) ? '1' : '0' }}"
+                                     data-loading="0">
+                                    @if($explanationImageUrl)
+                                        <div class="explanation-image">
+                                            <img src="{{ $explanationImageUrl }}"
+                                                 alt="Explanation Image"
+                                                 class="zoomable-image"
+                                                 loading="lazy">
+                                        </div>
+                                    @endif
 
+                                    <strong>@lang('l.explanation')</strong>
+                                    <div class="explanation-text">
                                         @if($question->explanation)
-                                            <strong>@lang('l.explanation')</strong>
-                                            <div class="explanation-text">
-                                                {!! $question->explanation !!}
-                                            </div>
+                                            {!! $question->explanation !!}
                                         @endif
                                     </div>
-                                @endif
+                                </div>
 
                                 @if($studentAnswer && $studentAnswer->teacher_feedback)
                                     <div class="teacher-feedback">
@@ -1129,6 +1131,58 @@
     <script>
         const showExplanationText = @json(__('l.show_explanation'));
         const hideExplanationText = @json(__('l.hide_explanation'));
+        const generatingExplanationText = 'Generating explanation...';
+        const assignmentAiExplanationUrl = @json(route('dashboard.users.assignments-ai-explanation'));
+        const studentAssignmentId = @json(encrypt($studentAssignment->id));
+
+        function escapeHtml(value) {
+            const div = document.createElement('div');
+            div.textContent = value ?? '';
+            return div.innerHTML;
+        }
+
+        async function loadAiExplanation(explanation) {
+            if (!explanation || explanation.dataset.hasSavedExplanation === '1' || explanation.dataset.loading === '1') {
+                return;
+            }
+
+            const textContainer = explanation.querySelector('.explanation-text');
+            explanation.dataset.loading = '1';
+            textContainer.textContent = generatingExplanationText;
+
+            try {
+                const response = await fetch(assignmentAiExplanationUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        student_assignment_id: studentAssignmentId,
+                        question_id: explanation.dataset.questionId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.explanation) {
+                    textContainer.innerHTML = escapeHtml(data.explanation).replace(/\n/g, '<br>');
+                    explanation.dataset.hasSavedExplanation = '1';
+
+                    if (window.MathJax && MathJax.typesetPromise) {
+                        MathJax.typesetPromise([explanation]);
+                    }
+                    return;
+                }
+
+                textContainer.textContent = data.message || 'AI explanation could not be generated. Please try again later.';
+            } catch (error) {
+                textContainer.textContent = 'AI explanation could not be generated. Please try again later.';
+            } finally {
+                explanation.dataset.loading = '0';
+            }
+        }
 
         function toggleExplanation(index, button) {
             const explanation = document.getElementById(`explanation-${index}`);
@@ -1143,6 +1197,10 @@
                 button.innerHTML = isVisible
                     ? `<i class="fas fa-lightbulb"></i> ${showExplanationText}`
                     : `<i class="fas fa-eye-slash"></i> ${hideExplanationText}`;
+            }
+
+            if (!isVisible) {
+                loadAiExplanation(explanation);
             }
 
             if (!isVisible && window.MathJax && MathJax.typesetPromise) {

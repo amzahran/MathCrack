@@ -1091,33 +1091,36 @@ if ($answer && $answer->is_correct) {
                                                     @break
                                             @endswitch
 
-                                            @if($question->explanation)
-                                                <div style="margin-top: 15px;">
-                                                    <button type="button"
-                                                            class="explanation-btn"
-                                                            onclick="toggleExplanation({{ $moduleCounter }}, {{ $index }}, this)">
-                                                        <i class="fas fa-lightbulb"></i>
-                                                        @lang('l.show_explanation')
-                                                    </button>
+                                            <div style="margin-top: 15px;">
+                                                <button type="button"
+                                                        class="explanation-btn"
+                                                        onclick="toggleExplanation({{ $moduleCounter }}, {{ $index }}, this)">
+                                                    <i class="fas fa-lightbulb"></i>
+                                                    @lang('l.show_explanation')
+                                                </button>
 
-                                                    <div class="question-explanation"
-                                                         id="explanation-{{ $moduleCounter }}-{{ $index }}">
-                                                        @if($explanationImageUrl)
-                                                            <div class="explanation-image">
-                                                                <img src="{{ $explanationImageUrl }}"
-                                                                     alt="Explanation Image"
-                                                                     class="zoomable-image"
-                                                                     loading="lazy">
-                                                            </div>
-                                                        @endif
-
-                                                        <strong>@lang('l.explanation')</strong>
-                                                        <div class="explanation-text">
-                                                            {!! nl2br(e($question->explanation)) !!}
+                                                <div class="question-explanation"
+                                                     id="explanation-{{ $moduleCounter }}-{{ $index }}"
+                                                     data-question-id="{{ $question->id }}"
+                                                     data-has-saved-explanation="{{ ($question->explanation || $explanationImageUrl) ? '1' : '0' }}"
+                                                     data-loading="0">
+                                                    @if($explanationImageUrl)
+                                                        <div class="explanation-image">
+                                                            <img src="{{ $explanationImageUrl }}"
+                                                                 alt="Explanation Image"
+                                                                 class="zoomable-image"
+                                                                 loading="lazy">
                                                         </div>
+                                                    @endif
+
+                                                    <strong>@lang('l.explanation')</strong>
+                                                    <div class="explanation-text">
+                                                        @if($question->explanation)
+                                                            {!! nl2br(e($question->explanation)) !!}
+                                                        @endif
                                                     </div>
                                                 </div>
-                                            @endif
+                                            </div>
                                         </div>
                                     </div>
                                 @endforeach
@@ -1195,6 +1198,59 @@ if ($answer && $answer->is_correct) {
             }
         }
 
+        const generatingExplanationText = 'Generating explanation...';
+        const testAiExplanationUrl = @json(route('dashboard.users.tests.ai-explanation'));
+        const studentTestId = @json($studentTest->id);
+
+        function escapeHtml(value) {
+            const div = document.createElement('div');
+            div.textContent = value ?? '';
+            return div.innerHTML;
+        }
+
+        async function loadAiExplanation(explanationDiv) {
+            if (!explanationDiv || explanationDiv.dataset.hasSavedExplanation === '1' || explanationDiv.dataset.loading === '1') {
+                return;
+            }
+
+            const textContainer = explanationDiv.querySelector('.explanation-text');
+            explanationDiv.dataset.loading = '1';
+            textContainer.textContent = generatingExplanationText;
+
+            try {
+                const response = await fetch(testAiExplanationUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        student_test_id: studentTestId,
+                        question_id: explanationDiv.dataset.questionId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.explanation) {
+                    textContainer.innerHTML = escapeHtml(data.explanation).replace(/\n/g, '<br>');
+                    explanationDiv.dataset.hasSavedExplanation = '1';
+
+                    if (window.MathJax && MathJax.typesetPromise) {
+                        MathJax.typesetPromise([explanationDiv]);
+                    }
+                    return;
+                }
+
+                textContainer.textContent = data.message || 'AI explanation could not be generated. Please try again later.';
+            } catch (error) {
+                textContainer.textContent = 'AI explanation could not be generated. Please try again later.';
+            } finally {
+                explanationDiv.dataset.loading = '0';
+            }
+        }
+
         function toggleExplanation(sectionIndex, questionIndex, button) {
             const explanationId = 'explanation-' + sectionIndex + '-' + questionIndex;
             const explanationDiv = document.getElementById(explanationId);
@@ -1204,6 +1260,7 @@ if ($answer && $answer->is_correct) {
                 explanationDiv.style.display = 'block';
                 button.innerHTML = '<i class="fas fa-eye-slash"></i> @lang("l.hide_explanation")';
                 button.classList.add('active');
+                loadAiExplanation(explanationDiv);
             } else {
                 explanationDiv.style.display = 'none';
                 button.innerHTML = '<i class="fas fa-lightbulb"></i> @lang("l.show_explanation")';

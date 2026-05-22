@@ -10,8 +10,10 @@ use App\Models\Level;
 use App\Models\Lecture;
 use App\Models\Invoice;
 use App\Models\LectureAssignment;
+use App\Models\LectureQuestion;
 use App\Models\StudentLectureAssignment;
 use App\Models\StudentLectureAnswer;
+use App\Services\Ai\AiExplanationService;
 use App\Services\PaymentService;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
@@ -482,6 +484,77 @@ class CoursesController extends Controller
         $this->recalculateAssignmentResults($studentAssignment);
 
         return view('themes/default/back.users.courses.assignment-results', compact('studentAssignment'));
+    }
+
+    public function assignmentAiExplanation(Request $request, AiExplanationService $aiExplanationService)
+    {
+        $validated = $request->validate([
+            'student_assignment_id' => 'required|string',
+            'question_id' => 'required|integer|exists:lecture_questions,id',
+        ]);
+
+        $user = auth()->user();
+        $studentAssignment = StudentLectureAssignment::with(['lectureAssignment.lecture', 'lectureAssignment.questions.options'])
+            ->where('student_id', $user->id)
+            ->findOrFail(decrypt($validated['student_assignment_id']));
+
+        $question = $studentAssignment->lectureAssignment->questions
+            ->firstWhere('id', (int) $validated['question_id']);
+
+        logger('AI explanation requested', [
+            'question_type' => 'assignment',
+            'question_id' => (int) $validated['question_id'],
+            'user_id' => $user->id,
+        ]);
+
+        if (!$question || !$studentAssignment->submitted_at || !$this->canAccessAssignment($user, $studentAssignment->lectureAssignment)) {
+            logger('AI explanation access denied', [
+                'question_type' => 'assignment',
+                'question_id' => (int) $validated['question_id'],
+                'user_id' => $user->id,
+            ]);
+
+            return response()->json(['success' => false, 'message' => 'AI explanation is currently unavailable.'], 403);
+        }
+
+        if (filled($question->explanation)) {
+            return response()->json([
+                'success' => true,
+                'explanation' => $question->explanation,
+                'cached' => true,
+            ]);
+        }
+
+        $result = $aiExplanationService->generate($question, 'assignment');
+
+        if (!$result['success']) {
+            logger('AI explanation failed', [
+                'question_type' => 'assignment',
+                'question_id' => $question->id,
+                'user_id' => $user->id,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'],
+            ], !empty($result['unavailable']) ? 503 : 500);
+        }
+
+        $explanation = trim(strip_tags($result['explanation']));
+
+        LectureQuestion::whereKey($question->id)->update(['explanation' => $explanation]);
+
+        logger('AI explanation generated', [
+            'question_type' => 'assignment',
+            'question_id' => $question->id,
+            'user_id' => $user->id,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'explanation' => $explanation,
+            'cached' => false,
+        ]);
     }
 
     /**
