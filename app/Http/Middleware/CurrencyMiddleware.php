@@ -17,6 +17,10 @@ class CurrencyMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if ($request->is('kashier-webhook') || $request->is('users/payment/payments/verify/*')) {
+            return $next($request);
+        }
+
         // فحص الكوكيز الحالية
         $currencyCode = $_COOKIE['currency'] ?? null;
 

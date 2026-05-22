@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Web\Auth\NewPasswordController;
-use App\Http\Controllers\api\Auth\SocialAuthController;
+use App\Http\Controllers\Api\Auth\SocialAuthController;
 
 
 Route::post('register', [AuthController::class, 'register']);

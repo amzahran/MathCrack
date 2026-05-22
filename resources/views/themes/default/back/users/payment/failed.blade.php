@@ -127,19 +127,19 @@
                             </h6>
 
                             <div class="detail-row mb-2">
-                                <strong>@lang('l.invoice_number'):</strong> #{{ $invoice->id }}
+                                <strong>@lang('l.invoice_number'):</strong> #{{ optional($invoice)->id ?? '-' }}
                             </div>
 
                             <div class="detail-row mb-2">
-                                <strong>@lang('l.item'):</strong> {{ $invoice->type_value_display }}
+                                <strong>@lang('l.item'):</strong> {{ optional($invoice)->type_value_display ?? '-' }}
                             </div>
 
                             <div class="detail-row mb-2">
-                                <strong>@lang('l.amount'):</strong> {{ number_format($invoice->amount, 2) }} @lang('l.currency')
+                                <strong>@lang('l.amount'):</strong> {{ number_format(optional($invoice)->amount ?? 0, 2) }} @lang('l.currency')
                             </div>
 
                             <div class="detail-row mb-2">
-                                <strong>@lang('l.attempt_time'):</strong> {{ $invoice->updated_at->format('Y-m-d H:i') }}
+                                <strong>@lang('l.attempt_time'):</strong> {{ optional(optional($invoice)->updated_at)->format('Y-m-d H:i') ?? '-' }}
                             </div>
 
                             <div class="detail-row">
@@ -150,8 +150,8 @@
 
                         <!-- أزرار العمل -->
                         <div class="action-buttons">
-                            @if($invoice->category == 'quiz')
-                                @if($invoice->type == 'single')
+                            @if($invoice && $invoice->category == 'quiz')
+                                @if($invoice && $invoice->type == 'single')
                                     @php
                                         $test = \App\Models\Test::find($invoice->type_value);
                                     @endphp
@@ -178,8 +178,8 @@
                                     <i class="fas fa-home me-2"></i>@lang('l.back_to_tests')
                                 </a>
                             @else
-                                @if($invoice->lecture)
-                                    <a href="{{ route('dashboard.users.courses-lectures-show', ['id' => encrypt($invoice->lecture->id)]) }}"
+                                @if($invoice && $invoice->lecture)
+                                    <a href="{{ route('dashboard.users.courses-lectures-show', ['id' => encrypt(optional($invoice->lecture)->id)]) }}"
                                        class="btn btn-danger-custom">
                                         <i class="fas fa-redo me-2"></i>@lang('l.try_again')
                                     </a>

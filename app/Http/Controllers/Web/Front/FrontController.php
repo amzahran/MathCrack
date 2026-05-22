@@ -389,18 +389,57 @@ class FrontController extends Controller
         $signature = hash_hmac('sha256', $queryString, (string) $paymentApiKey, false);
 
         if ($kashierSignature !== '' && hash_equals($signature, $kashierSignature)) {
+            $merchantOrderId = $data_obj['merchantOrderId']
+                ?? $data_obj['merchant_order_id']
+                ?? $data_obj['orderId']
+                ?? $data_obj['order_id']
+                ?? null;
+
+            $paymentStatus = strtoupper((string) (
+                $data_obj['paymentStatus']
+                ?? $data_obj['status']
+                ?? $data_obj['transactionStatus']
+                ?? ''
+            ));
+
+            $invoice = null;
+
+            if (!empty($merchantOrderId)) {
+                $invoice = \App\Models\Invoice::where('pid', $merchantOrderId)->first();
+
+                if ($invoice && in_array($paymentStatus, ['SUCCESS', 'CAPTURED', 'PAID', 'APPROVED'], true)) {
+                    $invoice->status = 'paid';
+                    $invoice->save();
+                }
+            }
+
+            logger('Kashier webhook valid signature', [
+                'merchant_order_id' => $merchantOrderId,
+                'payment_status' => $paymentStatus,
+                'invoice_found' => (bool) $invoice,
+                'invoice_id' => $invoice?->id,
+                'invoice_status' => $invoice?->status,
+                'data_keys' => array_keys($data_obj),
+            ]);
+
             echo 'valid signature';
             http_response_code(200);
             return;
         }
 
-        Setting::createOrUpdate([
-            'option' => 'kashier_webhook',
-            'value'  => '0',
+        Setting::updateOrCreate(
+            ['option' => 'kashier_webhook'],
+            ['value' => '0']
+        );
+
+        logger('Kashier webhook invalid signature', [
+            'has_signature' => $kashierSignature !== '',
+            'signature_keys_count' => count($signatureKeys),
+            'data_keys' => array_keys($data_obj),
         ]);
 
         echo 'invalid signature';
-        http_response_code(400);
+        http_response_code(200);
         return;
     }
 

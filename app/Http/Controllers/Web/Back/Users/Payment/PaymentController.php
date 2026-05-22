@@ -609,7 +609,23 @@ class PaymentController extends Controller
                 return redirect()->route('dashboard.users.payment-success', ['invoice_id' => $invoice->id])
                     ->with('success', __('l.payment_successful'));
             } else {
-                if ($invoice) {
+                $recentPaidInvoice = Invoice::where('user_id', auth()->id())
+                    ->where('status', 'paid')
+                    ->where('updated_at', '>=', now()->subMinutes(10))
+                    ->latest('updated_at')
+                    ->first();
+
+                if (!$invoice && $recentPaidInvoice) {
+                    logger('Kashier verification fallback to recent paid invoice', [
+                        'recent_invoice_id' => $recentPaidInvoice->id,
+                        'recent_invoice_status' => $recentPaidInvoice->status,
+                    ]);
+
+                    return redirect()->route('dashboard.users.payment-success', ['invoice_id' => $recentPaidInvoice->id])
+                        ->with('success', __('l.payment_successful'));
+                }
+
+                if ($invoice && $invoice->status !== 'paid') {
                     $invoice->status = 'failed';
                     $invoice->save();
                 }
@@ -641,14 +657,19 @@ class PaymentController extends Controller
      * صفحة فشل الدفع
      */
     public function paymentFailed(Request $request)
-    {
-        $invoiceId = $request->get('invoice_id');
-        $invoice = Invoice::with(['student', 'lecture', 'course'])
-                         ->where('user_id', auth()->id())
-                         ->findOrFail($invoiceId);
+{
+    $invoiceId = $request->get('invoice_id');
 
-        return view('themes/default/back.users.payment.failed', compact('invoice'));
+    $invoice = null;
+
+    if (!empty($invoiceId)) {
+        $invoice = Invoice::with(['student', 'lecture', 'course'])
+            ->where('user_id', auth()->id())
+            ->find($invoiceId);
     }
+
+    return view('themes/default/back.users.payment.failed', compact('invoice'));
+}
 
     /**
      * صفحة إلغاء الدفع
