@@ -1122,6 +1122,28 @@
     line-height:1.72 !important;
   }
 
+  /* Final answer choice compact sizing */
+  .options{
+    gap:13px !important;
+  }
+
+  .option-item{
+    grid-template-columns:44px 1fr !important;
+    padding:10px 14px !important;
+    min-height:0;
+    align-items:center !important;
+  }
+
+  .option-label{
+    width:36px !important;
+    height:36px !important;
+    font-size:15px !important;
+  }
+
+  .option-row{
+    gap:8px !important;
+  }
+
 </style>
 
   <script src="https://www.desmos.com/api/v1.10/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
