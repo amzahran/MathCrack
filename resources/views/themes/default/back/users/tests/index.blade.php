@@ -1472,6 +1472,149 @@
         }
     }
 
+    /* Final practice test card visual overrides */
+    .tests-grid.tests-view-block {
+        background: #eef3fa !important;
+        padding: 18px !important;
+    }
+
+    .tests-grid.tests-view-block .row {
+        row-gap: 18px !important;
+    }
+
+    .tests-grid.tests-view-block .test-card {
+        background: #ffffff !important;
+        border: 2px solid #b8c9e6 !important;
+        border-top: 4px solid #2454d6 !important;
+        border-radius: 14px !important;
+        box-shadow: 0 10px 24px rgba(31, 73, 125, 0.12) !important;
+        overflow: hidden !important;
+    }
+
+    .tests-grid.tests-view-block .test-card:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 14px 30px rgba(31, 73, 125, 0.16) !important;
+    }
+
+    .tests-grid.tests-view-block .test-card .card-header,
+    .tests-grid.tests-view-block .test-card:nth-child(3n+1) .card-header,
+    .tests-grid.tests-view-block .test-card:nth-child(3n+2) .card-header,
+    .tests-grid.tests-view-block .test-card:nth-child(3n+3) .card-header {
+        min-height: 62px !important;
+        padding: 10px 12px !important;
+        background: #f6f9ff !important;
+        border-bottom: 1px solid #d9e5f7 !important;
+        color: #0f172a !important;
+    }
+
+    .tests-grid.tests-view-block .test-title {
+        color: #123066 !important;
+        font-size: 0.94rem !important;
+        line-height: 1.2 !important;
+        margin-bottom: 2px !important;
+    }
+
+    .tests-grid.tests-view-block .test-description {
+        color: #52657f !important;
+        font-size: 0.72rem !important;
+        line-height: 1.25 !important;
+    }
+
+    .tests-grid.tests-view-block .test-card .card-body {
+        padding: 10px !important;
+    }
+
+    .tests-grid.tests-view-block .test-stats {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        gap: 6px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .tests-grid.tests-view-block .stat-item {
+        background: #eef6ff !important;
+        border: 1px solid #bdd4f2 !important;
+        border-radius: 8px !important;
+        padding: 6px 3px !important;
+        box-shadow: none !important;
+    }
+
+    .tests-grid.tests-view-block .stat-number {
+        color: #2454d6 !important;
+        font-size: 0.84rem !important;
+        line-height: 1.1 !important;
+        margin-bottom: 1px !important;
+    }
+
+    .tests-grid.tests-view-block .stat-label {
+        color: #52657f !important;
+        font-size: 0.6rem !important;
+        line-height: 1.1 !important;
+    }
+
+    .tests-grid.tests-view-block .price-section {
+        background: #ecfdf5 !important;
+        border: 1px solid #b7ebcc !important;
+        border-radius: 8px !important;
+        color: #047857 !important;
+        margin-bottom: 8px !important;
+        padding: 5px 8px !important;
+        box-shadow: none !important;
+    }
+
+    .tests-grid.tests-view-block .price-amount {
+        font-size: 0.86rem !important;
+        line-height: 1.15 !important;
+        margin-bottom: 0 !important;
+    }
+
+    .tests-grid.tests-view-block .price-label {
+        font-size: 0.66rem !important;
+        line-height: 1.1 !important;
+    }
+
+    .tests-grid.tests-view-block .status-badge {
+        min-height: 24px !important;
+        padding: 4px 8px !important;
+        font-size: 0.66rem !important;
+        gap: 5px !important;
+        box-shadow: none !important;
+    }
+
+    .tests-grid.tests-view-block .test-actions {
+        margin-top: 8px !important;
+        gap: 6px !important;
+    }
+
+    .tests-grid.tests-view-block .btn-test {
+        min-height: 30px !important;
+        padding: 6px 9px !important;
+        border-radius: 8px !important;
+        font-size: 0.68rem !important;
+        box-shadow: none !important;
+    }
+
+    .tests-grid.tests-view-block .btn-test span {
+        font-size: 0.68rem !important;
+    }
+
+    .tests-grid.tests-view-block .test-card .btn-primary-test,
+    .tests-grid.tests-view-block .test-card:nth-child(3n+1) .btn-primary-test,
+    .tests-grid.tests-view-block .test-card:nth-child(3n+2) .btn-primary-test,
+    .tests-grid.tests-view-block .test-card:nth-child(3n+3) .btn-primary-test {
+        background: #2454d6 !important;
+        color: #ffffff !important;
+    }
+
+    @media (max-width: 767.98px) {
+        .tests-grid.tests-view-block {
+            padding: 14px !important;
+        }
+
+        .tests-grid.tests-view-block .test-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        }
+    }
+
 </style>
 @endsection
 
