@@ -1118,7 +1118,7 @@ if ($answer && $answer->is_correct) {
                                                     <strong>@lang('l.explanation')</strong>
                                                     <div class="explanation-text">
                                                         @if($question->explanation)
-                                                            {!! nl2br(e($question->explanation)) !!}
+                                                            {!! nl2br(e(preg_replace('/\*\*(.*?)\*\*/s', '$1', $question->explanation))) !!}
                                                         @endif
                                                     </div>
                                                 </div>
@@ -1210,6 +1210,13 @@ if ($answer && $answer->is_correct) {
             return div.innerHTML;
         }
 
+        function cleanExplanationText(value) {
+            return String(value ?? '')
+                .replace(/\*\*(.*?)\*\*/gs, '$1')
+                .replace(/^#{1,6}\s*/gm, '')
+                .replace(/^\s*[-*]\s+/gm, '');
+        }
+
         async function loadAiExplanation(explanationDiv) {
             if (!explanationDiv || explanationDiv.dataset.hasSavedExplanation === '1' || explanationDiv.dataset.loading === '1') {
                 return;
@@ -1243,7 +1250,7 @@ if ($answer && $answer->is_correct) {
                 const data = await response.json();
 
                 if (data.success && data.explanation) {
-                    textContainer.innerHTML = escapeHtml(data.explanation).replace(/\n/g, '<br>');
+                    textContainer.innerHTML = escapeHtml(cleanExplanationText(data.explanation)).replace(/\n/g, '<br>');
                     explanationDiv.dataset.hasSavedExplanation = '1';
 
                     if (window.MathJax && MathJax.typesetPromise) {

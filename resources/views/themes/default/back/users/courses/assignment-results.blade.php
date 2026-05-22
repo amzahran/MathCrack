@@ -1095,7 +1095,7 @@
                                     <strong>@lang('l.explanation')</strong>
                                     <div class="explanation-text">
                                         @if($question->explanation)
-                                            {!! $question->explanation !!}
+                                            {!! preg_replace('/\*\*(.*?)\*\*/s', '$1', $question->explanation) !!}
                                         @endif
                                     </div>
                                 </div>
@@ -1143,6 +1143,13 @@
             return div.innerHTML;
         }
 
+        function cleanExplanationText(value) {
+            return String(value ?? '')
+                .replace(/\*\*(.*?)\*\*/gs, '$1')
+                .replace(/^#{1,6}\s*/gm, '')
+                .replace(/^\s*[-*]\s+/gm, '');
+        }
+
         async function loadAiExplanation(explanation) {
             if (!explanation || explanation.dataset.hasSavedExplanation === '1' || explanation.dataset.loading === '1') {
                 return;
@@ -1176,7 +1183,7 @@
                 const data = await response.json();
 
                 if (data.success && data.explanation) {
-                    textContainer.innerHTML = escapeHtml(data.explanation).replace(/\n/g, '<br>');
+                    textContainer.innerHTML = escapeHtml(cleanExplanationText(data.explanation)).replace(/\n/g, '<br>');
                     explanation.dataset.hasSavedExplanation = '1';
 
                     if (window.MathJax && MathJax.typesetPromise) {

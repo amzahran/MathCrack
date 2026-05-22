@@ -38,7 +38,7 @@ class AiExplanationService
                     'messages' => [
                         [
                             'role' => 'system',
-                            'content' => 'You are a concise SAT math tutor. Give clear step-by-step explanations. Do not mention AI.',
+                            'content' => 'You are a concise SAT math tutor. Return only short plain-text explanations. Use this exact structure: Step 1: ..., Step 2: ..., Step 3: ..., Final answer: .... Do not use Markdown symbols like **, ###, or bullet-heavy formatting. Do not mention AI.',
                         ],
                         [
                             'role' => 'user',
@@ -46,7 +46,7 @@ class AiExplanationService
                         ],
                     ],
                     'temperature' => 0.2,
-                    'max_tokens' => 700,
+                    'max_tokens' => 500,
                 ]);
 
             if (!$response->successful()) {
@@ -117,7 +117,7 @@ class AiExplanationService
             'Question text: ' . trim(strip_tags((string) $question->question_text)),
             $choices ? "Answer choices:\n" . $choices : null,
             $correctAnswer ? 'Correct answer: ' . $correctAnswer : null,
-            'Write a concise SAT-style step-by-step explanation. Do not mention that the explanation is AI-generated.',
+            'Write a concise SAT-style explanation using exactly this structure: Step 1: ..., Step 2: ..., Step 3: ..., Final answer: .... Keep it short. Do not use Markdown symbols such as **, ###, or bullet-heavy formatting. Do not mention that the explanation is AI-generated.',
         ]));
     }
 
