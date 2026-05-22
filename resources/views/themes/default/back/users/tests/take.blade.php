@@ -249,10 +249,15 @@
     gap:20px;
     align-items:start;
     justify-content:center;
-    transition: all 0.3s ease;
+    transition:grid-template-columns 0.3s ease, gap 0.3s ease;
+    width:100%;
   }
-  .workspace.no-calc,
-  .workspace.with-calc{ grid-template-columns:minmax(620px, 820px) }
+  .workspace.no-calc{ grid-template-columns:minmax(620px, 820px) }
+  .workspace.with-calc,
+  .workspace.calculator-open{
+    grid-template-columns:minmax(620px, 680px) minmax(420px, 1fr);
+    justify-content:stretch;
+  }
 
   .calc-pane{
     background:#fff;
@@ -261,13 +266,13 @@
     overflow:hidden;
     display:none;
     box-shadow: 0 22px 60px rgba(15,23,42,0.34);
-    position:fixed;
-    top:92px;
-    left:50%;
-    transform:translateX(-50%);
-    width:min(760px, calc(100vw - 32px));
-    max-height:calc(100vh - 126px);
-    z-index:12000;
+    position:sticky;
+    top:86px;
+    width:100%;
+    max-width:680px;
+    height:560px;
+    max-height:calc(100vh - 150px);
+    z-index:900;
   }
   .calc-pane.show{ display:flex; flex-direction:column; animation: slideIn 0.18s ease; }
   .calc-header{
@@ -305,16 +310,18 @@
     font-weight:800;
   }
   .calc-subheader small{color:rgba(255,255,255,0.88);font-size:0.75rem;font-weight:700}
-  .calc-shell{padding:12px;background:#e5e7eb}
+  .calc-shell{padding:10px;background:#e5e7eb;flex:1;min-height:0}
   .calc-body{
-    height:560px;
+    height:100%;
+    min-height:0;
     transition:height 0.3s ease;
     background:#fff;
     border:1px solid #cbd5e1;
     border-radius:10px;
     overflow:hidden;
   }
-  .calc-body.expanded{height:min(680px, calc(100vh - 230px))}
+  .calc-pane.calc-expanded{height:min(680px, calc(100vh - 128px));max-height:calc(100vh - 128px)}
+  .calc-body.expanded{height:100%}
   #desmosCalc{
     width:100%;
     height:100%;
@@ -326,7 +333,7 @@
     font-size:16px;
   }
   .calc-iframe{ width:100%; height:100%; border:0; display:block }
-  .calc-footer{display:flex;justify-content:space-between;gap:10px;padding:8px 12px 12px;background:#e5e7eb;color:#475569;font-size:0.74rem;font-weight:700}
+  .calc-footer{display:flex;justify-content:space-between;gap:10px;padding:8px 12px 12px;background:#e5e7eb;color:#475569;font-size:0.74rem;font-weight:700;flex-shrink:0}
   .calc-keypad-preview{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
   .calc-key{min-width:26px;height:22px;padding:0 6px;border:1px solid #cbd5e1;border-radius:5px;background:#f8fafc;color:#334155;display:inline-flex;align-items:center;justify-content:center;font-size:0.72rem}
   .calc-key.operator{background:#e2e8f0}
@@ -338,6 +345,7 @@
     border-radius:12px;
     overflow:hidden;
     width:100%;
+    min-width:0;
     box-shadow:0 2px 8px rgba(0,0,0,0.08);
   }
 
@@ -842,9 +850,27 @@
   .answer-preview-value{ font-size:26px; font-weight:800; color:#111827; }
   .answer-preview-empty{ display:none; }
 
+  @media (max-width:1100px){
+    .workspace.no-calc,
+    .workspace.with-calc,
+    .workspace.calculator-open{grid-template-columns:minmax(300px, 1fr)}
+    .calc-pane{
+      position:fixed;
+      top:82px;
+      left:50%;
+      transform:translateX(-50%);
+      width:calc(100vw - 28px);
+      max-width:700px;
+      height:min(560px, calc(100vh - 118px));
+      z-index:12000;
+    }
+    .calc-pane.calc-expanded{height:min(640px, calc(100vh - 104px));max-height:calc(100vh - 104px)}
+  }
+
   @media (max-width:768px){
     .workspace.no-calc,
-    .workspace.with-calc{grid-template-columns:minmax(300px, 1fr)}
+    .workspace.with-calc,
+    .workspace.calculator-open{grid-template-columns:minmax(300px, 1fr)}
     .q-head{ flex-direction:column; gap:10px; align-items:stretch; }
     .q-head-left, .q-head-right{justify-content:center}
     .option-row{ gap:6px; }
@@ -854,9 +880,10 @@
     .numeric-answer-box{ width:70%; }
     .timer-controls{ flex-direction:row; flex-wrap:wrap; }
     .container{ padding: 0 16px; }
-    .calc-pane{top:72px;width:calc(100vw - 18px);max-height:calc(100vh - 92px)}
+    .calc-pane{top:72px;width:calc(100vw - 18px);height:min(540px, calc(100vh - 92px));max-height:calc(100vh - 92px)}
+    .calc-pane.calc-expanded{height:min(590px, calc(100vh - 92px));max-height:calc(100vh - 92px)}
     .calc-body,
-    .calc-body.expanded{height:min(520px, calc(100vh - 230px))}
+    .calc-body.expanded{height:100%}
     .calc-footer{flex-direction:column}
     .calc-keypad-preview{justify-content:flex-start}
   }
@@ -1803,11 +1830,14 @@
   open() {
     const pane = document.getElementById('calcPane');
     const workspace = document.getElementById('workspace');
+    const contentWrapper = document.querySelector('.content-wrapper');
     if (!pane || !workspace) return;
 
     pane.classList.add('show');
     workspace.classList.remove('no-calc');
     workspace.classList.add('with-calc');
+    workspace.classList.add('calculator-open');
+    if (contentWrapper) contentWrapper.classList.add('calculator-open');
 
     this.ensureInit();
   },
@@ -1852,11 +1882,14 @@ setTimeout(() => this.desmosCalc?.resize?.(), 150);
   close() {
     const pane = document.getElementById('calcPane');
     const workspace = document.getElementById('workspace');
+    const contentWrapper = document.querySelector('.content-wrapper');
     if (!pane || !workspace) return;
 
     pane.classList.remove('show');
     workspace.classList.remove('with-calc');
+    workspace.classList.remove('calculator-open');
     workspace.classList.add('no-calc');
+    if (contentWrapper) contentWrapper.classList.remove('calculator-open');
   },
 
   fallback() {
@@ -1905,10 +1938,12 @@ setTimeout(() => this.desmosCalc?.resize?.(), 150);
 
   toggleExpand() {
     const calcBody = document.getElementById('calcBody');
+    const pane = document.getElementById('calcPane');
     if (!calcBody) return;
 
     const isExpanded = calcBody.classList.contains('expanded');
     calcBody.classList.toggle('expanded', !isExpanded);
+    if (pane) pane.classList.toggle('calc-expanded', !isExpanded);
 
     const btn = document.getElementById('btnExpandCalc');
     if (btn) btn.textContent = isExpanded ? '↕️ Expand' : '↕️ Collapse';
