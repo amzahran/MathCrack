@@ -267,6 +267,12 @@
   .workspace.calculator-open{
     grid-template-columns:minmax(620px, 680px) minmax(420px, 1fr);
     justify-content:stretch;
+    gap:14px;
+  }
+  .content-wrapper.calculator-open .container{
+    max-width:none;
+    margin-left:16px;
+    margin-right:16px;
   }
 
   .calc-pane{
