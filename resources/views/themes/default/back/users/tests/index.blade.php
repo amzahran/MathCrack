@@ -1224,6 +1224,251 @@
         }
     }
 
+    /* Compact professional practice test cards */
+    .course-section {
+        margin-bottom: 20px !important;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+    }
+
+    .course-section:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.09);
+    }
+
+    .course-header {
+        padding: 16px 20px !important;
+        background: #1e40af;
+        gap: 10px;
+    }
+
+    .course-header::before {
+        display: none;
+    }
+
+    .course-title {
+        font-size: clamp(1.15rem, 1.6vw, 1.45rem);
+        line-height: 1.2;
+    }
+
+    .course-meta-item {
+        min-height: 30px;
+        padding: 6px 10px;
+        font-size: 0.82rem;
+        background: rgba(255, 255, 255, 0.13);
+    }
+
+    .tests-grid {
+        padding: 16px 18px !important;
+    }
+
+    .tests-grid .row {
+        row-gap: 16px;
+    }
+
+    .test-card {
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+        overflow: hidden;
+    }
+
+    .test-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 26px rgba(15, 23, 42, 0.11);
+    }
+
+    .test-card .card-header,
+    .test-card:nth-child(3n+1) .card-header,
+    .test-card:nth-child(3n+2) .card-header,
+    .test-card:nth-child(3n+3) .card-header {
+        min-height: 82px;
+        padding: 14px 16px;
+        justify-content: flex-start;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        color: #0f172a;
+    }
+
+    .test-title {
+        font-size: 1.02rem;
+        line-height: 1.25;
+        color: #0f172a !important;
+        margin-bottom: 4px;
+    }
+
+    .test-description {
+        color: #64748b !important;
+        font-size: 0.8rem;
+        line-height: 1.35;
+        -webkit-line-clamp: 1;
+    }
+
+    .test-card .card-body {
+        padding: 14px !important;
+    }
+
+    .test-stats {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 7px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .stat-item {
+        padding: 8px 5px;
+        border-radius: 8px;
+        background: #f8fafc;
+    }
+
+    .stat-item:hover {
+        transform: none;
+    }
+
+    .stat-number {
+        font-size: 0.98rem;
+        margin-bottom: 2px;
+        color: #1d4ed8;
+    }
+
+    .stat-label {
+        font-size: 0.68rem;
+        line-height: 1.15;
+        color: #64748b;
+    }
+
+    .price-section {
+        margin-bottom: 10px;
+        padding: 9px 10px;
+        border-radius: 8px;
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #bbf7d0;
+        box-shadow: none;
+    }
+
+    .price-amount {
+        font-size: 1rem;
+        margin-bottom: 1px;
+    }
+
+    .price-label {
+        font-size: 0.76rem;
+        opacity: 1;
+    }
+
+    .test-status {
+        margin-bottom: 0 !important;
+    }
+
+    .status-badge {
+        min-height: 28px;
+        padding: 6px 10px;
+        gap: 6px;
+        font-size: 0.76rem;
+        border-radius: 999px;
+        box-shadow: none;
+    }
+
+    .status-not-started {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .status-in-progress {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-completed {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .status-locked {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .test-actions {
+        margin-top: 10px;
+        gap: 8px !important;
+    }
+
+    .btn-test {
+        min-height: 36px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        box-shadow: none;
+    }
+
+    .btn-test span {
+        font-size: 0.78rem;
+    }
+
+    .test-card .btn-primary-test,
+    .test-card:nth-child(3n+1) .btn-primary-test,
+    .test-card:nth-child(3n+2) .btn-primary-test,
+    .test-card:nth-child(3n+3) .btn-primary-test {
+        background: #1d4ed8;
+        color: #ffffff !important;
+    }
+
+    .btn-success-test {
+        background: #059669;
+    }
+
+    .btn-warning-test {
+        background: #f59e0b;
+        color: #111827 !important;
+    }
+
+    .course-purchase-section {
+        padding: 14px 18px !important;
+        margin-top: 0 !important;
+        background: #f8fafc;
+        border-radius: 0 0 10px 10px;
+    }
+
+    .course-purchase-price {
+        font-size: 1.15rem;
+        margin-bottom: 2px;
+    }
+
+    .course-purchase-desc {
+        font-size: 0.86rem;
+    }
+
+    @media (max-width: 1199.98px) {
+        .test-stats {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .course-header {
+            padding: 14px !important;
+        }
+
+        .tests-grid {
+            padding: 14px !important;
+        }
+
+        .test-card .card-header {
+            min-height: auto;
+        }
+
+        .test-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .test-actions {
+            flex-direction: row;
+        }
+    }
+
 </style>
 @endsection
 
