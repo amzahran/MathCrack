@@ -488,6 +488,14 @@ class CoursesController extends Controller
 
     public function assignmentAiExplanation(Request $request, AiExplanationService $aiExplanationService)
     {
+        logger('AI explanation endpoint entered', [
+            'question_type' => 'assignment',
+            'user_id' => auth()->id(),
+            'request_keys' => array_keys($request->all()),
+            'question_id' => $request->input('question_id'),
+            'assignment_result_id' => $request->input('student_assignment_id'),
+        ]);
+
         $validated = $request->validate([
             'student_assignment_id' => 'required|string',
             'question_id' => 'required|integer|exists:lecture_questions,id',
