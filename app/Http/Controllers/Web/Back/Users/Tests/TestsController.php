@@ -528,14 +528,6 @@ $studentTest->updateCurrentScore();
 
     public function aiExplanation(Request $request, AiExplanationService $aiExplanationService)
     {
-        Log::info('AI explanation endpoint entered', [
-            'question_type' => 'test',
-            'user_id' => auth()->id(),
-            'request_keys' => array_keys($request->all()),
-            'question_id' => $request->input('question_id'),
-            'student_test_id' => $request->input('student_test_id'),
-        ]);
-
         $validated = $request->validate([
             'student_test_id' => 'required|integer|exists:student_tests,id',
             'question_id' => 'required|integer|exists:test_questions,id',
