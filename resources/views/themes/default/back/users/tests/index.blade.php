@@ -1261,64 +1261,67 @@
 
     .tests-grid {
         padding: 16px 18px !important;
+        background: #f1f5f9;
     }
 
     .tests-grid .row {
-        row-gap: 16px;
+        row-gap: 14px;
     }
 
     .test-card {
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+        border-radius: 7px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
         overflow: hidden;
     }
 
     .test-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 12px 26px rgba(15, 23, 42, 0.11);
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.17);
     }
 
     .test-card .card-header,
     .test-card:nth-child(3n+1) .card-header,
     .test-card:nth-child(3n+2) .card-header,
     .test-card:nth-child(3n+3) .card-header {
-        min-height: 82px;
-        padding: 14px 16px;
+        min-height: 66px;
+        padding: 10px 12px;
         justify-content: flex-start;
-        background: #f8fafc;
-        border-bottom: 1px solid #e2e8f0;
+        background: #ffffff;
+        border-bottom: 2px solid #dbeafe;
         color: #0f172a;
     }
 
     .test-title {
-        font-size: 1.02rem;
+        font-size: 0.92rem;
         line-height: 1.25;
         color: #0f172a !important;
-        margin-bottom: 4px;
+        margin-bottom: 3px;
     }
 
     .test-description {
         color: #64748b !important;
-        font-size: 0.8rem;
-        line-height: 1.35;
+        font-size: 0.72rem;
+        line-height: 1.25;
         -webkit-line-clamp: 1;
     }
 
     .test-card .card-body {
-        padding: 14px !important;
+        padding: 10px !important;
     }
 
     .test-stats {
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 7px !important;
-        margin-bottom: 10px !important;
+        gap: 5px !important;
+        margin-bottom: 8px !important;
     }
 
     .stat-item {
-        padding: 8px 5px;
-        border-radius: 8px;
-        background: #f8fafc;
+        padding: 6px 3px;
+        border-radius: 6px;
+        background: #eff6ff;
+        border-color: #bfdbfe;
     }
 
     .stat-item:hover {
@@ -1326,21 +1329,21 @@
     }
 
     .stat-number {
-        font-size: 0.98rem;
-        margin-bottom: 2px;
+        font-size: 0.84rem;
+        margin-bottom: 1px;
         color: #1d4ed8;
     }
 
     .stat-label {
-        font-size: 0.68rem;
+        font-size: 0.6rem;
         line-height: 1.15;
-        color: #64748b;
+        color: #475569;
     }
 
     .price-section {
-        margin-bottom: 10px;
-        padding: 9px 10px;
-        border-radius: 8px;
+        margin-bottom: 8px;
+        padding: 6px 8px;
+        border-radius: 6px;
         background: #ecfdf5;
         color: #047857;
         border: 1px solid #bbf7d0;
@@ -1348,12 +1351,12 @@
     }
 
     .price-amount {
-        font-size: 1rem;
-        margin-bottom: 1px;
+        font-size: 0.86rem;
+        margin-bottom: 0;
     }
 
     .price-label {
-        font-size: 0.76rem;
+        font-size: 0.66rem;
         opacity: 1;
     }
 
@@ -1362,10 +1365,10 @@
     }
 
     .status-badge {
-        min-height: 28px;
-        padding: 6px 10px;
-        gap: 6px;
-        font-size: 0.76rem;
+        min-height: 24px;
+        padding: 4px 8px;
+        gap: 5px;
+        font-size: 0.66rem;
         border-radius: 999px;
         box-shadow: none;
     }
@@ -1391,21 +1394,21 @@
     }
 
     .test-actions {
-        margin-top: 10px;
-        gap: 8px !important;
+        margin-top: 8px;
+        gap: 6px !important;
     }
 
     .btn-test {
-        min-height: 36px;
-        padding: 8px 12px;
-        border-radius: 8px;
-        font-size: 0.78rem;
+        min-height: 30px;
+        padding: 6px 9px;
+        border-radius: 6px;
+        font-size: 0.68rem;
         font-weight: 800;
         box-shadow: none;
     }
 
     .btn-test span {
-        font-size: 0.78rem;
+        font-size: 0.68rem;
     }
 
     .test-card .btn-primary-test,
@@ -1733,7 +1736,7 @@
                                 $testFilterStatus = $test['display_status'] ?? 'not_started';
                             @endphp
 
-                            <div class="col-xl-4 col-lg-6 col-md-6 mb-4 test-filter-item" data-test-status="{{ $testFilterStatus }}">
+                            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-3 test-filter-item" data-test-status="{{ $testFilterStatus }}">
                                 <div class="test-card">
                                     <div class="card-header">
                                         <h3 class="test-title">{{ $test['name'] }}</h3>
