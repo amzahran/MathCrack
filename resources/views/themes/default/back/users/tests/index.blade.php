@@ -1269,16 +1269,16 @@
     }
 
     .test-card {
-        border-radius: 7px;
-        border: 1px solid #cbd5e1;
-        background: #ffffff;
-        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+        border-radius: 14px;
+        border: 1px solid #cbd8ea;
+        background: #fbfdff;
+        box-shadow: 0 10px 24px rgba(30, 64, 175, 0.13);
         overflow: hidden;
     }
 
     .test-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.17);
+        box-shadow: 0 14px 30px rgba(30, 64, 175, 0.17);
     }
 
     .test-card .card-header,
@@ -1288,8 +1288,8 @@
         min-height: 66px;
         padding: 10px 12px;
         justify-content: flex-start;
-        background: #ffffff;
-        border-bottom: 2px solid #dbeafe;
+        background: #f8fbff;
+        border-bottom: 1px solid #d6e2f2;
         color: #0f172a;
     }
 
@@ -1319,9 +1319,9 @@
 
     .stat-item {
         padding: 6px 3px;
-        border-radius: 6px;
-        background: #eff6ff;
-        border-color: #bfdbfe;
+        border-radius: 8px;
+        background: #eef6ff;
+        border: 1px solid #cfe0f6;
     }
 
     .stat-item:hover {
@@ -1342,8 +1342,8 @@
 
     .price-section {
         margin-bottom: 8px;
-        padding: 6px 8px;
-        border-radius: 6px;
+        padding: 5px 8px;
+        border-radius: 8px;
         background: #ecfdf5;
         color: #047857;
         border: 1px solid #bbf7d0;
@@ -1401,7 +1401,7 @@
     .btn-test {
         min-height: 30px;
         padding: 6px 9px;
-        border-radius: 6px;
+        border-radius: 8px;
         font-size: 0.68rem;
         font-weight: 800;
         box-shadow: none;
