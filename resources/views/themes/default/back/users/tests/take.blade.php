@@ -1124,12 +1124,13 @@
 
   /* Final answer choice compact sizing */
   .options{
-    gap:13px !important;
+    gap:11px !important;
   }
 
   .option-item{
     grid-template-columns:44px 1fr !important;
-    padding:10px 14px !important;
+    padding:8px 13px !important;
+    border-color:#b8c6dc !important;
     min-height:0;
     align-items:center !important;
   }
