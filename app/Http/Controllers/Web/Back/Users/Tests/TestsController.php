@@ -1209,6 +1209,18 @@ $previousAttempt = \App\Models\StudentTest::where('student_id', $user->id)
                 'accuracy' => $dAccuracy,
                 'coverage' => $dCoverage,
             ];
+        })->sortBy(function ($difficulty) {
+            $difficultyOrder = [
+                'easy' => 1,
+                'medium' => 2,
+                'hard' => 3,
+            ];
+            $normalizedDifficulty = strtolower(trim((string) $difficulty['difficulty']));
+
+            return [
+                $difficultyOrder[$normalizedDifficulty] ?? 4,
+                $normalizedDifficulty,
+            ];
         })->values();
 
         if ($percentage >= 85) {
