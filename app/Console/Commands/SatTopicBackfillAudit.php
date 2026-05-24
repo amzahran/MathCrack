@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Tests\SatTopicClassifier;
 use Illuminate\Console\Command;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
@@ -16,13 +17,6 @@ class SatTopicBackfillAudit extends Command
                             {--limit= : Limit the number of untagged questions exported}';
 
     protected $description = 'Export untagged SAT question topic suggestions for manual review (read-only database audit)';
-
-    private const DOMAINS = [
-        'algebra' => 'Algebra',
-        'advanced_math' => 'Advanced Math',
-        'problem_solving_and_data_analysis' => 'Problem Solving and Data Analysis',
-        'geometry_and_trigonometry' => 'Geometry and Trigonometry',
-    ];
 
     private const HEADERS = [
         'test_id',
@@ -41,7 +35,7 @@ class SatTopicBackfillAudit extends Command
         'needs_manual_review',
     ];
 
-    public function handle(): int
+    public function handle(SatTopicClassifier $classifier): int
     {
         if (strtolower((string) $this->option('format')) !== 'csv') {
             $this->error('Only --format=csv is supported.');
@@ -79,8 +73,8 @@ class SatTopicBackfillAudit extends Command
 
         foreach ($questions as $question) {
             $options = $optionsByQuestion->get($question->question_id, collect());
-            $imagePresent = $this->hasImage($question, $options);
-            $suggestion = $this->classify($question->question_text, $options);
+            $imagePresent = $classifier->hasImage($question, $options);
+            $suggestion = $classifier->classify($question->question_text, $options);
             $needsManualReview = $suggestion['confidence'] === 'low' || $imagePresent;
 
             $confidenceCounts[$suggestion['confidence']]++;
@@ -93,15 +87,15 @@ class SatTopicBackfillAudit extends Command
                 $question->test_title,
                 $question->question_id,
                 $question->question_order,
-                $this->preview($question->question_text, 180),
-                $this->cleanText($question->question_text),
-                $this->optionsPreview($options),
+                $classifier->preview($question->question_text, 180),
+                $classifier->cleanText($question->question_text),
+                $classifier->optionsPreview($options),
                 $question->current_content,
                 $suggestion['label'],
                 $suggestion['slug'],
                 $suggestion['confidence'],
                 $imagePresent ? 'yes' : 'no',
-                $this->hasExplanation($question) ? 'yes' : 'no',
+                $classifier->hasExplanation($question) ? 'yes' : 'no',
                 $needsManualReview ? 'yes' : 'no',
             ];
         }
@@ -229,97 +223,6 @@ class SatTopicBackfillAudit extends Command
             ->orderBy('option_order')
             ->get()
             ->groupBy('test_question_id');
-    }
-
-    private function classify(?string $questionText, $options): array
-    {
-        $searchable = strtolower($this->cleanText($questionText) . ' ' . $this->optionsPreview($options));
-        $matches = [];
-
-        $rules = [
-            'geometry_and_trigonometry' => [
-                'confidence' => 'high',
-                'pattern' => '/\b(triangle|circle|radius|diameter|circumference|angle|parallel|perpendicular|congruent|similar triangles?|right triangle|sine|cosine|tangent|trigonometric|cylinder|cone|sphere|rectangular prism)\b/i',
-            ],
-            'problem_solving_and_data_analysis' => [
-                'confidence' => 'high',
-                'pattern' => '/\b(random sample|probability|scatterplot|scatter plot|line of best fit|margin of error|survey|frequency table|histogram|median|standard deviation|data set|percentile|two-way table)\b/i',
-            ],
-            'advanced_math' => [
-                'confidence' => 'medium',
-                'pattern' => '/\b(quadratic|polynomial|parabola|exponential|radical equation|rational function|nonlinear|zeros? of|complex number)\b/i',
-            ],
-            'algebra' => [
-                'confidence' => 'medium',
-                'pattern' => '/\b(linear equation|system of (?:linear )?equations?|slope|x-intercept|y-intercept|linear function|inequality|equation of a line)\b/i',
-            ],
-        ];
-
-        foreach ($rules as $slug => $rule) {
-            if (preg_match($rule['pattern'], $searchable) === 1) {
-                $matches[$slug] = $rule['confidence'];
-            }
-        }
-
-        if (count($matches) !== 1) {
-            return ['label' => '', 'slug' => '', 'confidence' => 'low'];
-        }
-
-        $slug = array_key_first($matches);
-
-        return [
-            'label' => self::DOMAINS[$slug],
-            'slug' => $slug,
-            'confidence' => $matches[$slug],
-        ];
-    }
-
-    private function hasImage(object $question, $options): bool
-    {
-        if ($this->hasValue($question->question_image)) {
-            return true;
-        }
-
-        return $options->contains(function (object $option): bool {
-            return $this->hasValue($option->option_image);
-        });
-    }
-
-    private function hasExplanation(object $question): bool
-    {
-        return $this->hasValue($question->explanation) || $this->hasValue($question->explanation_image);
-    }
-
-    private function optionsPreview($options): string
-    {
-        return $options->map(function (object $option): string {
-            $label = chr(65 + max(0, (int) $option->option_order - 1));
-
-            return $label . ': ' . $this->cleanText($option->option_text);
-        })->implode(' | ');
-    }
-
-    private function preview(?string $text, int $length): string
-    {
-        $text = $this->cleanText($text);
-
-        if (mb_strlen($text) <= $length) {
-            return $text;
-        }
-
-        return mb_substr($text, 0, $length - 3) . '...';
-    }
-
-    private function cleanText(?string $text): string
-    {
-        $text = trim(strip_tags((string) $text));
-
-        return preg_replace('/\s+/u', ' ', $text) ?? $text;
-    }
-
-    private function hasValue(?string $value): bool
-    {
-        return trim((string) $value) !== '';
     }
 
     private function resolveOutputPath(string $output): string
