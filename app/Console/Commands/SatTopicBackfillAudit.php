@@ -13,10 +13,10 @@ class SatTopicBackfillAudit extends Command
     protected $signature = 'sat:topic-backfill-audit
                             {--format=csv : Export format; currently only csv is supported}
                             {--output=storage/app/sat-topic-audit.csv : CSV output path}
-                            {--test= : Restrict the audit to one SAT test ID}
+                            {--test= : Restrict the audit to one test ID}
                             {--limit= : Limit the number of untagged questions exported}';
 
-    protected $description = 'Export untagged SAT question topic suggestions for manual review (read-only database audit)';
+    protected $description = 'Export untagged math question topic suggestions for manual review (read-only database audit)';
 
     private const HEADERS = [
         'test_id',
@@ -53,12 +53,16 @@ class SatTopicBackfillAudit extends Command
             return self::FAILURE;
         }
 
-        $satTestsQuery = $this->satTestsQuery($testId);
-        $testsFound = (clone $satTestsQuery)->count();
-        $testIds = (clone $satTestsQuery)->pluck('tests.id');
+        $testsQuery = $this->testsQuery($testId);
+        $testsFound = (clone $testsQuery)->count();
+        $testIds = (clone $testsQuery)
+            ->join('test_questions', 'test_questions.test_id', '=', 'tests.id')
+            ->distinct()
+            ->pluck('tests.id');
+        $testsWithQuestions = $testIds->count();
 
-        if ($testsFound === 0) {
-            $this->warn('No SAT or Digital SAT tests matched the requested filter.');
+        if ($testsWithQuestions === 0) {
+            $this->warn('No tests with questions matched the requested filter.');
 
             return self::SUCCESS;
         }
@@ -106,8 +110,9 @@ class SatTopicBackfillAudit extends Command
         }
 
         $this->newLine();
-        $this->info('SAT topic backfill audit export complete. No database records were modified.');
-        $this->line('Total SAT tests found: ' . $testsFound);
+        $this->info('Math topic backfill audit export complete. No database records were modified.');
+        $this->line('Total tests found: ' . $testsFound);
+        $this->line('Total tests with questions: ' . $testsWithQuestions);
         $this->line('Total questions scanned: ' . $summary->total_questions);
         $this->line('Total untagged: ' . $summary->untagged_questions);
         $this->line('Rows exported: ' . count($rows));
@@ -154,16 +159,9 @@ class SatTopicBackfillAudit extends Command
         return (int) $limit;
     }
 
-    private function satTestsQuery(?int $testId): Builder
+    private function testsQuery(?int $testId): Builder
     {
         return DB::table('tests')
-            ->where(function (Builder $query): void {
-                $query->whereRaw('LOWER(tests.name) LIKE ?', ['%digital sat%'])
-                    ->orWhereRaw('LOWER(tests.name) = ?', ['sat'])
-                    ->orWhereRaw('LOWER(tests.name) LIKE ?', ['sat %'])
-                    ->orWhereRaw('LOWER(tests.name) LIKE ?', ['% sat %'])
-                    ->orWhereRaw('LOWER(tests.name) LIKE ?', ['% sat']);
-            })
             ->when($testId !== null, function (Builder $query) use ($testId): void {
                 $query->where('tests.id', $testId);
             });

@@ -23,7 +23,7 @@ class SatTopicClassifier
             ],
             'problem_solving_and_data_analysis' => [
                 'confidence' => 'high',
-                'pattern' => '/\b(random sample|probability|scatterplot|scatter plot|line of best fit|margin of error|survey|frequency table|histogram|median|standard deviation|data set|percentile|two-way table)\b/i',
+                'pattern' => '/\b(random sample|probability|scatterplot|scatter plot|line of best fit|margin of error|frequency table|histogram|median|standard deviation|data set|percentile|two-way table)\b/i',
             ],
             'advanced_math' => [
                 'confidence' => 'medium',
@@ -39,6 +39,13 @@ class SatTopicClassifier
             if (preg_match($rule['pattern'], $searchable) === 1) {
                 $matches[$slug] = $rule['confidence'];
             }
+        }
+
+        if (
+            preg_match('/\bsurvey\b/i', $searchable) === 1
+            && preg_match('/\b(percent|percentage|proportion|sample|estimate|margin of error|residents|respondents)\b/i', $searchable) === 1
+        ) {
+            $matches['problem_solving_and_data_analysis'] = 'high';
         }
 
         if (count($matches) !== 1) {

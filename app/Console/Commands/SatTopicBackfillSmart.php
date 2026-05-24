@@ -12,12 +12,12 @@ class SatTopicBackfillSmart extends Command
 {
     protected $signature = 'sat:topic-backfill-smart
                             {--dry-run : Preview eligible updates without modifying database records}
-                            {--apply : Apply only high-confidence, image-free suggestions to untagged SAT questions}
+                            {--apply : Apply only high-confidence, image-free suggestions to untagged math questions}
                             {--limit= : Limit evaluated untagged questions for dry-run testing only}
                             {--output=storage/app/sat-topic-backfill-smart-preview.csv : Preview CSV output path}
-                            {--test= : Restrict the operation to one SAT test ID}';
+                            {--test= : Restrict the operation to one test ID}';
 
-    protected $description = 'Preview or safely backfill high-confidence SAT topic values across SAT tests';
+    protected $description = 'Preview or safely backfill high-confidence math topic values across tests';
 
     private const HEADERS = [
         'test_id',
@@ -61,17 +61,22 @@ class SatTopicBackfillSmart extends Command
         }
 
         if ($apply) {
-            $this->warn('APPLY MODE: updating high-confidence untagged SAT questions only.');
+            $this->warn('APPLY MODE: updating high-confidence untagged math questions only.');
         } else {
             $this->info('DRY RUN: no database records will be modified.');
         }
 
-        $satTestsQuery = $this->satTestsQuery($testId);
-        $testsFound = (clone $satTestsQuery)->count();
-        $testIds = (clone $satTestsQuery)->pluck('tests.id')->all();
+        $testsQuery = $this->testsQuery($testId);
+        $testsFound = (clone $testsQuery)->count();
+        $testIds = (clone $testsQuery)
+            ->join('test_questions', 'test_questions.test_id', '=', 'tests.id')
+            ->distinct()
+            ->pluck('tests.id')
+            ->all();
+        $testsWithQuestions = count($testIds);
 
-        if ($testsFound === 0) {
-            $this->warn('No SAT or Digital SAT tests matched the requested filter.');
+        if ($testsWithQuestions === 0) {
+            $this->warn('No tests with questions matched the requested filter.');
 
             return self::SUCCESS;
         }
@@ -165,6 +170,17 @@ class SatTopicBackfillSmart extends Command
                             $query->whereNull('content')
                                 ->orWhereRaw("TRIM(content) = ''");
                         })
+                        ->where(function (Builder $query): void {
+                            $query->whereNull('question_image')
+                                ->orWhereRaw("TRIM(question_image) = ''");
+                        })
+                        ->whereNotExists(function (Builder $query): void {
+                            $query->select(DB::raw(1))
+                                ->from('test_question_options as image_options')
+                                ->whereColumn('image_options.test_question_id', 'test_questions.id')
+                                ->whereNotNull('image_options.option_image')
+                                ->whereRaw("TRIM(image_options.option_image) <> ''");
+                        })
                         ->update(['content' => $candidate['slug']]);
 
                     $updated += $affected;
@@ -176,6 +192,7 @@ class SatTopicBackfillSmart extends Command
         $this->printSummary(
             $apply,
             $testsFound,
+            $testsWithQuestions,
             $summary,
             count($rows),
             count($eligible),
@@ -208,16 +225,9 @@ class SatTopicBackfillSmart extends Command
         return (int) $value;
     }
 
-    private function satTestsQuery(?int $testId): Builder
+    private function testsQuery(?int $testId): Builder
     {
         return DB::table('tests')
-            ->where(function (Builder $query): void {
-                $query->whereRaw('LOWER(tests.name) LIKE ?', ['%digital sat%'])
-                    ->orWhereRaw('LOWER(tests.name) = ?', ['sat'])
-                    ->orWhereRaw('LOWER(tests.name) LIKE ?', ['sat %'])
-                    ->orWhereRaw('LOWER(tests.name) LIKE ?', ['% sat %'])
-                    ->orWhereRaw('LOWER(tests.name) LIKE ?', ['% sat']);
-            })
             ->when($testId !== null, function (Builder $query) use ($testId): void {
                 $query->where('tests.id', $testId);
             });
@@ -281,6 +291,7 @@ class SatTopicBackfillSmart extends Command
     private function printSummary(
         bool $apply,
         int $testsFound,
+        int $testsWithQuestions,
         object $summary,
         int $rowsEvaluated,
         int $eligibleCount,
@@ -292,8 +303,9 @@ class SatTopicBackfillSmart extends Command
         ?int $limit
     ): void {
         $this->newLine();
-        $this->info($apply ? 'SAT topic smart backfill apply complete.' : 'SAT topic smart backfill dry-run complete.');
-        $this->line('Total SAT tests found: ' . $testsFound);
+        $this->info($apply ? 'Math topic smart backfill apply complete.' : 'Math topic smart backfill dry-run complete.');
+        $this->line('Total tests found: ' . $testsFound);
+        $this->line('Total tests with questions: ' . $testsWithQuestions);
         $this->line('Total questions scanned: ' . (int) $summary->total_questions);
         $this->line('Already tagged: ' . (int) $summary->tagged_questions);
         $this->line('Untagged: ' . (int) $summary->untagged_questions);
@@ -322,7 +334,7 @@ class SatTopicBackfillSmart extends Command
 
         $this->line('Preview output file path: ' . $outputPath);
         if ($apply) {
-            $this->warn('Medium-confidence, low-confidence, image-present, already-tagged, and non-SAT questions were not touched.');
+            $this->warn('Medium-confidence, low-confidence, image-present, already-tagged, and questions without a safe math-domain suggestion were not touched.');
         } else {
             $this->info('Dry-run only: rerun with --apply to update eligible rows.');
         }
