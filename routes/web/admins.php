@@ -350,7 +350,7 @@ Route::prefix('admins/tests')->controller(\App\Http\Controllers\Web\Back\Admins\
     Route::get('/edit', 'edit')->name('dashboard.admins.tests-edit');
     Route::patch('/update', 'update')->name('dashboard.admins.tests-update');
 
-    Route::get('/delete', 'delete')->name('dashboard.admins.tests-delete');
+    Route::delete('/delete', 'delete')->name('dashboard.admins.tests-delete');
     Route::get('/show', 'show')->name('dashboard.admins.tests-show');
 
     Route::post('/toggle-status', 'toggleStatus')->name('dashboard.admins.tests-toggle-status');

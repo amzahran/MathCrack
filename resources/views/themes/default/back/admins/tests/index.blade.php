@@ -748,13 +748,9 @@ $(document).ready(function() {
         }
     });
 
-    $(document).on('click', '.delete-record', function() {
-        var href     = $(this).attr('href');
+    $(document).on('submit', '.delete-record', function() {
         var testName = $(this).closest('tr').find('td:eq(1)').text().trim() || 'this test';
-        if (confirm('@lang("l.are_you_sure_delete_test") "' + testName + '"?')) {
-            window.location.href = href;
-        }
-        return false;
+        return confirm('@lang("l.are_you_sure_delete_test") "' + testName + '"?');
     });
 });
 </script>

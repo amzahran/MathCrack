@@ -151,7 +151,6 @@ Route::group(
                     Route::get('/edit', 'edit')->name('edit');
                     Route::post('/update', 'update')->name('update');
                     Route::get('/show', 'show')->name('show');
-                    Route::get('/delete', 'delete')->name('delete');
                     Route::post('/toggle-status', 'toggleStatus')->name('toggle-status');
                     Route::get('/preview/{id}', 'preview')->name('preview');
                 });
@@ -222,5 +221,4 @@ Route::get('/mock-unavailable', function() {
 
 Route::get('/users/tests/{id}/report', [UserTestsController::class, 'report'])
     ->name('dashboard.users.tests.report');
-
 

@@ -128,10 +128,14 @@ class TestsController extends Controller
                                 </a>';
 
                     if (!$test->studentTests()->exists()) {
-                        $buttons .= '<a href="' . route('dashboard.admins.tests-delete', ['id' => encrypt($test->id)]) . '"
-                                       class="btn btn-sm btn-danger delete-record" title="' . __('l.delete') . '">
-                                       <i class="fas fa-trash"></i>
-                                    </a>';
+                        $buttons .= '<form action="' . route('dashboard.admins.tests-delete', ['id' => encrypt($test->id)]) . '"
+                                          method="POST" class="d-inline delete-record">
+                                       <input type="hidden" name="_token" value="' . csrf_token() . '">
+                                       <input type="hidden" name="_method" value="DELETE">
+                                       <button type="submit" class="btn btn-sm btn-danger" title="' . __('l.delete') . '">
+                                           <i class="fas fa-trash"></i>
+                                       </button>
+                                    </form>';
                     }
 
                     $buttons .= '</div>';
