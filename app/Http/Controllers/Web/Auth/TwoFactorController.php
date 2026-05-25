@@ -11,7 +11,7 @@ class TwoFactorController extends Controller
 {
     public function challenge()
     {
-        if (!session()->has('auth.2fa.user_id')) {
+        if (!session()->has('auth.2fa.user_id') || !session('auth.2fa.password_confirmed')) {
             return redirect()->route('login');
         }
 
@@ -20,14 +20,20 @@ class TwoFactorController extends Controller
 
     public function verify(Request $request)
     {
+        if (!$request->session()->has('auth.2fa.user_id') || !$request->session()->get('auth.2fa.password_confirmed')) {
+            return redirect()->route('login');
+        }
+
         $request->validate([
             'code' => 'required|string|size:6',
         ]);
 
-        $userId = session('auth.2fa.user_id');
+        $userId = $request->session()->get('auth.2fa.user_id');
         $user = \App\Models\User::find($userId);
 
         if (!$user) {
+            $request->session()->forget(['auth.2fa.user_id', 'auth.2fa.remember', 'auth.2fa.password_confirmed']);
+
             return redirect()->route('login');
         }
 
@@ -38,10 +44,11 @@ class TwoFactorController extends Controller
 
         if ($valid) {
             // تسجيل الدخول
-            Auth::login($user, session('auth.2fa.remember', false));
+            Auth::login($user, $request->session()->get('auth.2fa.remember', false));
 
             // مسح بيانات الجلسة المؤقتة
-            session()->forget(['auth.2fa.user_id', 'auth.2fa.remember']);
+            $request->session()->forget(['auth.2fa.user_id', 'auth.2fa.remember', 'auth.2fa.password_confirmed']);
+            $request->session()->regenerate();
 
             return redirect()->intended(route('home', absolute: false));
         }

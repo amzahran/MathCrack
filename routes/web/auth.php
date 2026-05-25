@@ -87,4 +87,5 @@ Route::get('/auth/twitter/callback', [SocialAuthController::class, 'handleTwitte
 Route::get('/2fa/challenge', [TwoFactorController::class, 'challenge'])
     ->name('2fa.challenge');
 Route::post('/2fa/verify', [TwoFactorController::class, 'verify'])
+    ->middleware('throttle:5,1')
     ->name('2fa.verify');

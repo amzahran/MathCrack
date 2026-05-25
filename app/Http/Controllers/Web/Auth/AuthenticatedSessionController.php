@@ -55,30 +55,30 @@ class AuthenticatedSessionController extends Controller
                 throw new \Exception('Invalid credentials');
             }
 
-            if (!empty($user->google2fa_secret)) {
-                session([
-                    'auth.2fa.user_id' => $user->id,
-                    'auth.2fa.remember' => $request->boolean('remember'),
-                ]);
-
-                return redirect()->route('2fa.challenge');
-            }
-
             $request->authenticate();
 
             Cache::forget($key . ':attempts');
             Cache::forget($key . ':lockout_time');
 
+            if (!empty($user->google2fa_secret)) {
+                Auth::guard('web')->logout();
+                $request->session()->regenerate();
+                $request->session()->put([
+                    'auth.2fa.user_id' => $user->id,
+                    'auth.2fa.remember' => $request->boolean('remember'),
+                    'auth.2fa.password_confirmed' => true,
+                ]);
+
+                return redirect()->route('2fa.challenge');
+            }
+
             if ($request->boolean('remember')) {
                 $email = $request->email;
-                $password = $request->password;
                 $expiry = time() + (60 * 60 * 24 * 30);
 
                 setcookie('remember_user', $email, $expiry, "/");
-                setcookie('remember_pass', encrypt($password), $expiry, "/");
             } else {
                 setcookie('remember_user', '', time() - 3600, "/");
-                setcookie('remember_pass', '', time() - 3600, "/");
             }
 
             $request->session()->regenerate();
