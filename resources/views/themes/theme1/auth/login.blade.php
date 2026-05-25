@@ -43,11 +43,7 @@
                             <div class="mb-3">
                                 <input type="password" id="password" class="form-control" name="password" required
                                 placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                aria-describedby="password"
-                                @if (isset($_COOKIE['remember_pass'])) <?php $password = decrypt($_COOKIE['remember_pass']); ?>
-                                    value="{{ $password }}"
-                                @else
-                                    value="{{ old('password') }}" @endif />
+                                aria-describedby="password" />
                             </div>
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>

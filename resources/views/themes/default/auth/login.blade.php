@@ -152,11 +152,7 @@ a:hover{
                             <div class="mb-3 position-relative">
                                 <input type="password" id="password" class="form-control" name="password" required
                                 placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                aria-describedby="password"
-                                @if (isset($_COOKIE['remember_pass'])) <?php $password = decrypt($_COOKIE['remember_pass']); ?>
-                                    value="{{ $password }}"
-                                @else
-                                    value="{{ old('password') }}" @endif />
+                                aria-describedby="password" />
                                 <button type="button" class="btn position-absolute end-0 top-50 translate-middle-y pe-3"
                                         onclick="togglePassword()" style="border: none; background: none; z-index: 10;">
                                     <i id="password-toggle-icon" class="feather-eye-off text-muted"></i>

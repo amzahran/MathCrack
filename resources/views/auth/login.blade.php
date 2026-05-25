@@ -92,15 +92,6 @@
 @section('content')
 @php
     $rememberUser = $_COOKIE['remember_user'] ?? null;
-
-    $rememberPass = null;
-    if (isset($_COOKIE['remember_pass'])) {
-        try {
-            $rememberPass = decrypt($_COOKIE['remember_pass']);
-        } catch (\Throwable $e) {
-            $rememberPass = null;
-        }
-    }
 @endphp
 
 <main class="auth-minimal-wrapper">
@@ -159,7 +150,6 @@
                                 required
                                 placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
                                 aria-describedby="password"
-                                value="{{ $rememberPass ?? old('password') }}"
                             />
 
                             <button
