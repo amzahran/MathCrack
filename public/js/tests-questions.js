@@ -903,8 +903,11 @@ function deleteQuestion(questionId) {
 
     $.ajax({
         url: window.routes ? window.routes.questionsDelete : '/dashboard/admins/tests-questions/delete',
-        method: 'GET',
-        data: { id: questionId },
+        method: 'POST',
+        data: {
+            id: questionId,
+            _token: (window.Laravel && window.Laravel.csrfToken) || $('meta[name="csrf-token"]').attr('content')
+        },
         success: function () {
             showLoading(false);
             questionCard.fadeOut(300, function () {

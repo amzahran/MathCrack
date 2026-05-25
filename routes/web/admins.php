@@ -411,7 +411,6 @@ Route::prefix('admins/tests-questions')->controller(TestQuestionsController::cla
     Route::get('/', 'index')->name('dashboard.admins.tests-questions');
     Route::post('/store', 'store')->name('dashboard.admins.tests-questions-store');
     Route::patch('/update', 'update')->name('dashboard.admins.tests-questions-update');
-    Route::get('/delete', 'delete')->name('dashboard.admins.tests-questions-delete');
 });
         // --------------------------------------------------test preview-------------------------------------------------------------------------------------------------------------
         Route::prefix('admins/tests')->controller(\App\Http\Controllers\Web\Back\Admins\Tests\TestsController::class)->group(function () {
