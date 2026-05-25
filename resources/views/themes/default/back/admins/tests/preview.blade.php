@@ -595,14 +595,14 @@ mjx-container {
                     <i class="fas fa-arrow-left me-2"></i>
                     @lang('l.back_to_questions')
                 </a>
-                <button onclick="window.print()" class="btn btn-outline-primary waves-effect waves-light">
+                <!-- <button onclick="window.print()" class="btn btn-outline-primary waves-effect waves-light">
                     <i class="fas fa-print me-2"></i>
                     @lang('l.print')
-                </button>
-                <button onclick="copyPreviewLink()" class="btn btn-outline-success waves-effect waves-light">
+                </button> -->
+                <!-- <button onclick="copyPreviewLink()" class="btn btn-outline-success waves-effect waves-light">
                     <i class="fas fa-link me-2"></i>
                     @lang('l.copy_link')
-                </button>
+                </button> -->
             </div>
         </div>
 

@@ -2007,4 +2007,6 @@ return [
     'course_count' => 'Course',
     'course_parts' => 'Course Parts',
     'updated_since' => 'Updated :time',
+    'complete' => 'Complete',
+    'L.print'=>'Print'
 ];
