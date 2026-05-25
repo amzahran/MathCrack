@@ -58,7 +58,7 @@ use App\Http\Controllers\Web\Back\Admins\Tests\TestQuestionsController;
         Route::post('/assignments/store', 'storeAssignment')->name('dashboard.admins.lectures-assignments-store');
         Route::get('/assignments/edit', 'editAssignment')->name('dashboard.admins.lectures-assignments-edit');
         Route::patch('/assignments/update', 'updateAssignment')->name('dashboard.admins.lectures-assignments-update');
-        Route::get('/assignments/delete', 'deleteAssignment')->name('dashboard.admins.lectures-assignments-delete');
+        Route::delete('/assignments/delete', 'deleteAssignment')->name('dashboard.admins.lectures-assignments-delete');
         Route::get('/assignments/preview', 'previewAssignment')->name('dashboard.admins.lectures-assignments-preview');
         // الأسئلة
         Route::get('/questions', 'questions')->name('dashboard.admins.lectures-questions');
