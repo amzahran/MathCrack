@@ -29,7 +29,7 @@ class BackupAndUpdateController extends Controller
         }
 
         $name = $request->backup;
-        $path = public_path('backup/laravel/' . $name);
+        $path = storage_path('app/backups/laravel/' . $name);
 
         if (File::exists($path)) {
             File::delete($path);

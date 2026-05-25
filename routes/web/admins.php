@@ -359,7 +359,7 @@ Route::get('/preview', 'preview')->name('dashboard.admins.tests-preview');
     
 });
 
-Route::prefix('admins/tests/latex-import')->controller(LatexTestImportController::class)->group(function () {
+Route::prefix('admins/tests/latex-import')->middleware('can:edit tests')->controller(LatexTestImportController::class)->group(function () {
     Route::get('/', 'create')->name('dashboard.admins.tests-latex-import');
     Route::post('/preview', 'preview')->name('dashboard.admins.tests-latex-import-preview');
     Route::post('/store', 'store')->name('dashboard.admins.tests-latex-import-store');

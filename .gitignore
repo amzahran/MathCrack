@@ -38,3 +38,10 @@ storage/logs/*
 # Cache
 *.log
 *.cache
+
+# Database dumps and backup archives
+*.sql
+*.sql.gz
+/public/backup/
+/storage/app/backups/
+/storage/app/backup-temp/

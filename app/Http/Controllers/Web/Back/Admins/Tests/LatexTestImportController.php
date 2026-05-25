@@ -9,6 +9,7 @@ use App\Services\Tests\LatexTestImporter;
 use App\Services\Tests\LatexTestImportValidator;
 use App\Services\Tests\LatexTestParser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,6 +17,8 @@ class LatexTestImportController extends Controller
 {
     public function create()
     {
+        Gate::authorize('edit tests');
+
         $tests = Test::withCount('studentTests')
             ->orderBy('student_tests_count')
             ->orderBy('name')
@@ -31,6 +34,8 @@ class LatexTestImportController extends Controller
         LatexImportArchiveExtractor $extractor
     )
     {
+        Gate::authorize('edit tests');
+
         $inputValidator = $this->validateImportRequest($request);
 
         if ($inputValidator->fails()) {
@@ -67,6 +72,8 @@ class LatexTestImportController extends Controller
         LatexTestImporter $importer,
         LatexImportArchiveExtractor $extractor
     ) {
+        Gate::authorize('edit tests');
+
         $inputValidator = $this->validateImportRequest($request);
 
         if ($inputValidator->fails()) {

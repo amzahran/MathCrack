@@ -25,7 +25,7 @@ class SettingsController extends Controller
         $languages = Language::where('is_active', true)->get();
         $ips = BlockedIp::orderByDesc('id')->get();
 
-        $backupPath = public_path('backup/laravel');
+        $backupPath = storage_path('app/backups/laravel');
         $backups = [];
 
         if (File::exists($backupPath)) {

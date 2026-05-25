@@ -58,8 +58,8 @@ return [
 
         'backup' => [
             'driver' => 'local',
-            'root' => public_path('backup'),
-            'visibility' => 'public',
+            'root' => storage_path('app/backups'),
+            'visibility' => 'private',
         ],
 
     ],
