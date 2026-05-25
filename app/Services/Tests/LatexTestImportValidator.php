@@ -52,11 +52,15 @@ class LatexTestImportValidator
             ];
 
             if ($incoming > 0 && $expected <= 0) {
-                $result['errors'][] = "Module {$moduleNumber} has incoming questions, but {$part}_questions_count is not configured.";
+                $result['errors'][] = "Your file contains Module {$moduleNumber} questions, but this test does not have a Module {$moduleNumber} question count configured. Edit the test and set Part {$moduleNumber} Questions Count first.";
             }
 
             if ($expected > 0 && $final > $expected) {
-                $result['errors'][] = "Module {$moduleNumber} would exceed {$part}_questions_count ({$final}/{$expected}).";
+                $existingLabel = $existing === 1 ? 'question' : 'questions';
+                $incomingLabel = $incoming === 1 ? 'question' : 'questions';
+                $allowedLabel = $expected === 1 ? 'question' : 'questions';
+
+                $result['errors'][] = "Module {$moduleNumber} already has {$existing} {$existingLabel}, and your file adds {$incoming} more {$incomingLabel}. The test allows only {$expected} {$allowedLabel} in Module {$moduleNumber}. Create a new test or delete the existing questions first.";
             }
         }
 
@@ -101,8 +105,13 @@ class LatexTestImportValidator
                     $calculatedScore = $this->calculateScore($test, $moduleNumber, $difficulty);
 
                     if (!$this->isValidScore($calculatedScore)) {
-                        $scoreField = "module{$moduleNumber}_{$difficulty}_score";
-                        $result['errors'][] = "{$label}: calculated score from {$scoreField} is missing, zero, non-numeric, or outside 1..100.";
+                        $scoreLabel = "Module {$moduleNumber} " . ucfirst($difficulty) . ' score';
+
+                        if ($calculatedScore === null || $calculatedScore === '') {
+                            $result['errors'][] = "{$label}: {$scoreLabel} is missing in the test settings. Edit the test and fill Module {$moduleNumber} score values.";
+                        } else {
+                            $result['errors'][] = "{$label}: {$scoreLabel} must be a number from 1 to 100 in the test settings. Edit the test and enter a valid score.";
+                        }
                     }
                 }
 
