@@ -285,13 +285,10 @@
             updateFiltersStatus();
 
             // Delete Course
-            $(document).on('click', '.delete-course', function() {
-                var id = $(this).data('id');
+            $(document).on('submit', '.delete-course', function() {
                 var name = $(this).data('name');
 
-                if (confirm('@lang("l.Are you sure you want to delete") "' + name + '"?')) {
-                    window.location.href = "{{ route('dashboard.admins.courses-delete') }}?id=" + id;
-                }
+                return confirm('@lang("l.Are you sure you want to delete") "' + name + '"?');
             });
 
             // Access Duration Helper

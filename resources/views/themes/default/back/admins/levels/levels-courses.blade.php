@@ -88,6 +88,12 @@
                     url: "{{ asset('assets/themes/default/js/datatables-ar.json') }}"
                 }
             });
+
+            $(document).on('submit', '.delete-course', function() {
+                var name = $(this).data('name');
+
+                return confirm('@lang("l.Are you sure you want to delete") "' + name + '"?');
+            });
         });
     </script>
 @endsection

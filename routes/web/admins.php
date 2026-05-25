@@ -95,7 +95,7 @@ use App\Http\Controllers\Web\Back\Admins\Tests\TestQuestionsController;
         Route::post('/store', 'store')->name('dashboard.admins.courses-store');
         Route::get('/edit', 'edit')->name('dashboard.admins.courses-edit');
         Route::patch('/update', 'update')->name('dashboard.admins.courses-update');
-        Route::get('/delete', 'delete')->name('dashboard.admins.courses-delete');
+        Route::delete('/delete', 'delete')->name('dashboard.admins.courses-delete');
     });
     // =======================================================customers==============================================================================================================
     Route::prefix('admins/students')->controller(CustomersController::class)->group(function () {
