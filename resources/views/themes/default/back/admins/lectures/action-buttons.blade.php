@@ -7,7 +7,13 @@
         <i class="fa fa-edit ti-xs"></i>
     </a>
 
-    <a href="{{ route('dashboard.admins.lectures-delete') }}?id={{ encrypt($row->id) }}" class="btn btn-danger btn-sm delete-record" title="@lang('l.Delete')">
-        <i class="fa fa-trash ti-xs"></i>
-    </a>
+    <form action="{{ route('dashboard.admins.lectures-delete', ['id' => encrypt($row->id)]) }}"
+          method="POST"
+          class="d-inline delete-record">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn btn-danger btn-sm" title="@lang('l.Delete')">
+            <i class="fa fa-trash ti-xs"></i>
+        </button>
+    </form>
 </div>

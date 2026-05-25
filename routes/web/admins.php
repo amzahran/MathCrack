@@ -52,7 +52,7 @@ use App\Http\Controllers\Web\Back\Admins\Tests\TestQuestionsController;
         Route::post('/store', 'store')->name('dashboard.admins.lectures-store');
         Route::get('/edit', 'edit')->name('dashboard.admins.lectures-edit');
         Route::patch('/update', 'update')->name('dashboard.admins.lectures-update');
-        Route::get('/delete', 'delete')->name('dashboard.admins.lectures-delete');
+        Route::delete('/delete', 'delete')->name('dashboard.admins.lectures-delete');
         // الواجبات
         Route::get('/assignments', 'assignments')->name('dashboard.admins.lectures-assignments');
         Route::post('/assignments/store', 'storeAssignment')->name('dashboard.admins.lectures-assignments-store');

@@ -331,13 +331,9 @@
             updateFiltersStatus();
 
             // Delete confirmation
-            $(document).on('click', '.delete-record', function() {
-                var id = $(this).attr('href').split('id=')[1];
+            $(document).on('submit', '.delete-record', function() {
                 var name = $(this).closest('tr').find('td:eq(1)').text();
-                if (confirm('@lang("l.Are you sure you want to delete") "' + name + '"?')) {
-                    window.location.href = $(this).attr('href');
-                }
-                return false;
+                return confirm('@lang("l.Are you sure you want to delete") "' + name + '"?');
             });
 
             // Handle lecture type change
