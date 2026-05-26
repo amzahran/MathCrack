@@ -65,7 +65,7 @@ use App\Http\Controllers\Web\Back\Admins\Tests\TestQuestionsController;
         Route::post('/questions/store', 'storeQuestion')->name('dashboard.admins.lectures-questions-store');
         Route::get('/questions/edit', 'editQuestion')->name('dashboard.admins.lectures-questions-edit');
         Route::patch('/questions/update', 'updateQuestion')->name('dashboard.admins.lectures-questions-update');
-        Route::get('/questions/delete', 'deleteQuestion')->name('dashboard.admins.lectures-questions-delete');
+        Route::post('/questions/delete', 'deleteQuestion')->name('dashboard.admins.lectures-questions-delete');
     });
     Route::prefix('admins/lectures/assignments/latex-import')->controller(LatexAssignmentImportController::class)->group(function () {
         Route::get('/', 'create')->name('dashboard.admins.lectures-assignments-latex-import');

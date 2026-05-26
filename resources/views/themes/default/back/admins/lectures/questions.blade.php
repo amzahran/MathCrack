@@ -1137,7 +1137,10 @@ function deleteQuestion(questionId) {
 
     $.ajax({
         url: '{{ route("dashboard.admins.lectures-questions-delete") }}',
-        method: 'GET',
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
         data: {
             id: isNewQuestion ? questionId : questionDataId // إرسال الـ ID الصحيح
         },
