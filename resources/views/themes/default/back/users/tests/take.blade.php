@@ -1319,7 +1319,7 @@
                           <input
                             class="numeric-answer-input"
                             type="text"
-                            inputmode="text"
+                            inputmode="decimal"
                             dir="ltr"
                             autocomplete="off"
                             placeholder="e.g. 0.5, 1/2, or 3 2"
@@ -2114,12 +2114,13 @@ setTimeout(() => this.desmosCalc?.resize?.(), 150);
       .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
       .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
 
+    // Keep numeric free-response typing permissive: digits, decimals, negatives, and fractions are saved as text.
     v = v
-      .replace(/\u066B/g, '.')
+      .replace(/[\u060C\u066B]/g, '.')
+      .replace(/,/g, '.')
       .replace(/\u066C/g, '')
-      .replace(/[⁄／]/g, '/');
-
-    v = v.replace(/[^0-9\-./ ]/g, '');
+      .replace(/[\u061F\u2044\u2215\uFF0F]/g, '/')
+      .replace(/[\u2212\u2010\u2011\u2012\u2013\u2014]/g, '-');
 
     return v;
   }
