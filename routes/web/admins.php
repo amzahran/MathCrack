@@ -85,7 +85,7 @@ use App\Http\Controllers\Web\Back\Admins\Tests\TestQuestionsController;
         Route::get('/', 'index')->name('dashboard.admins.levels');
         Route::post('/store', 'store')->name('dashboard.admins.levels-store');
         Route::patch('/update', 'update')->name('dashboard.admins.levels-update');
-        Route::get('/delete', 'delete')->name('dashboard.admins.levels-delete');
+        Route::delete('/delete', 'delete')->name('dashboard.admins.levels-delete');
         Route::get('/students', 'students')->name('dashboard.admins.levels-students');
         Route::get('/courses', 'courses')->name('dashboard.admins.levels-courses');
     });

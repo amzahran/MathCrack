@@ -172,7 +172,27 @@
                 var name = $(this).data('name');
 
                 if (confirm('@lang("l.Are you sure you want to delete") "' + name + '"?')) {
-                    window.location.href = "{{ route('dashboard.admins.levels-delete') }}?id=" + id;
+                    $('<form>', {
+                        method: 'POST',
+                        action: "{{ route('dashboard.admins.levels-delete') }}"
+                    })
+                        .append($('<input>', {
+                            type: 'hidden',
+                            name: '_token',
+                            value: "{{ csrf_token() }}"
+                        }))
+                        .append($('<input>', {
+                            type: 'hidden',
+                            name: '_method',
+                            value: 'DELETE'
+                        }))
+                        .append($('<input>', {
+                            type: 'hidden',
+                            name: 'id',
+                            value: id
+                        }))
+                        .appendTo('body')
+                        .submit();
                 }
             });
         });
