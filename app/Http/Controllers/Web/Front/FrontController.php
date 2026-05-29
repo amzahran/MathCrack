@@ -388,37 +388,60 @@ class FrontController extends Controller
         $queryString = http_build_query($data, "", '&', PHP_QUERY_RFC3986);
         $signature = hash_hmac('sha256', $queryString, (string) $paymentApiKey, false);
 
+        $merchantOrderId = $data_obj['merchantOrderId']
+            ?? $data_obj['merchant_order_id']
+            ?? $data_obj['orderId']
+            ?? $data_obj['order_id']
+            ?? null;
+        $paymentStatus = strtoupper((string) (
+            $data_obj['paymentStatus']
+            ?? $data_obj['status']
+            ?? $data_obj['transactionStatus']
+            ?? ''
+        ));
+        $amount = $data_obj['amount']
+            ?? $data_obj['orderAmount']
+            ?? $data_obj['totalAmount']
+            ?? null;
+        $currency = $data_obj['currency']
+            ?? $data_obj['orderCurrency']
+            ?? null;
+        $transactionId = $data_obj['transactionId']
+            ?? $data_obj['transaction_id']
+            ?? $data_obj['paymentId']
+            ?? $data_obj['payment_id']
+            ?? null;
+
         if ($kashierSignature !== '' && hash_equals($signature, $kashierSignature)) {
-            $merchantOrderId = $data_obj['merchantOrderId']
-                ?? $data_obj['merchant_order_id']
-                ?? $data_obj['orderId']
-                ?? $data_obj['order_id']
-                ?? null;
-
-            $paymentStatus = strtoupper((string) (
-                $data_obj['paymentStatus']
-                ?? $data_obj['status']
-                ?? $data_obj['transactionStatus']
-                ?? ''
-            ));
-
             $invoice = null;
+            $oldInvoiceStatus = null;
+            $newInvoiceStatus = null;
 
             if (!empty($merchantOrderId)) {
                 $invoice = \App\Models\Invoice::where('pid', $merchantOrderId)->first();
+                $oldInvoiceStatus = $invoice?->status;
 
                 if ($invoice && in_array($paymentStatus, ['SUCCESS', 'CAPTURED', 'PAID', 'APPROVED'], true)) {
                     $invoice->status = 'paid';
                     $invoice->save();
                 }
+
+                $newInvoiceStatus = $invoice?->status;
             }
 
             logger('Kashier webhook valid signature', [
                 'merchant_order_id' => $merchantOrderId,
+                'pid' => $merchantOrderId,
                 'payment_status' => $paymentStatus,
+                'amount' => $amount,
+                'currency' => $currency,
+                'transaction_id' => $transactionId,
                 'invoice_found' => (bool) $invoice,
                 'invoice_id' => $invoice?->id,
+                'old_invoice_status' => $oldInvoiceStatus,
+                'new_invoice_status' => $newInvoiceStatus,
                 'invoice_status' => $invoice?->status,
+                'request_keys' => array_keys($request->all()),
                 'data_keys' => array_keys($data_obj),
             ]);
 
@@ -435,6 +458,13 @@ class FrontController extends Controller
         logger('Kashier webhook invalid signature', [
             'has_signature' => $kashierSignature !== '',
             'signature_keys_count' => count($signatureKeys),
+            'merchant_order_id' => $merchantOrderId,
+            'pid' => $merchantOrderId,
+            'payment_status' => $paymentStatus,
+            'amount' => $amount,
+            'currency' => $currency,
+            'transaction_id' => $transactionId,
+            'request_keys' => array_keys($request->all()),
             'data_keys' => array_keys($data_obj),
         ]);
 
