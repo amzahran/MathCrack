@@ -122,9 +122,9 @@ Route::group(
             Route::get('/mock-test', [UserTestsController::class, 'mockTest'])->name('mock-test');
             Route::prefix('/notification')->controller(NotificationController::class)->group(function () {
                 Route::get('/show', 'show')->name('dashboard.notification-show');
-                Route::get('/delete', 'delete')->name('dashboard.notification-delete');
-                Route::get('/deleteall', 'deleteall')->name('dashboard.notification-deleteAll');
-                Route::get('/markall', 'markall')->name('dashboard.notification-markAll');
+                Route::delete('/delete', 'delete')->name('dashboard.notification-delete');
+                Route::delete('/deleteall', 'deleteall')->name('dashboard.notification-deleteAll');
+                Route::post('/markall', 'markall')->name('dashboard.notification-markAll');
                 Route::get('/sse', 'sse')->name('dashboard.notification-sse');
             });
 
@@ -221,4 +221,3 @@ Route::get('/mock-unavailable', function() {
 
 Route::get('/users/tests/{id}/report', [UserTestsController::class, 'report'])
     ->name('dashboard.users.tests.report');
-
