@@ -609,20 +609,13 @@ class PaymentController extends Controller
                 return redirect()->route('dashboard.users.payment-success', ['invoice_id' => $invoice->id])
                     ->with('success', __('l.payment_successful'));
             } else {
-                $recentPaidInvoice = Invoice::where('user_id', auth()->id())
-                    ->where('status', 'paid')
-                    ->where('updated_at', '>=', now()->subMinutes(10))
-                    ->latest('updated_at')
-                    ->first();
-
-                if (!$invoice && $recentPaidInvoice) {
-                    logger('Kashier verification fallback to recent paid invoice', [
-                        'recent_invoice_id' => $recentPaidInvoice->id,
-                        'recent_invoice_status' => $recentPaidInvoice->status,
+                if ($response['success'] == 'true' && !$invoice) {
+                    logger()->warning('Kashier verification succeeded without matching invoice', [
+                        'user_id' => auth()->id(),
+                        'returned_payment_id' => $response['payment_id'] ?? null,
+                        'route_payment_parameter' => $payment,
+                        'request_keys' => array_keys($request->all()),
                     ]);
-
-                    return redirect()->route('dashboard.users.payment-success', ['invoice_id' => $recentPaidInvoice->id])
-                        ->with('success', __('l.payment_successful'));
                 }
 
                 if ($invoice && $invoice->status !== 'paid') {
