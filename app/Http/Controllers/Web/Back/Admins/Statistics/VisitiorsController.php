@@ -20,7 +20,7 @@ class VisitiorsController extends Controller
             return view('themes/default/back.permission-denied');
         }
 
-        $accept = Setting::where('option', 'allow_cookies')->first()->value ?? 0;
+        $accept = Setting::where('option', 'allow_cookies')->value('value') ?? 0;
         if ($accept == 0) {
             return view('themes/default/back.admins.statistics.visitors.visitors-statistics', compact('accept'));
         }
@@ -96,7 +96,7 @@ class VisitiorsController extends Controller
             return view('themes/default/back.permission-denied');
         }
 
-        $accept = Setting::where('option', 'allow_cookies')->first()->value ?? 0;
+        $accept = Setting::where('option', 'allow_cookies')->value('value') ?? 0;
         if ($accept == 1) {
             Visit::truncate();
         }
@@ -115,7 +115,7 @@ class VisitiorsController extends Controller
             return view('themes/default/back.permission-denied');
         }
 
-        $google = Setting::where('option', 'google_analytics')->first()->value ?? null;
+        $google = Setting::where('option', 'google_analytics')->value('value') ?? null;
 
         if ($google) {
             $days = $request->input('period', 30);
@@ -156,7 +156,7 @@ class VisitiorsController extends Controller
             return view('themes/default/back.permission-denied');
         }
 
-        $google = Setting::where('option', 'google_analytics')->first()->value ?? null;
+        $google = Setting::where('option', 'google_analytics')->value('value') ?? null;
         if ($google == null) {
             $request->validate([
                 'google_analytics' => 'required|string|max:255',

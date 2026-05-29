@@ -317,7 +317,7 @@ class BlogCategoriesController extends Controller
         $currentName = is_array($category->name) ? $category->name : [];
         $currentMetaKeywords = is_array($category->meta_keywords) ? $category->meta_keywords : [];
         $currentMetaDescription = is_array($category->meta_description) ? $category->meta_description : [];
-        $defaultLanguage = Setting::where('option', 'default_language')->first()->value;
+        $defaultLanguage = Setting::where('option', 'default_language')->value('value') ?? 'en';
 
         $category->update([
             'name' => array_merge($currentName, [$defaultLanguage => $request->name]),

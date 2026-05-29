@@ -40,7 +40,7 @@ class PaymentsController extends Controller
         ]);
 
         $gateway = PaymentGateway::findOrFail($id);
-        $defaultLanguage = Setting::where('option', 'default_language')->first()->value;
+        $defaultLanguage = Setting::where('option', 'default_language')->value('value') ?? 'en';
 
         // تحويل الوصف الحالي إلى مصفوفة إذا كان نصاً
         $currentDescription = is_array($gateway->description) ? $gateway->description : [];

@@ -24,8 +24,8 @@ class LimitUserSessions
 
         if (Auth::check()) {
             $userId = Auth::id();
-            $maxSessions = Setting::where('option', 'max_sessions')->first()->value;
-            $sessionTimeout = Setting::where('option', 'session_timeout')->first()->value * 60 * 60;
+            $maxSessions = (int) (Setting::where('option', 'max_sessions')->value('value') ?? 1);
+            $sessionTimeout = (int) (Setting::where('option', 'session_timeout')->value('value') ?? 24) * 60 * 60;
 
             // التحقق من آخر جلسة للمستخدم
             $lastSession = DB::table('sessions')

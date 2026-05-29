@@ -72,9 +72,9 @@ class NewBlogNotification extends Notification implements ShouldQueue
     {
         try {
             // استخدام الوصول المباشر لجدول الإعدادات بدلاً من الكاش
-            $defaultLanguage = \App\Models\Setting::where('option', 'default_language')->first()->value ?? 'en';
+            $defaultLanguage = \App\Models\Setting::where('option', 'default_language')->value('value') ?? 'en';
             $title = $this->blog->getTranslation('title', $defaultLanguage);
-            $siteTitle = \App\Models\Setting::where('option', 'site_name')->first()->value ?? config('app.name');
+            $siteTitle = \App\Models\Setting::where('option', 'site_name')->value('value') ?? config('app.name');
             $url = route('blog.show', $this->blog->slug);
 
             return (new MailMessage)
@@ -101,7 +101,7 @@ class NewBlogNotification extends Notification implements ShouldQueue
      */
     public function toArray($notifiable)
     {
-        $defaultLanguage = \App\Models\Setting::where('option', 'default_language')->first()->value ?? 'en';
+        $defaultLanguage = \App\Models\Setting::where('option', 'default_language')->value('value') ?? 'en';
         return [
             'blog_id' => $this->blog->id,
             'title' => $this->blog->getTranslation('title', $defaultLanguage),

@@ -79,7 +79,16 @@ class AppServiceProvider extends ServiceProvider
      */
     private function getSettings(): array
     {
-        return Setting::pluck('value', 'option')->toArray();
+        return array_merge([
+            'theme' => 'default',
+            'default_language' => 'en',
+            'default_currency' => 'egp',
+            'max_sessions' => 1,
+            'session_timeout' => 24,
+            'allow_cookies' => 0,
+            'google_analytics' => null,
+            'site_name' => config('app.name'),
+        ], Setting::pluck('value', 'option')->toArray());
     }
 
     /**

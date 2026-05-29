@@ -26,8 +26,9 @@ class CurrencyMiddleware
 
         // تعيين العملة الافتراضية إذا لم تكن موجودة
         if ($currencyCode == null) {
-            $defaultCode = Setting::where('option', 'default_currency')->first()->value;
-            $defaultCurrency = Currency::where('code', $defaultCode)->firstOrFail();
+            $defaultCode = Setting::where('option', 'default_currency')->value('value') ?? 'egp';
+            $defaultCurrency = Currency::where('code', $defaultCode)->first()
+                ?? Currency::where('is_active', true)->firstOrFail();
 
             setcookie('currency', $defaultCurrency->code, [
                 'expires' => time() + (86400 * 30),

@@ -609,7 +609,7 @@ class BlogsController extends Controller
         $currentContent = is_array($blog->content) ? $blog->content : [];
         $currentMetaKeywords = is_array($blog->meta_keywords) ? $blog->meta_keywords : [];
         $currentMetaDescription = is_array($blog->meta_description) ? $blog->meta_description : [];
-        $defaultLanguage = Setting::where('option', 'default_language')->first()->value;
+        $defaultLanguage = Setting::where('option', 'default_language')->value('value') ?? 'en';
 
         $image = $blog->image;
         if ($request->hasFile('image')) {

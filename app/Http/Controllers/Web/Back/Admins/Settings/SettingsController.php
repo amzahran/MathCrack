@@ -52,7 +52,7 @@ class SettingsController extends Controller
         // update logo if exist
         if ($request->hasFile('logo')) {
             $logoo = Setting::where('option', 'logo')->first();
-            $logo = $logoo->value;
+            $logo = $logoo?->value;
             if ($logo != null) {
                 $path = public_path($logo);
                 if (file_exists($path)) {
@@ -62,13 +62,13 @@ class SettingsController extends Controller
             $image = $request->file('logo');
             $filename = 'logo.' . $image->getClientOriginalExtension();
             $image->move(public_path('/'), $filename);
-            $logoo->update(['value' => $filename]);
+            Setting::updateOrCreate(['option' => 'logo'], ['value' => $filename]);
         }
 
         // update Black logo if exist
         if ($request->hasFile('logo_black')) {
             $logooBlack = Setting::where('option', 'logo_black')->first();
-            $logoBlack = $logooBlack->value;
+            $logoBlack = $logooBlack?->value;
             if ($logoBlack != null) {
                 $path = public_path($logoBlack);
                 if (file_exists($path)) {
@@ -78,13 +78,13 @@ class SettingsController extends Controller
             $image = $request->file('logo_black');
             $filename = 'logo-black.' . $image->getClientOriginalExtension();
             $image->move(public_path('/'), $filename);
-            $logooBlack->update(['value' => $filename]);
+            Setting::updateOrCreate(['option' => 'logo_black'], ['value' => $filename]);
         }
 
         // update favicon if exist
         if ($request->hasFile('favicon')) {
             $faviconn = Setting::where('option', 'favicon')->first();
-            $favicon = $faviconn->value;
+            $favicon = $faviconn?->value;
             if ($favicon != null) {
                 $path = public_path($favicon);
                 if (file_exists($path)) {
@@ -94,7 +94,7 @@ class SettingsController extends Controller
             $image = $request->file('favicon');
             $filename = 'favicon.' . $image->getClientOriginalExtension();
             $image->move(public_path('/'), $filename);
-            $faviconn->update(['value' => $filename]);
+            Setting::updateOrCreate(['option' => 'favicon'], ['value' => $filename]);
         }
 
         // update theme

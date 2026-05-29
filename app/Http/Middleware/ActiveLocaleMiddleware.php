@@ -26,7 +26,7 @@ class ActiveLocaleMiddleware
         $active = Language::where('code', $locale)->where('is_active', true)->exists();
         if (!$active) {
             // جلب اللغة الافتراضية من الإعدادات
-            $defaultLanguage = \App\Models\Setting::where('option', 'default_language')->first()->value ?? 'en';
+            $defaultLanguage = \App\Models\Setting::where('option', 'default_language')->value('value') ?? 'en';
             // إذا كانت اللغة الافتراضية نفسها غير مفعلة، أظهر 404
             $defaultActive = Language::where('code', $defaultLanguage)->where('is_active', true)->exists();
             if ($defaultActive && $locale !== $defaultLanguage) {
