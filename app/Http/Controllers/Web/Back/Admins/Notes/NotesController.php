@@ -20,15 +20,24 @@ class NotesController extends Controller
             return DataTables::of($notes)
                 ->addIndexColumn()
                 ->addColumn('action', function ($note) {
+                    $encryptedId = encrypt($note->id);
+                    $confirmMessage = e(json_encode(__('l.Are you sure you want to delete?')));
+
                     return '
-                        <a href="' . route('dashboard.admins.notes-edit', ['id' => encrypt($note->id)]) . '"
+                        <a href="' . route('dashboard.admins.notes-edit', ['id' => $encryptedId]) . '"
                             class="btn btn-warning btn-sm" data-bs-toggle="tooltip" title="' . __('l.Edit') . '">
                             <i class="fa fa-edit"></i>
                         </a>
-                        <button type="button" class="btn btn-danger btn-sm delete-note"
-                            data-id="' . encrypt($note->id) . '" data-bs-toggle="tooltip" title="' . __('l.Delete') . '">
-                            <i class="fa fa-trash"></i>
-                        </button>';
+                        <form method="POST" action="' . route('dashboard.admins.notes-delete') . '" class="d-inline"
+                            onsubmit="return confirm(' . $confirmMessage . ');">
+                            ' . csrf_field() . '
+                            ' . method_field('DELETE') . '
+                            <input type="hidden" name="id" value="' . $encryptedId . '">
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                data-bs-toggle="tooltip" title="' . __('l.Delete') . '">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </form>';
                 })
                 ->editColumn('note', function ($note) {
                     return Str::limit($note->note, 75);

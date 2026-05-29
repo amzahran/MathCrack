@@ -145,8 +145,8 @@ use App\Http\Controllers\Web\Back\Admins\Tests\TestQuestionsController;
         Route::post('/store', 'store')->name('dashboard.admins.notes-store');
         Route::get('/edit', 'edit')->name('dashboard.admins.notes-edit');
         Route::patch('/update', 'update')->name('dashboard.admins.notes-update');
-        Route::get('/delete', 'delete')->name('dashboard.admins.notes-delete');
-        Route::get('/delete-selected', 'deleteSelected')->name('dashboard.admins.notes-deleteSelected');
+        Route::delete('/delete', 'delete')->name('dashboard.admins.notes-delete');
+        Route::delete('/delete-selected', 'deleteSelected')->name('dashboard.admins.notes-deleteSelected');
         Route::get('/check', 'check')->name('dashboard.admins.notes-check');
     });
     // =======================================================blog==============================================================================================================

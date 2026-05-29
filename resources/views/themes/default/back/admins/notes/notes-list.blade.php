@@ -99,6 +99,76 @@
 @section('js')
     <script>
         $(function() {
+            function submitDeleteForm(action, fields) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = action;
+                form.style.display = 'none';
+
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '_token';
+                tokenInput.value = @json(csrf_token());
+                form.appendChild(tokenInput);
+
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                form.appendChild(methodInput);
+
+                Object.keys(fields).forEach(function(name) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = name;
+                    input.value = fields[name];
+                    form.appendChild(input);
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+            function confirmDelete(options, onConfirm) {
+                if (window.Swal && typeof window.Swal.fire === 'function') {
+                    window.Swal.fire(options).then((result) => {
+                        if (result.isConfirmed) {
+                            onConfirm();
+                        }
+                    });
+                    return;
+                }
+
+                if (window.confirm(options.text || options.title)) {
+                    onConfirm();
+                }
+            }
+
+            $('#deleteSelected').on('click', function(e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
+                let selectedIds = $('.row-checkbox:checked').map(function() {
+                    return $(this).val();
+                }).get();
+
+                if (selectedIds.length > 0) {
+                    confirmDelete({
+                        title: '@lang('l.Are you sure?')',
+                        text: '@lang('l.Selected notes will be deleted!')',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: '@lang('l.Yes, delete them!')',
+                        cancelButtonText: '@lang('l.Cancel')',
+                        reverseButtons: true
+                    }, function() {
+                        submitDeleteForm(@json(route('dashboard.admins.notes-deleteSelected')), {
+                            ids: selectedIds.join(',')
+                        });
+                    });
+                }
+            });
+
             let table = $('#notes-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -184,49 +254,7 @@
             }
 
             // حذف الملاحظات المحددة
-            $('#deleteSelected').on('click', function() {
-                let selectedIds = $('.row-checkbox:checked').map(function() {
-                    return $(this).val();
-                }).get();
-
-                if (selectedIds.length > 0) {
-                    Swal.fire({
-                        title: '@lang('l.Are you sure?')',
-                        text: '@lang('l.Selected notes will be deleted!')',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: '@lang('l.Yes, delete them!')',
-                        cancelButtonText: '@lang('l.Cancel')',
-                        reverseButtons: true
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href =
-                                '{{ route('dashboard.admins.notes-deleteSelected') }}?ids=' +
-                                selectedIds.join(',');
-                        }
-                    });
-                }
-            });
-
             // إضافة معالج حدث الحذف للأزرار التي يتم إنشاؤها ديناميكياً
-            $(document).on('click', '.delete-note', function() {
-                let noteId = $(this).data('id');
-
-                Swal.fire({
-                    title: '@lang('l.Are you sure?')',
-                    text: '@lang('l.You will delete this note forever!')',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '@lang('l.Yes, delete it!')',
-                    cancelButtonText: '@lang('l.Cancel')',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '{{ route('dashboard.admins.notes-delete') }}?id=' +
-                            noteId;
-                    }
-                });
-            });
         });
     </script>
 @endsection
