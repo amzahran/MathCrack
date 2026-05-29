@@ -18,10 +18,14 @@ class LimitUserSessions
      */
     public function handle($request, Closure $next)
     {
+        if (config('session.driver') !== 'database') {
+            return $next($request);
+        }
+
         if (Auth::check()) {
             $userId = Auth::id();
             $maxSessions = Setting::where('option', 'max_sessions')->first()->value;
-            $sessionTimeout = Setting::where('option', 'session_timeout')->first()->value*60*60;
+            $sessionTimeout = Setting::where('option', 'session_timeout')->first()->value * 60 * 60;
 
             // التحقق من آخر جلسة للمستخدم
             $lastSession = DB::table('sessions')
