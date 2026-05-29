@@ -167,12 +167,19 @@
             });
 
             // Delete Level
-            $(document).on('click', '.delete-level', function() {
+            $(document).on('click', '.delete-level', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+
                 var id = $(this).data('id');
                 var name = $(this).data('name');
+                var message = @json(__('l.Are you sure you want to delete')) + ' "' + name + '"?';
 
-                if (confirm('@lang("l.Are you sure you want to delete") "' + name + '"?')) {
-                    $('<form>', {
+                if (!window.confirm(message)) {
+                    return false;
+                }
+
+                var form = $('<form>', {
                         method: 'POST',
                         action: "{{ route('dashboard.admins.levels-delete') }}"
                     })
@@ -191,9 +198,10 @@
                             name: 'id',
                             value: id
                         }))
-                        .appendTo('body')
-                        .submit();
-                }
+                        .appendTo('body');
+
+                form[0].submit();
+                return false;
             });
         });
     </script>
