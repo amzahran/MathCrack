@@ -453,6 +453,25 @@ $studentTest->updateCurrentScore();
             return $this->jsonError('Test is not active', 400);
         }
 
+        $questionQuery = TestQuestion::where('id', $request->question_id)
+            ->where('test_id', $studentTest->test_id);
+
+        if (in_array($studentTest->status, [self::STATUS_PART1, self::STATUS_PART2], true)) {
+            $currentModule = (int) $studentTest->current_module;
+            $currentPart = 'part' . $currentModule;
+
+            $questionQuery->where(function ($query) use ($currentPart, $currentModule) {
+                $query->where('part', $currentPart)
+                    ->orWhere('module_number', $currentModule);
+            });
+        }
+
+        $question = $questionQuery->first();
+
+        if (!$question) {
+            return $this->jsonError('Question is not valid for this test attempt', 403);
+        }
+
         try {
             $answerValue = $this->extractAnswerValue($request->input('answer'));
             if ($answerValue === null) {
