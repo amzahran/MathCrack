@@ -39,8 +39,8 @@ use App\Http\Controllers\Web\Back\Admins\Tests\TestQuestionsController;
     Route::prefix('admins/invoices')->controller(\App\Http\Controllers\Web\Back\Admins\Invoices\InvoicesController::class)->group(function () {
         Route::get('/', 'index')->name('dashboard.admins.invoices');
         Route::post('/store', 'store')->name('dashboard.admins.invoices-store');
-        Route::get('/delete', 'delete')->name('dashboard.admins.invoices-delete');
-        Route::get('/delete-selected', 'deleteSelected')->name('dashboard.admins.invoices-delete-selected');
+        Route::delete('/delete', 'delete')->name('dashboard.admins.invoices-delete');
+        Route::delete('/delete-selected', 'deleteSelected')->name('dashboard.admins.invoices-delete-selected');
         Route::get('/show', 'show')->name('dashboard.admins.invoices-show');
         Route::get('/student-invoices', 'studentInvoices')->name('dashboard.admins.invoices-student');
         Route::get('/get-students', 'getStudents')->name('dashboard.admins.invoices-get-students');

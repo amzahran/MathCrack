@@ -188,11 +188,17 @@
                     <div class="col-12">
                         <div class="d-flex gap-2">
                             @can('delete invoices')
-                                <a href="{{ route('dashboard.admins.invoices-delete', ['id' => encrypt($invoice->id)]) }}"
-                                   class="btn btn-danger"
-                                   onclick="return confirm('@lang('l.Are you sure you want to delete this invoice?')')">
-                                    <i class="fas fa-trash me-1"></i>@lang('l.Delete')
-                                </a>
+                                <form method="POST"
+                                      action="{{ route('dashboard.admins.invoices-delete') }}"
+                                      class="d-inline"
+                                      onsubmit="return confirm('Are you sure you want to delete this invoice? This may affect access records.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <input type="hidden" name="id" value="{{ encrypt($invoice->id) }}">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fas fa-trash me-1"></i>@lang('l.Delete')
+                                    </button>
+                                </form>
                             @endcan
                         </div>
                     </div>

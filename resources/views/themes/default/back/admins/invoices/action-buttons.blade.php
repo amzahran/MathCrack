@@ -8,11 +8,18 @@
     @endcan
 
     @can('delete invoices')
-        <a href="{{ route('dashboard.admins.invoices-delete', ['id' => encrypt($row->id)]) }}"
-           class="btn btn-sm btn-danger"
-           title="@lang('l.Delete')"
-           onclick="return confirm('@lang('l.Are you sure you want to delete this invoice?')')">
-            <i class="fas fa-trash"></i>
-        </a>
+        <form method="POST"
+              action="{{ route('dashboard.admins.invoices-delete') }}"
+              class="d-inline"
+              onsubmit="return confirm('Are you sure you want to delete this invoice? This may affect access records.')">
+            @csrf
+            @method('DELETE')
+            <input type="hidden" name="id" value="{{ encrypt($row->id) }}">
+            <button type="submit"
+                    class="btn btn-sm btn-danger"
+                    title="@lang('l.Delete')">
+                <i class="fas fa-trash"></i>
+            </button>
+        </form>
     @endcan
 </div>
