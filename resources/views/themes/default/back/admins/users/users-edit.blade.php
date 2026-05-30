@@ -158,8 +158,9 @@
                                             <p class="mb-0">@lang('l.Once you delete this account, there is no going back. Please be certain.')</p>
                                         </div>
                                     </div>
-                                    <form id="formAccountDeactivation" method="get"
+                                    <form id="formAccountDeactivation" method="post"
                                         action="{{ route('dashboard.admins.users-inactive') }}">@csrf
+                                        @method('PATCH')
                                         <div class="form-check mb-4">
                                             <input class="form-check-input" type="checkbox" name="accountActivation"
                                                 id="accountActivation" required />
