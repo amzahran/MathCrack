@@ -504,10 +504,15 @@
                                                     <i class="fa-solid fa-ellipsis-vertical"></i>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end">
-                                                    <a href="{{ route('dashboard.profile-apiDelete') }}?name={{ encrypt($api->name) }}"
-                                                        class="dropdown-item">
-                                                        <i class="ti ti-trash me-2"></i>@lang('l.Delete')
-                                                    </a>
+                                                    <form method="POST" action="{{ route('dashboard.profile-apiDelete') }}"
+                                                        onsubmit="return confirm('Are you sure you want to delete this API token?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <input type="hidden" name="name" value="{{ encrypt($api->name) }}">
+                                                        <button type="submit" class="dropdown-item">
+                                                            <i class="ti ti-trash me-2"></i>@lang('l.Delete')
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>

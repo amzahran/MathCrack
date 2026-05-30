@@ -135,7 +135,7 @@ Route::group(
                 Route::put('/password', 'updatePassword')->name('dashboard.profile-updatePassword');
                 Route::delete('/delete', 'delete')->name('dashboard.profile-delete');
                 Route::post('/apiCreate', 'apiCreate')->name('dashboard.profile-apiCreate');
-                Route::get('/apiDelete', 'apiDelete')->name('dashboard.profile-apiDelete');
+                Route::delete('/apiDelete', 'apiDelete')->name('dashboard.profile-apiDelete');
                 Route::get('/2fa', 'show2faForm')->name('profile.2fa.form');
                 Route::post('/2fa/enable', 'enable2fa')->name('profile.2fa.enable');
                 Route::post('/2fa/disable', 'disable2fa')->name('profile.2fa.disable');
