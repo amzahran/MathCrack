@@ -330,14 +330,24 @@
             }
 
             // معالجة أحداث الحذف
+            function submitDeleteRequest(action) {
+                $('<form>', {
+                    method: 'POST',
+                    action: action
+                })
+                    .append('@csrf')
+                    .append('<input type="hidden" name="_method" value="DELETE">')
+                    .appendTo('body')
+                    .submit();
+            }
+
             $(document).on('click', '.delete-record', function(e) {
                 e.preventDefault();
                 const deleteUrl = $(this).attr('href');
-                const isInactive = $(this).data('inactive');
 
                 Swal.fire({
                     title: '@lang('l.Are you sure?')',
-                    text: isInactive ? "@lang('l.The customer will be deleted permanently!')" : "@lang('l.The customer will be disabled!')",
+                    text: 'This is a permanent delete and cannot be undone. It may remove invoices, tests, answers, assignments, and access records.',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: '@lang('l.Yes, delete it!')',
@@ -350,7 +360,7 @@
                     }
                 }).then(function(result) {
                     if (result && (result.isConfirmed || result.value === true)) {
-                        window.location.assign(deleteUrl);
+                        submitDeleteRequest(deleteUrl);
                     }
                 });
             });
@@ -367,7 +377,7 @@
 
                 Swal.fire({
                     title: '@lang('l.Are you sure?')',
-                    text: "@lang('l.All inactive customers will be deleted permanently! This action cannot be undone.')",
+                    text: 'This is a permanent delete and cannot be undone. It may remove invoices, tests, answers, assignments, and access records.',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: '@lang('l.Yes, delete all!')',
@@ -380,7 +390,7 @@
                     }
                 }).then(function(result) {
                     if (result && (result.isConfirmed || result.value === true)) {
-                        window.location.assign('{{ route('dashboard.admins.customers-delete-allinactive') }}');
+                        submitDeleteRequest('{{ route('dashboard.admins.customers-delete-allinactive') }}');
                     }
                 });
             });
@@ -419,7 +429,7 @@
                 if (selectedIds.length > 0) {
                     Swal.fire({
                         title: '@lang('l.Are you sure?')',
-                        text: "@lang('l.Selected customers will be deleted!')",
+                        text: 'This is a permanent delete and cannot be undone. It may remove invoices, tests, answers, assignments, and access records.',
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: '@lang('l.Yes, delete them!')',
@@ -432,7 +442,7 @@
                         }
                     }).then(function(result) {
                         if (result && (result.isConfirmed || result.value === true)) {
-                            window.location.assign('{{ route("dashboard.admins.customers-delete-selected") }}?ids=' + selectedIds.join(','));
+                            submitDeleteRequest('{{ route("dashboard.admins.customers-delete-selected") }}?ids=' + selectedIds.join(','));
                         }
                     });
                 }

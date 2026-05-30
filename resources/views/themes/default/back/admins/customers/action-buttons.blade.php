@@ -46,7 +46,7 @@
                     class="btn btn-sm btn-icon btn-danger delete-record"
                     data-bs-toggle="tooltip"
                     data-bs-placement="top"
-                    title="{{ __('l.Delete') }}"
+                    title="{{ __('l.Permanent Delete') }}"
                     data-inactive="false">
                     <i class="fa fa-trash"></i>
                 </a>
