@@ -99,6 +99,36 @@
 @section('js')
     <script>
         $(function() {
+            function submitDeleteForm(action, fields) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = action;
+                form.style.display = 'none';
+
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '_token';
+                tokenInput.value = @json(csrf_token());
+                form.appendChild(tokenInput);
+
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                form.appendChild(methodInput);
+
+                Object.keys(fields).forEach(function(name) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = name;
+                    input.value = fields[name];
+                    form.appendChild(input);
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+
             let table = $('#notes-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -200,33 +230,14 @@
                         reverseButtons: true
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href =
-                                '{{ route('dashboard.users.notes-deleteSelected') }}?ids=' +
-                                selectedIds.join(',');
+                            submitDeleteForm(@json(route('dashboard.users.notes-deleteSelected')), {
+                                ids: selectedIds.join(',')
+                            });
                         }
                     });
                 }
             });
 
-            // إضافة معالج حدث الحذف للأزرار التي يتم إنشاؤها ديناميكياً
-            $(document).on('click', '.delete-note', function() {
-                let noteId = $(this).data('id');
-
-                Swal.fire({
-                    title: '@lang('l.Are you sure?')',
-                    text: '@lang('l.You will delete this note forever!')',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '@lang('l.Yes, delete it!')',
-                    cancelButtonText: '@lang('l.Cancel')',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '{{ route('dashboard.users.notes-delete') }}?id=' +
-                            noteId;
-                    }
-                });
-            });
         });
     </script>
 @endsection

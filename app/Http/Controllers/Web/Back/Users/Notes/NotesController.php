@@ -20,15 +20,24 @@ class NotesController extends Controller
             return DataTables::of($notes)
                 ->addIndexColumn()
                 ->addColumn('action', function ($note) {
+                    $encryptedId = encrypt($note->id);
+                    $confirmMessage = e(json_encode(__('l.Are you sure you want to delete?')));
+
                     return '
-                        <a href="' . route('dashboard.users.notes-edit', ['id' => encrypt($note->id)]) . '"
+                        <a href="' . route('dashboard.users.notes-edit', ['id' => $encryptedId]) . '"
                             class="btn btn-warning btn-sm" data-bs-toggle="tooltip" title="' . __('l.Edit') . '">
                             <i class="fa fa-edit"></i>
                         </a>
-                        <button type="button" class="btn btn-danger btn-sm delete-note"
-                            data-id="' . encrypt($note->id) . '" data-bs-toggle="tooltip" title="' . __('l.Delete') . '">
-                            <i class="fa fa-trash"></i>
-                        </button>';
+                        <form method="POST" action="' . route('dashboard.users.notes-delete') . '" class="d-inline"
+                            onsubmit="return confirm(' . $confirmMessage . ');">
+                            ' . csrf_field() . '
+                            ' . method_field('DELETE') . '
+                            <input type="hidden" name="id" value="' . $encryptedId . '">
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                data-bs-toggle="tooltip" title="' . __('l.Delete') . '">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </form>';
                 })
                 ->editColumn('note', function ($note) {
                     return Str::limit($note->note, 75);
@@ -45,7 +54,7 @@ class NotesController extends Controller
 
     public function show()
     {
-        $notes = Note::where('user_id', auth()->user()->id)
+        $notes = Note::where('user_id', auth()->id())
         ->where(function ($query) {
             $query->where(function ($q) {
                 $q->where('is_still_active', 1)
@@ -85,7 +94,7 @@ class NotesController extends Controller
         $encryptedId = $request->id;
         $id = decrypt($encryptedId);
 
-        $note = Note::findOrFail($id);
+        $note = Note::where('user_id', auth()->id())->findOrFail($id);
 
         return view('themes.default.back.users.notes.notes-edit', ['note' => $note]);
     }
@@ -102,7 +111,7 @@ class NotesController extends Controller
         $encryptedId = $request->id;
         $id = decrypt($encryptedId);
 
-        $note = Note::findOrFail($id);
+        $note = Note::where('user_id', auth()->id())->findOrFail($id);
 
         $note->note = $request->input('note');
         $note->date = $request->input('date');
@@ -117,7 +126,7 @@ class NotesController extends Controller
         $encryptedId = $request->id;
         $id = decrypt($encryptedId);
 
-        $note = Note::findOrFail($id);
+        $note = Note::where('user_id', auth()->id())->findOrFail($id);
 
         $note->delete();
 
@@ -127,7 +136,7 @@ class NotesController extends Controller
     public function deleteSelected(Request $request)
     {
         $ids = explode(',', $request->ids);
-        Note::whereIn('id', $ids)->delete();
+        Note::where('user_id', auth()->id())->whereIn('id', $ids)->delete();
         return redirect()->back()->with('success', __('l.Notes deleted successfully'));
     }
 
@@ -135,7 +144,7 @@ class NotesController extends Controller
     {
         try {
             if (request()->ajax()) {
-                $notesCount = Note::where('user_id', auth()->user()->id)
+                $notesCount = Note::where('user_id', auth()->id())
                     ->where(function ($query) {
                         $query->where(function ($q) {
                             $q->where('is_still_active', 1)

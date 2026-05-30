@@ -54,7 +54,7 @@ class NotesController extends Controller
 
     public function show()
     {
-        $notes = Note::where('user_id', auth()->user()->id)
+        $notes = Note::where('user_id', auth()->id())
         ->where(function ($query) {
             $query->where(function ($q) {
                 $q->where('is_still_active', 1)
@@ -102,7 +102,7 @@ class NotesController extends Controller
         $encryptedId = $request->id;
         $id = decrypt($encryptedId);
 
-        $note = Note::findOrFail($id);
+        $note = Note::where('user_id', auth()->id())->findOrFail($id);
 
         return view('themes.default.back.admins.notes.notes-edit', ['note' => $note]);
     }
@@ -119,7 +119,7 @@ class NotesController extends Controller
         $encryptedId = $request->id;
         $id = decrypt($encryptedId);
 
-        $note = Note::findOrFail($id);
+        $note = Note::where('user_id', auth()->id())->findOrFail($id);
 
         $note->note = $request->input('note');
         $note->date = $request->input('date');
@@ -138,7 +138,7 @@ class NotesController extends Controller
         $encryptedId = $request->id;
         $id = decrypt($encryptedId);
 
-        $note = Note::findOrFail($id);
+        $note = Note::where('user_id', auth()->id())->findOrFail($id);
 
         $note->delete();
 
@@ -152,7 +152,7 @@ class NotesController extends Controller
         }
 
         $ids = explode(',', $request->ids);
-        Note::whereIn('id', $ids)->delete();
+        Note::where('user_id', auth()->id())->whereIn('id', $ids)->delete();
         return redirect()->back()->with('success', __('l.Notes deleted successfully'));
     }
 
@@ -160,7 +160,7 @@ class NotesController extends Controller
     {
         try {
             if (request()->ajax()) {
-                $notesCount = Note::where('user_id', auth()->user()->id)
+                $notesCount = Note::where('user_id', auth()->id())
                     ->where(function ($query) {
                         $query->where(function ($q) {
                             $q->where('is_still_active', 1)

@@ -75,8 +75,8 @@
         Route::post('/store', 'store')->name('dashboard.users.notes-store');
         Route::get('/edit', 'edit')->name('dashboard.users.notes-edit');
         Route::patch('/update', 'update')->name('dashboard.users.notes-update');
-        Route::get('/delete', 'delete')->name('dashboard.users.notes-delete');
-        Route::get('/delete-selected', 'deleteSelected')->name('dashboard.users.notes-deleteSelected');
+        Route::delete('/delete', 'delete')->name('dashboard.users.notes-delete');
+        Route::delete('/delete-selected', 'deleteSelected')->name('dashboard.users.notes-deleteSelected');
         Route::get('/check', 'check')->name('dashboard.users.notes-check');
     });
     // =======================================================payment==============================================================================================================

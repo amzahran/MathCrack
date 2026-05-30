@@ -65,11 +65,17 @@
                                                    class="btn btn-warning*/989+btn-sm rounded-pill hover-scale">
                                                     <i class="fas fa-edit me-1"></i> @lang('l.Edit')
                                                 </a>
-                                                <button type="button"
-                                                        class="btn btn-soft-danger btn-sm rounded-pill delete-note hover-scale"
-                                                        data-note-id="{{ encrypt($note->id) }}">
-                                                    <i class="fas fa-trash-alt me-1"></i> @lang('l.Delete')
-                                                </button>
+                                                <form method="POST" action="{{ route('dashboard.users.notes-delete') }}"
+                                                      class="d-inline"
+                                                      onsubmit="return confirm(@json(__('l.Are you sure you want to delete?')));">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <input type="hidden" name="id" value="{{ encrypt($note->id) }}">
+                                                    <button type="submit"
+                                                            class="btn btn-soft-danger btn-sm rounded-pill hover-scale">
+                                                        <i class="fas fa-trash-alt me-1"></i> @lang('l.Delete')
+                                                    </button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -221,36 +227,4 @@
 @endsection
 
 @section('js')
-    <script>
-        $(document).on('click', '.delete-note', function() {
-            let noteId = $(this).data('note-id');
-
-            Swal.fire({
-                title: '@lang('l.Are you sure?')',
-                text: '@lang('l.You will delete this note forever!')',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: '@lang('l.Yes, delete it!')',
-                cancelButtonText: '@lang('l.Cancel')',
-                customClass: {
-                    popup: 'animate__animated animate__fadeInDown',
-                    confirmButton: 'btn btn-danger',
-                    cancelButton: 'btn btn-secondary ms-2'
-                },
-                buttonsStyling: false,
-                reverseButtons: true,
-                background: '#fff',
-                showClass: {
-                    popup: 'animate__animated animate__fadeIn'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOut'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '{{ route('dashboard.users.notes-delete') }}?id=' + noteId;
-                }
-            });
-        });
-    </script>
 @endsection
