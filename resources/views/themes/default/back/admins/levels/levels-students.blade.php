@@ -92,9 +92,8 @@
             // Confirm before delete
             $(document).on('click', '.delete-record', function(e) {
                 e.preventDefault();
-                var url = $(this).attr('href');
                 if (confirm("@lang('l.Are you sure you want to delete')")) {
-                    window.location.href = url;
+                    $(this).closest('form').submit();
                 }
             });
         });
