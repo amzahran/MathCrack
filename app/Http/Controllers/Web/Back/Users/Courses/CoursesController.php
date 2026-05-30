@@ -17,6 +17,7 @@ use App\Services\Ai\AiExplanationService;
 use App\Services\PaymentService;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class CoursesController extends Controller
 {
@@ -525,36 +526,63 @@ class CoursesController extends Controller
             ]);
         }
 
-        $result = $aiExplanationService->generate($question, 'assignment');
+        $lock = Cache::lock('ai-explanation:assignment:' . $question->id, 60);
 
-        if (!$result['success']) {
-            logger('AI explanation failed', [
+        if (!$lock->get()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'AI explanation is already being generated. Please try again in a moment.',
+            ], 429);
+        }
+
+        try {
+            $question = LectureQuestion::whereKey($question->id)->with('options')->first();
+
+            if (!$question) {
+                return response()->json(['success' => false, 'message' => 'AI explanation is currently unavailable.'], 403);
+            }
+
+            if (filled($question->explanation)) {
+                return response()->json([
+                    'success' => true,
+                    'explanation' => $question->explanation,
+                    'cached' => true,
+                ]);
+            }
+
+            $result = $aiExplanationService->generate($question, 'assignment');
+
+            if (!$result['success']) {
+                logger('AI explanation failed', [
+                    'question_type' => 'assignment',
+                    'question_id' => $question->id,
+                    'user_id' => $user->id,
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                ], !empty($result['unavailable']) ? 503 : 500);
+            }
+
+            $explanation = trim(strip_tags($result['explanation']));
+
+            LectureQuestion::whereKey($question->id)->update(['explanation' => $explanation]);
+
+            logger('AI explanation generated', [
                 'question_type' => 'assignment',
                 'question_id' => $question->id,
                 'user_id' => $user->id,
             ]);
 
             return response()->json([
-                'success' => false,
-                'message' => $result['message'],
-            ], !empty($result['unavailable']) ? 503 : 500);
+                'success' => true,
+                'explanation' => $explanation,
+                'cached' => false,
+            ]);
+        } finally {
+            optional($lock)->release();
         }
-
-        $explanation = trim(strip_tags($result['explanation']));
-
-        LectureQuestion::whereKey($question->id)->update(['explanation' => $explanation]);
-
-        logger('AI explanation generated', [
-            'question_type' => 'assignment',
-            'question_id' => $question->id,
-            'user_id' => $user->id,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'explanation' => $explanation,
-            'cached' => false,
-        ]);
     }
 
     /**

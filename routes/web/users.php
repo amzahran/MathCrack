@@ -19,7 +19,7 @@
         Route::get('/{id}/break', 'break')->name('dashboard.users.tests.break');
         Route::post('/{id}/start-part2', 'startPart2')->name('dashboard.users.tests.start-part2');
         Route::post('/save-answer', 'saveAnswer')->name('dashboard.users.tests.save-answer');
-        Route::post('/ai-explanation', 'aiExplanation')->name('dashboard.users.tests.ai-explanation');
+        Route::post('/ai-explanation', 'aiExplanation')->middleware('throttle:10,1')->name('dashboard.users.tests.ai-explanation');
         Route::post('/{id}/submit-part1', 'submitPart1')->name('dashboard.users.tests.submit-part1');
         Route::post('/{id}/submit-part2', 'submitPart2')->name('dashboard.users.tests.submit-part2');
         Route::get('/{id}/results', 'results')->name('dashboard.users.tests.results');
@@ -56,7 +56,7 @@
             Route::get('/take', 'takeAssignment')->name('dashboard.users.assignments-take');
             Route::post('/submit', 'submitAssignment')->name('dashboard.users.assignments-submit');
             Route::post('/save-progress', 'saveAssignmentProgress')->name('dashboard.users.assignments-save-progress');
-            Route::post('/ai-explanation', 'assignmentAiExplanation')->name('dashboard.users.assignments-ai-explanation');
+            Route::post('/ai-explanation', 'assignmentAiExplanation')->middleware('throttle:10,1')->name('dashboard.users.assignments-ai-explanation');
             Route::get('/results', 'assignmentResults')->name('dashboard.users.assignments-results');
         });
     });
