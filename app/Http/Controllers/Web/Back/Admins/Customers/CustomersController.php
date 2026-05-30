@@ -365,7 +365,13 @@ class CustomersController extends Controller
 
         $user = User::withTrashed()->findOrFail($userId);
 
-        // حذف المستخد بشكل دائم
+        // حذف المستخدم بشكل دائم فقط إذا لم تكن له سجلات مرتبطة
+        if ($this->studentHasPermanentDeletionBlockers($user)) {
+            return redirect()->back()->withErrors([
+                'delete' => $this->studentPermanentDeletionBlockedMessage(),
+            ]);
+        }
+
         $user->forceDelete();
 
         return redirect()->back()->with('success', __('l.Customer has been deleted permanently'));
@@ -377,9 +383,35 @@ class CustomersController extends Controller
             return view('themes/default/back.permission-denied');
         }
 
-        User::onlyTrashed()->doesntHave('roles')->forceDelete();
+        $deletedCount = 0;
+        $skippedCount = 0;
 
-        return redirect()->back()->with('success', __('l.All inactive customers have been deleted permanently'));
+        User::onlyTrashed()
+            ->doesntHave('roles')
+            ->get()
+            ->each(function (User $user) use (&$deletedCount, &$skippedCount) {
+                if ($this->studentHasPermanentDeletionBlockers($user)) {
+                    $skippedCount++;
+                    return;
+                }
+
+                $user->forceDelete();
+                $deletedCount++;
+            });
+
+        if ($skippedCount > 0) {
+            $redirect = redirect()->back()->withErrors([
+                'delete' => "Skipped {$skippedCount} students because they have invoices, tests, answers, assignments, or access records. Deactivate them instead to preserve history.",
+            ]);
+
+            if ($deletedCount > 0) {
+                return $redirect->with('success', "Deleted {$deletedCount} students permanently.");
+            }
+
+            return $redirect;
+        }
+
+        return redirect()->back()->with('success', "Deleted {$deletedCount} students permanently.");
     }
 
     public function role(Request $request)
@@ -503,23 +535,55 @@ class CustomersController extends Controller
 
         if ($request->has('inactive') && $request->inactive == 1) {
             // حذف نهائي للمستخدمين المحذوفين مؤقتاً
-            User::onlyTrashed()
+            $users = User::onlyTrashed()
                 ->whereIn('id', $ids)
                 ->doesntHave('roles')
-                ->forceDelete();
-
-            $message = __('l.Selected customers have been deleted permanently');
+                ->get();
         } else {
             // حذف مؤقت للمستخدمين النشطين
-            User::whereIn('id', $ids)
+            $users = User::whereIn('id', $ids)
                 ->doesntHave('roles')
-                ->forceDelete();
-                // ->delete();
-
-            $message = __('l.Selected customers have been disabled');
+                ->get();
         }
 
-        return redirect()->back()->with('success', $message);
+        $deletedCount = 0;
+        $skippedCount = 0;
+
+        foreach ($users as $user) {
+            if ($this->studentHasPermanentDeletionBlockers($user)) {
+                $skippedCount++;
+                continue;
+            }
+
+            $user->forceDelete();
+            $deletedCount++;
+        }
+
+        if ($skippedCount > 0) {
+            $redirect = redirect()->back()->withErrors([
+                'delete' => "Skipped {$skippedCount} students because they have invoices, tests, answers, assignments, or access records. Deactivate them instead to preserve history.",
+            ]);
+
+            if ($deletedCount > 0) {
+                return $redirect->with('success', "Deleted {$deletedCount} students permanently.");
+            }
+
+            return $redirect;
+        }
+
+        return redirect()->back()->with('success', "Deleted {$deletedCount} students permanently.");
+    }
+
+    private function studentPermanentDeletionBlockedMessage(): string
+    {
+        return 'Cannot permanently delete this student because linked records exist: invoices, tests, answers, assignments, or access records. Deactivate the student instead to preserve history.';
+    }
+
+    private function studentHasPermanentDeletionBlockers(User $user): bool
+    {
+        return $user->invoices()->exists()
+            || $user->studentTests()->exists()
+            || \App\Models\StudentLectureAssignment::where('student_id', $user->id)->exists();
     }
 
     public function import(Request $request)
