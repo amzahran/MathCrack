@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web\Back\Admins\Users;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
@@ -377,6 +378,10 @@ class UsersController extends Controller
 
         $user = User::onlyTrashed()->findOrFail($userId);
 
+        if ($this->userHasPermanentDeletionBlockers($user)) {
+            return redirect()->back()->with('error', $this->userPermanentDeletionBlockedMessage());
+        }
+
         // حذف المستخد بشكل دائم
         $user->forceDelete();
 
@@ -389,7 +394,25 @@ class UsersController extends Controller
             return view('themes/default/back.permission-denied');
         }
 
-        User::onlyTrashed()->whereHas('roles')->forceDelete();
+        $deletedCount = 0;
+        $skippedCount = 0;
+
+        User::onlyTrashed()
+            ->whereHas('roles')
+            ->get()
+            ->each(function (User $user) use (&$deletedCount, &$skippedCount) {
+                if ($this->userHasPermanentDeletionBlockers($user)) {
+                    $skippedCount++;
+                    return;
+                }
+
+                $user->forceDelete();
+                $deletedCount++;
+            });
+
+        if ($skippedCount > 0) {
+            return redirect()->back()->with('success', "Deleted {$deletedCount} users permanently. Skipped {$skippedCount} because linked records exist.");
+        }
 
         return redirect()->back()->with('success', __('l.All inactive users have been deleted permanently'));
     }
@@ -528,14 +551,29 @@ class UsersController extends Controller
 
         if ($request->has('inactive') && $request->inactive == 1) {
             // حذف نهائي للمستخدمين المحذوفين مؤقتاً
-            User::onlyTrashed()
+            $users = User::onlyTrashed()
                 ->whereIn('id', $ids)
                 ->whereHas('roles')
                 ->where('email', '!=', 'root@admin.com')
                 ->where('email', '!=', 'admin@admin.com')
-                ->forceDelete();
+                ->get();
 
-            $message = __('l.Selected users have been deleted permanently');
+            $deletedCount = 0;
+            $skippedCount = 0;
+
+            foreach ($users as $user) {
+                if ($this->userHasPermanentDeletionBlockers($user)) {
+                    $skippedCount++;
+                    continue;
+                }
+
+                $user->forceDelete();
+                $deletedCount++;
+            }
+
+            $message = $skippedCount > 0
+                ? "Deleted {$deletedCount} users permanently. Skipped {$skippedCount} because linked records exist."
+                : __('l.Selected users have been deleted permanently');
         } else {
             // حذف مؤقت للمستخدمين النشطين
             User::whereIn('id', $ids)
@@ -684,5 +722,26 @@ class UsersController extends Controller
 
         $roles = Role::all();
         return view('themes.default.back.admins.users.users-import', compact('roles'));
+    }
+
+    private function userHasPermanentDeletionBlockers(User $user): bool
+    {
+        $userId = $user->id;
+
+        return DB::table('invoices')->where('user_id', $userId)->exists()
+            || DB::table('student_tests')->where('student_id', $userId)->exists()
+            || DB::table('student_lecture_assignments')->where('student_id', $userId)->exists()
+            || DB::table('tickets')->where('user_id', $userId)->exists()
+            || DB::table('ticket_messages')->where('user_id', $userId)->exists()
+            || DB::table('chat_participants')->where('user_id', $userId)->exists()
+            || DB::table('chat_messages')->where('user_id', $userId)->exists()
+            || DB::table('notes')->where('user_id', $userId)->exists()
+            || DB::table('chats')->where('created_by', $userId)->exists()
+            || DB::table('tasks')->where('created_by', $userId)->exists();
+    }
+
+    private function userPermanentDeletionBlockedMessage(): string
+    {
+        return 'Cannot permanently delete this user because linked records exist: invoices, tests, answers, assignments, chats, tickets, notes, tasks, or access records. Disable the user instead to preserve history.';
     }
 }
