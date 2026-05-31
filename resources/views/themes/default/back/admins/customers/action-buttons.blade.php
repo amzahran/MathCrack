@@ -42,14 +42,19 @@
             @endcan
 
             @can('delete students')
-                <a href="{{ route('dashboard.admins.customers-delete-inactive', ['id' => encrypt($row->id)]) }}"
-                    class="btn btn-sm btn-icon btn-danger delete-record"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
-                    title="{{ __('l.Permanent Delete') }}"
-                    data-inactive="false">
-                    <i class="fa fa-trash"></i>
-                </a>
+                <form method="POST" action="{{ route('dashboard.admins.customers-inactive') }}" class="d-inline">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="id" value="{{ encrypt($row->id) }}">
+                    <button type="submit"
+                        class="btn btn-sm btn-icon btn-danger delete-record"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        title="{{ __('l.Delete') }}"
+                        data-inactive="false">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </form>
             @endcan
         @endif
     @endif

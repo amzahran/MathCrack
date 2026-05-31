@@ -26,30 +26,40 @@
             </div>
         @endif
         @can('show students')
-            @if ($inactiveUsers == 0)
-                @can('add students')
-                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                    <div>
-                        {{-- <a href="{{ route('dashboard.admins.customers-import-get') }}" class="btn btn-info waves-effect waves-light me-2">
-                            <i class="fa fa-file-import ti-xs me-1"></i>
-                            @lang('l.Import Customers')
-                        </a> --}}
-                        <a href="{{ route('dashboard.admins.customers-add') }}"
-                            class="btn btn-primary waves-effect waves-light"><i class="fa fa-plus ti-xs me-1"></i>
-                            @lang('l.Add New Customer')
-                        </a>
-                    </div>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ route('dashboard.admins.customers') }}"
+                        class="btn {{ $inactiveUsers == 0 ? 'btn-primary' : 'btn-outline-primary' }} waves-effect waves-light mb-2">
+                        <i class="fa fa-users ti-xs me-1"></i>
+                        Active Students
+                    </a>
+                    <a href="{{ route('dashboard.admins.customers', ['inactive' => 1]) }}"
+                        class="btn {{ $inactiveUsers == 1 ? 'btn-primary' : 'btn-outline-primary' }} waves-effect waves-light mb-2">
+                        <i class="fa fa-user-times ti-xs me-1"></i>
+                        Inactive Students
+                    </a>
                 </div>
-                @endcan
-            @elseif ($inactiveUsers == 1)
-                @can('delete students')
-                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                    @if ($inactiveUsers == 0)
+                        @can('add students')
+                            {{-- <a href="{{ route('dashboard.admins.customers-import-get') }}" class="btn btn-info waves-effect waves-light me-2">
+                                <i class="fa fa-file-import ti-xs me-1"></i>
+                                @lang('l.Import Customers')
+                            </a> --}}
+                            <a href="{{ route('dashboard.admins.customers-add') }}"
+                                class="btn btn-primary waves-effect waves-light mb-2"><i class="fa fa-plus ti-xs me-1"></i>
+                                @lang('l.Add New Customer')
+                            </a>
+                        @endcan
+                    @elseif ($inactiveUsers == 1)
+                        @can('delete students')
                         <a href="javascript:void(0);" class="btn btn-danger waves-effect waves-light delete-all-inactive"><i
                                     class="fa fa-trash ti-xs me-1"></i>@lang('l.Delete All Inactive Customers')
                         </a>
-                    </div>
-                @endcan
-            @endif
+                        @endcan
+                    @endif
+                </div>
+            </div>
 
             {{-- <div class="nav-align-top mb-4">
                 <ul class="nav nav-tabs nav-fill w-100" role="tablist" style="min-height: 50px;">
@@ -344,13 +354,15 @@
             $(document).on('click', '.delete-record', function(e) {
                 e.preventDefault();
                 const deleteUrl = $(this).attr('href');
+                const form = $(this).closest('form');
+                const isInactive = $(this).data('inactive');
 
                 Swal.fire({
                     title: '@lang('l.Are you sure?')',
-                    text: 'This is a permanent delete and cannot be undone. It may remove invoices, tests, answers, assignments, and access records.',
+                    text: isInactive ? 'This is a permanent delete and cannot be undone. It may remove invoices, tests, answers, assignments, and access records.' : 'The student will be disabled.',
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: '@lang('l.Yes, delete it!')',
+                    confirmButtonText: isInactive ? '@lang('l.Yes, delete it!')' : 'Yes, disable it!',
                     cancelButtonText: '@lang('l.Cancel')',
                     reverseButtons: true,
                     buttonsStyling: false,
@@ -360,7 +372,11 @@
                     }
                 }).then(function(result) {
                     if (result && (result.isConfirmed || result.value === true)) {
-                        submitDeleteRequest(deleteUrl);
+                        if (form.length) {
+                            form.submit();
+                        } else {
+                            submitDeleteRequest(deleteUrl);
+                        }
                     }
                 });
             });

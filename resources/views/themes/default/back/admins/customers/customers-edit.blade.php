@@ -157,15 +157,15 @@
                             </div>
                             <!-- /Account -->
                         </div>
-                        {{-- @can('delete students')
+                        @can('delete students')
                             <div class="card">
-                                <h5 class="card-header">@lang('l.Delete Account')</h5>
+                                <h5 class="card-header">Inactive Profile</h5>
                                 <div class="card-body">
                                     <div class="mb-3 col-12 mb-0">
                                         <div class="alert alert-warning">
-                                            <h5 class="alert-heading mb-1">@lang('l.Are you sure you want to delete this account?')
+                                            <h5 class="alert-heading mb-1">Are you sure you want to disable this student profile?
                                             </h5>
-                                            <p class="mb-0">@lang('l.Once you delete this account, there is no going back. Please be certain.')</p>
+                                            <p class="mb-0">The student will be moved to Inactive Students and can be restored later.</p>
                                         </div>
                                     </div>
                                     <form id="formAccountDeactivation" method="post"
@@ -177,11 +177,11 @@
                                             <label class="form-check-label" for="accountActivation">@lang('l.I confirm this account deactivation')</label>
                                         </div>
                                         <input type="hidden" name="id" value="{{ encrypt($user->id) }}" />
-                                        <button type="submit" class="btn btn-danger deactivate-account">@lang('l.Deactivate Account')</button>
+                                        <button type="submit" class="btn btn-danger deactivate-account">Inactive Profile</button>
                                     </form>
                                 </div>
                             </div>
-                        @endcan --}}
+                        @endcan
                     </div>
                     <div id="page2">
                         <!-- Change Password -->

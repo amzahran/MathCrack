@@ -114,8 +114,10 @@ class CustomersController extends Controller
                         'users.lastname',
                         'users.email',
                         'users.phone',
+                        'users.level_id',
                         'users.deleted_at'
                     ])
+                    ->with('level')
                     ->where('min_role', 0)
                     ->doesntHave('roles');
 
@@ -127,6 +129,9 @@ class CustomersController extends Controller
                     ->addIndexColumn()
                     ->addColumn('name', function($row) {
                         return $row->firstname . ' ' . $row->lastname;
+                    })
+                    ->addColumn('level', function($row) {
+                        return $row->level ? $row->level->name : __('l.No Level');
                     })
                     ->filterColumn('name', function($query, $keyword) {
                         $query->where(function($q) use ($keyword) {
