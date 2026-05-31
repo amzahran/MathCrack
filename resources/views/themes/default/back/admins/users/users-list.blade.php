@@ -33,6 +33,18 @@
         @endif
         @can('show users')
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ route('dashboard.admins.users') }}"
+                        class="btn {{ $inactiveUsers == 0 ? 'btn-primary' : 'btn-outline-primary' }} waves-effect waves-light mb-2">
+                        <i class="fa fa-users ti-xs me-1"></i>
+                        Active Users
+                    </a>
+                    <a href="{{ route('dashboard.admins.users', ['inactive' => 1]) }}"
+                        class="btn {{ $inactiveUsers == 1 ? 'btn-primary' : 'btn-outline-primary' }} waves-effect waves-light mb-2">
+                        <i class="fa fa-user-times ti-xs me-1"></i>
+                        Inactive Users
+                    </a>
+                </div>
                 <div>
                     @if ($inactiveUsers == 0)
                         @can('add users')
