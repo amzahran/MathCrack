@@ -375,7 +375,7 @@ class UsersController extends Controller
 
         $userId = decrypt($request->query('id')); // استرجاع عرّف المستخدم
 
-        $user = User::withTrashed()->findOrFail($userId);
+        $user = User::onlyTrashed()->findOrFail($userId);
 
         // حذف المستخد بشكل دائم
         $user->forceDelete();
@@ -543,8 +543,7 @@ class UsersController extends Controller
                 ->whereNotIn('email', User::PROTECTED_EMAILS)
                 ->where('email', '!=', 'root@admin.com')
                 ->where('email', '!=', 'admin@admin.com')
-                ->forceDelete();
-                // ->delete();
+                ->delete();
 
             $message = __('l.Selected users have been disabled');
         }

@@ -80,6 +80,16 @@
                             <i class="fa fa-trash ti-xs me-1"></i>@lang('l.Delete Selected')
                         </button>
                     </div>
+                    <form id="deleteAllInactiveForm" method="POST" action="{{ route('dashboard.admins.users-delete-allinactive') }}" class="d-none">
+                        @csrf
+                        @method('DELETE')
+                    </form>
+                    <form id="deleteSelectedForm" method="POST" action="{{ route('dashboard.admins.users-delete-selected') }}" class="d-none">
+                        @csrf
+                        @method('DELETE')
+                        <input type="hidden" name="ids" id="deleteSelectedIds">
+                        <input type="hidden" name="inactive" id="deleteSelectedInactive" value="{{ $inactiveUsers }}">
+                    </form>
                     <table class="table" id="users-table">
                         <thead>
                             <tr>
@@ -338,15 +348,15 @@
             // معالجة أحداث الحذف
             $(document).on('click', '.delete-record', function(e) {
                 e.preventDefault();
-                const deleteUrl = $(this).attr('href');
+                const form = $(this).closest('form');
                 const isInactive = $(this).data('inactive');
 
                 Swal.fire({
                     title: '@lang('l.Are you sure?')',
-                    text: isInactive ? "@lang('l.The user will be deleted permanently!')" : "@lang('l.The user will be disabled!')",
+                    text: isInactive ? "This inactive user will be permanently deleted. This cannot be undone and may remove linked records." : "@lang('l.The user will be disabled!')",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: '@lang('l.Yes, delete it!')',
+                    confirmButtonText: isInactive ? '@lang('l.Yes, delete it!')' : 'Yes, disable it!',
                     cancelButtonText: '@lang('l.Cancel')',
                     reverseButtons: true,
                     buttonsStyling: false,
@@ -356,7 +366,7 @@
                     }
                 }).then(function(result) {
                     if (result && (result.isConfirmed || result.value === true)) {
-                        window.location.assign(deleteUrl);
+                        form.submit();
                     }
                 });
             });
@@ -373,7 +383,7 @@
 
                 Swal.fire({
                     title: '@lang('l.Are you sure?')',
-                    text: "@lang('l.All inactive users will be deleted permanently! This action cannot be undone.')",
+                    text: "All inactive users will be permanently deleted. This cannot be undone and may remove linked records.",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: '@lang('l.Yes, delete all!')',
@@ -386,7 +396,7 @@
                     }
                 }).then(function(result) {
                     if (result && (result.isConfirmed || result.value === true)) {
-                        window.location.assign('{{ route('dashboard.admins.users-delete-allinactive') }}');
+                        $('#deleteAllInactiveForm').submit();
                     }
                 });
             });
@@ -423,12 +433,14 @@
                 }).get();
 
                 if (selectedIds.length > 0) {
+                    const isInactiveList = {{ (int) $inactiveUsers }} === 1;
+
                     Swal.fire({
                         title: '@lang('l.Are you sure?')',
-                        text: "@lang('l.Selected users will be deleted!')",
+                        text: isInactiveList ? "Selected inactive users will be permanently deleted. This cannot be undone and may remove linked records." : "Selected active users will be disabled.",
                         icon: 'warning',
                         showCancelButton: true,
-                        confirmButtonText: '@lang('l.Yes, delete them!')',
+                        confirmButtonText: isInactiveList ? '@lang('l.Yes, delete them!')' : 'Yes, disable them!',
                         cancelButtonText: '@lang('l.Cancel')',
                         reverseButtons: true,
                         buttonsStyling: false,
@@ -438,9 +450,9 @@
                         }
                     }).then(function(result) {
                         if (result && (result.isConfirmed || result.value === true)) {
-                            window.location.assign(
-                                '{{ route('dashboard.admins.users-delete-selected') }}?ids=' + selectedIds.join(',')
-                            );
+                            $('#deleteSelectedIds').val(selectedIds.join(','));
+                            $('#deleteSelectedInactive').val(isInactiveList ? 1 : 0);
+                            $('#deleteSelectedForm').submit();
                         }
                     });
                 }
