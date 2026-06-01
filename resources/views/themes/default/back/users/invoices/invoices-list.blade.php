@@ -9,9 +9,32 @@
         .badge {
             color: #fff;
         }
+
+        #data-table.table thead tr th,
+        table#data-table thead tr th {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
+            color: #ffffff !important;
+            font-weight: 800 !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            vertical-align: middle !important;
+        }
+
+        #data-table.table thead tr th *,
+        table#data-table thead tr th * {
+            color: #ffffff !important;
+        }
+
+        table#data-table.dataTable thead .sorting::before,
+        table#data-table.dataTable thead .sorting::after,
+        table#data-table.dataTable thead .sorting_asc::before,
+        table#data-table.dataTable thead .sorting_asc::after,
+        table#data-table.dataTable thead .sorting_desc::before,
+        table#data-table.dataTable thead .sorting_desc::after {
+            color: #ffffff !important;
+            opacity: 0.95 !important;
+        }
     </style>
 @endsection
-
 
 @section('content')
     <div class="main-content">
@@ -19,7 +42,7 @@
             <div class="content-wrapper">
                 <div class="card" id="div1">
                     <div class="card-datatable table-responsive">
-                        <table class=" table" id="data-table">
+                        <table class="table" id="data-table">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -37,14 +60,16 @@
                                 @foreach ($invoices as $order)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td style="color: #d11c1c;">{{ $order->id }}</a></td>
+                                        <td style="color: #d11c1c;">{{ $order->id }}</td>
                                         <td>{{ $order->student->firstname . ' ' . $order->student->lastname }}</td>
                                         <td>{{ $order->course ? $order->course->name : '-' }}</td>
                                         <td>{{ $order->type }}</td>
                                         <td>{{ $order->type_value_display }}</td>
                                         <td>{{ $order->amount }}</td>
-                                        <td><span
-                                                class="badge bg-{{ $order->status == 'pending' ? 'warning' : ($order->status == 'paid' ? 'success' : 'danger') }}">@lang('l.' . ucfirst($order->status)) </span>
+                                        <td>
+                                            <span class="badge bg-{{ $order->status == 'pending' ? 'warning' : ($order->status == 'paid' ? 'success' : 'danger') }}">
+                                                @lang('l.' . ucfirst($order->status))
+                                            </span>
                                         </td>
                                         <td>{{ $order->created_at }}</td>
                                     </tr>
@@ -56,9 +81,7 @@
             </div>
         </div>
     </div>
-    <!-- / Content -->
 @endsection
-
 
 @section('js')
     <script>
