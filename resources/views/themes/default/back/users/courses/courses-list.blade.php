@@ -1128,13 +1128,25 @@
                     </div>
                 @endforeach
             </div>
-        @else
-            <div class="no-courses">
-                <i class="fas fa-graduation-cap"></i>
-                <h3>@lang('l.no_courses_available')</h3>
-                <p>@lang('l.no_courses_description')</p>
-            </div>
-        @endif
+       @else
+    <div class="no-courses">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>@lang('l.no_courses_available')</h3>
+        <p>@lang('l.no_courses_description')</p>
+
+        <div class="d-flex justify-content-center gap-2 flex-wrap mt-4">
+            <a href="{{ route('dashboard.users.tests') }}" class="btn btn-primary">
+                <i class="fas fa-pen"></i>
+                View Practice Tests
+            </a>
+
+            <a href="{{ route('dashboard.users.invoices') }}" class="btn btn-outline-primary">
+                <i class="fas fa-file-invoice"></i>
+                View Invoices
+            </a>
+        </div>
+    </div>
+@endif
 
         @if($trackTitle)
                 </div>
