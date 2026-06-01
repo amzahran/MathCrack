@@ -917,6 +917,12 @@
                                     </a>
                                 </li>
                                 <li class="student-nav-item">
+                                    <a href="{{ route('dashboard.users.invoices') }}" class="student-nav-link {{ request()->is('dashboard/users/invoices*') ? 'active' : '' }}">
+                                        <i class="feather-file-text"></i>
+                                        Invoices
+                                    </a>
+                                </li>
+                                <li class="student-nav-item">
                                     <a href="{{ route('dashboard.users.score-calc') }}" class="student-nav-link {{ request()->is('dashboard/users/score-calc*') ? 'active' : '' }}">
                                         <i class="feather-percent"></i>
                                         @lang('l.Score Calc')
@@ -979,6 +985,18 @@
                                 <a href="{{ route('dashboard.users.tests') }}" class="student-nav-link {{ request()->is('dashboard/users/tests*') ? 'active' : '' }}">
                                     <i class="feather-edit-3"></i>
                                     @lang('l.Tests')
+                                </a>
+                            </li>
+                            <li class="student-nav-item">
+                                <a href="{{ route('dashboard.users.lives') }}" class="student-nav-link {{ request()->is('dashboard/users/lives*') ? 'active' : '' }}">
+                                    <i class="feather-tv"></i>
+                                    @lang('l.Live')
+                                </a>
+                            </li>
+                            <li class="student-nav-item">
+                                <a href="{{ route('dashboard.users.invoices') }}" class="student-nav-link {{ request()->is('dashboard/users/invoices*') ? 'active' : '' }}">
+                                    <i class="feather-file-text"></i>
+                                    Invoices
                                 </a>
                             </li>
                             <li class="student-nav-item">
