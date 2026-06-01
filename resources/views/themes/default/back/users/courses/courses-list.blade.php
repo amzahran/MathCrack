@@ -1117,6 +1117,12 @@
                                         <div class="stat-label">{{ $course->updated_at->diffForHumans() }}</div>
                                     </div>
                                 </div>
+                                <a href="{{ route('dashboard.users.courses-lectures') }}?id={{ encrypt($course->id) }}"
+                                   class="btn btn-primary btn-sm w-100 mt-2"
+                                   onclick="event.stopPropagation();">
+                                    <i class="fas fa-arrow-right"></i>
+                                    Open Course
+                                </a>
                             </div>
                         </div>
                     </div>
