@@ -17,6 +17,7 @@
             font-weight: 800 !important;
             border-color: rgba(255, 255, 255, 0.2) !important;
             vertical-align: middle !important;
+            text-align: center !important;
         }
 
         #data-table.table thead tr th *,
