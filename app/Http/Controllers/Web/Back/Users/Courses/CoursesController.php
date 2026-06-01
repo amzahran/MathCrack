@@ -144,6 +144,7 @@ class CoursesController extends Controller
                 'assignments.questions',
                 'assignments.studentAssignments'
             ])
+            ->whereHas('course', fn($q) => $q->where('level_id', auth()->user()->level_id))
             ->findOrFail(decrypt($request->id));
 
         $courseLectures = $lecture->course->lectures
@@ -282,7 +283,7 @@ class CoursesController extends Controller
     public function takeAssignment(Request $request)
     {
         $user = auth()->user();
-        $studentAssignment = StudentLectureAssignment::with(['lectureAssignment.questions.options', 'answers'])
+        $studentAssignment = StudentLectureAssignment::with(['lectureAssignment.lecture.course', 'lectureAssignment.questions.options', 'answers'])
             ->where('student_id', $user->id)
             ->findOrFail(decrypt($request->id));
 
@@ -302,7 +303,7 @@ class CoursesController extends Controller
     public function submitAssignment(Request $request)
     {
         $user = auth()->user();
-        $studentAssignment = StudentLectureAssignment::with(['lectureAssignment.questions.options'])
+        $studentAssignment = StudentLectureAssignment::with(['lectureAssignment.lecture.course', 'lectureAssignment.questions.options'])
             ->where('student_id', $user->id)
             ->findOrFail(decrypt($request->id));
 
@@ -417,7 +418,7 @@ class CoursesController extends Controller
     public function saveAssignmentProgress(Request $request)
     {
         $user = auth()->user();
-        $studentAssignment = StudentLectureAssignment::with(['lectureAssignment.questions'])
+        $studentAssignment = StudentLectureAssignment::with(['lectureAssignment.lecture.course', 'lectureAssignment.questions'])
             ->where('student_id', $user->id)
             ->findOrFail(decrypt($request->id));
 
@@ -475,11 +476,16 @@ class CoursesController extends Controller
     {
         $user = auth()->user();
         $studentAssignment = StudentLectureAssignment::with([
+            'lectureAssignment.lecture.course',
             'lectureAssignment.questions.options',
             'answers.lectureQuestion',
             'answers.selectedOption'
         ])->where('student_id', $user->id)
             ->findOrFail(decrypt($request->id));
+
+        if (!$this->canAccessAssignment($user, $studentAssignment->lectureAssignment)) {
+            return redirect()->back()->with('error', __('l.you_dont_have_permission_to_access_this_assignment'));
+        }
 
         // إعادة حساب النتائج إذا كانت غير صحيحة
         $this->recalculateAssignmentResults($studentAssignment);
@@ -650,7 +656,11 @@ class CoursesController extends Controller
 
     private function canAccessAssignment($user, $assignment)
     {
-        $lecture = $assignment->lecture;
+        $lecture = $assignment ? $assignment->lecture : null;
+
+        if (!$lecture || !$lecture->course || $lecture->course->level_id != $user->level_id) {
+            return false;
+        }
 
         // التحقق من نوع المحاضرة والصلاحيات
         if ($lecture->type == 'free') {
