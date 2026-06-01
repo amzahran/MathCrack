@@ -1615,6 +1615,48 @@
         }
     }
 
+
+    .test-access-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        margin: 8px 0 10px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .test-access-badge-free {
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+    }
+
+    .test-access-badge-purchased {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
+    }
+
+    .test-access-badge-locked {
+        background: #fff7ed;
+        color: #c2410c;
+        border: 1px solid #fed7aa;
+    }
+
+    .table-access-badge {
+        width: auto;
+        min-width: 120px;
+        margin: 0 auto 6px;
+        padding: 6px 9px;
+        font-size: 0.68rem;
+        white-space: nowrap;
+    }
+
 </style>
 @endsection
 
@@ -1938,6 +1980,23 @@
                                             @endswitch
                                         </div>
 
+                                        @if($test['price'] <= 0)
+                                            <div class="test-access-badge test-access-badge-free">
+                                                <i class="fas fa-gift"></i>
+                                                Free
+                                            </div>
+                                        @elseif($test['has_paid'])
+                                            <div class="test-access-badge test-access-badge-purchased">
+                                                <i class="fas fa-check-circle"></i>
+                                                Purchased
+                                            </div>
+                                        @else
+                                            <div class="test-access-badge test-access-badge-locked">
+                                                <i class="fas fa-lock"></i>
+                                                Locked - Purchase required
+                                            </div>
+                                        @endif
+
                                         <div class="test-actions">
                                             @if($test['has_paid'])
                                                 @switch($test['status'])
@@ -2085,6 +2144,23 @@
                                             @endif
                                         </td>
                                         <td>
+                                            @if($test['price'] <= 0)
+                                                <span class="test-access-badge test-access-badge-free table-access-badge">
+                                                    <i class="fas fa-gift"></i>
+                                                    Free
+                                                </span>
+                                            @elseif($test['has_paid'])
+                                                <span class="test-access-badge test-access-badge-purchased table-access-badge">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    Purchased
+                                                </span>
+                                            @else
+                                                <span class="test-access-badge test-access-badge-locked table-access-badge">
+                                                    <i class="fas fa-lock"></i>
+                                                    Locked
+                                                </span>
+                                            @endif
+
                                             @switch($test['display_status'] ?? 'not_started')
                                                 @case('not_started')
                                                     <span class="status-badge status-not-started">
