@@ -453,7 +453,6 @@
 @section('js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/codemirror.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/mode/stex/stex.min.js"></script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 <script>
@@ -1546,11 +1545,7 @@ $(document).ready(function() {
     // تحميل MathJax إذا لم يكن متوفراً
     if (typeof MathJax === 'undefined') {
         console.log('Loading MathJax...');
-        const script = document.createElement('script');
-        script.src = 'https://polyfill.io/v3/polyfill.min.js?features=es6';
-        document.head.appendChild(script);
-
-        script.onload = function() {
+script.onload = function() {
             const mathJaxScript = document.createElement('script');
             mathJaxScript.id = 'MathJax-script';
             mathJaxScript.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
