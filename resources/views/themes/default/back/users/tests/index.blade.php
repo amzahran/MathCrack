@@ -6,95 +6,9 @@
 
 @section('css')
 <style>
-    .course-section {
-        margin-bottom: 30px !important;
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        overflow: hidden;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .course-section:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    }
-
-    .course-header {
-        padding: 25px 30px !important;
-        margin-bottom: 25px !important;
-        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-        color: white;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .course-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: -60px;
-        width: 120px;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.1);
-        transform: skewX(-15deg);
-    }
-
-    .course-title {
-        font-size: 1.8rem;
-        font-weight: 700;
-        margin: 0;
-        color: white !important;
-        position: relative;
-        z-index: 2;
-    }
-
-    .course-meta {
-        margin-top: 12px !important;
-        gap: 20px !important;
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        position: relative;
-        z-index: 2;
-    }
-
-    .course-meta-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: rgba(255, 255, 255, 0.95);
-        font-size: 1rem;
-        font-weight: 500;
-    }
-
-    .course-meta-item i,
-    .course-meta-item span {
+    .course-meta-item i, .course-meta-item span {
         color: white !important;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    }
-
-    .tests-grid {
-        padding: 25px 30px !important;
-    }
-
-    .test-card {
-        margin-bottom: 20px !important;
-        background: white;
-        border-radius: 16px;
-        padding: 0;
-        transition: all 0.4s ease;
-        height: 100%;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        border: 1px solid #f1f5f9;
-    }
-
-    .test-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
     }
 
     .card-header {
@@ -103,155 +17,23 @@
         position: relative;
     }
 
-    .test-card:nth-child(3n+1) .card-header,
-    .test-card:nth-child(3n+1) .btn-primary-test {
+    .test-card:nth-child(3n+1) .card-header, .test-card:nth-child(3n+1) .btn-primary-test {
         background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
     }
 
-    .test-card:nth-child(3n+2) .card-header,
-    .test-card:nth-child(3n+2) .btn-primary-test {
+    .test-card:nth-child(3n+2) .card-header, .test-card:nth-child(3n+2) .btn-primary-test {
         background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
     }
 
-    .test-card:nth-child(3n+3) .card-header,
-    .test-card:nth-child(3n+3) .btn-primary-test {
+    .test-card:nth-child(3n+3) .card-header, .test-card:nth-child(3n+3) .btn-primary-test {
         background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
-    }
-
-    .test-title {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: white;
-        margin: 0 0 5px 0;
-    }
-
-    .test-description {
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 0.9rem;
-        margin-bottom: 0;
-        line-height: 1.5;
     }
 
     .card-body {
         padding: 20px !important;
     }
 
-    .test-stats {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        margin-bottom: 15px !important;
-        gap: 12px !important;
-    }
-
-    .stat-item {
-        background: #f8fafc;
-        padding: 15px;
-        border-radius: 12px;
-        text-align: center;
-        transition: all 0.3s ease;
-        border: 1px solid #f1f5f9;
-    }
-
-    .stat-item:hover {
-        background: #f1f5f9;
-        transform: translateY(-2px);
-    }
-
-    .stat-number {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: #1e40af;
-        display: block;
-        margin-bottom: 5px;
-    }
-
-    .stat-label {
-        font-size: 0.85rem;
-        color: #64748b;
-        font-weight: 500;
-    }
-
-    .price-section {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
-        padding: 15px;
-        border-radius: 12px;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    .price-amount {
-        font-size: 1.4rem;
-        font-weight: 700;
-        margin-bottom: 5px;
-    }
-
-    .price-label {
-        font-size: 0.9rem;
-        opacity: 0.9;
-    }
-
-    .test-status {
-        margin-bottom: 15px !important;
-    }
-
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        border-radius: 25px;
-        font-size: 0.9rem;
-        font-weight: 600;
-    }
-
-    .status-not-started {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        color: #475569;
-    }
-
-    .status-in-progress {
-        background: linear-gradient(135deg, #fef3c7 0%, #f59e0b 100%);
-        color: #92400e;
-    }
-
-    .status-completed {
-        background: linear-gradient(135deg, #d1fae5 0%, #10b981 100%);
-        color: #065f46;
-    }
-
-    .status-locked {
-        background: linear-gradient(135deg, #fee2e2 0%, #ef4444 100%);
-        color: #991b1b;
-    }
-
-    .test-actions {
-        display: flex;
-        gap: 10px !important;
-    }
-
-    .btn-test {
-        flex: 1;
-        min-height: 42px;
-        padding: 12px 20px;
-        border-radius: 10px;
-        font-weight: 800;
-        text-decoration: none !important;
-        text-align: center;
-        transition: all 0.3s ease;
-        display: inline-flex !important;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        font-size: 0.92rem;
-        line-height: 1.2;
-        opacity: 1 !important;
-        visibility: visible !important;
-        white-space: nowrap;
-    }
-
-    .btn-test i,
-    .btn-test span {
+    .btn-test i, .btn-test span {
         display: inline-flex !important;
         align-items: center;
         color: inherit !important;
@@ -259,11 +41,6 @@
         visibility: visible !important;
         text-indent: 0 !important;
         line-height: 1.2;
-    }
-
-    .btn-test span {
-        font-size: 0.92rem;
-        font-weight: 800;
     }
 
     .btn-primary-test {
@@ -278,59 +55,16 @@
         color: white;
     }
 
-    .btn-success-test {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: #ffffff !important;
-        border: none;
-    }
-
     .btn-success-test:hover {
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
         color: white;
     }
 
-    .btn-warning-test {
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        color: #ffffff !important;
-        border: none;
-    }
-
     .btn-warning-test:hover {
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
         color: white;
-    }
-
-    .course-purchase-section {
-        padding: 20px 25px !important;
-        margin-top: 20px !important;
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        border-top: 1px solid #e2e8f0;
-        text-align: center;
-        border-radius: 0 0 20px 20px;
-    }
-
-    .course-purchase-price {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #1e40af;
-        margin-bottom: 8px;
-    }
-
-    .course-purchase-desc {
-        color: #64748b;
-        font-size: 1rem;
-    }
-
-    .page-headers {
-        margin-bottom: 5px !important;
-        padding: 40px 0 !important;
-        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-        color: white !important;
-        border-radius: 20px !important;
-        position: relative !important;
-        overflow: hidden !important;
     }
 
     .page-headers::before {
@@ -344,8 +78,7 @@
         transform: skewX(-15deg);
     }
 
-    .page-header h1,
-    .page-main-title {
+    .page-header h1, .page-main-title {
         margin: 0 0 10px 0 !important;
         font-size: 2.5rem !important;
         font-weight: 700 !important;
@@ -354,8 +87,7 @@
         z-index: 2 !important;
     }
 
-    .page-header p,
-    .page-subtitle {
+    .page-header p, .page-subtitle {
         margin: 0 !important;
         opacity: 0.9 !important;
         color: white !important;
@@ -364,71 +96,9 @@
         z-index: 2 !important;
     }
 
-    .stats-summary {
-        position: relative;
-        z-index: 2;
-    }
-
-    .stats-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 12px 18px;
-        border-radius: 16px;
-        background: rgba(255, 255, 255, 0.18);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: white;
-        font-weight: 700;
-        backdrop-filter: blur(10px);
-    }
-
-    #filtersForm {
-        background: linear-gradient(135deg, #239BA7 0%, #48B3AF 100%) !important;
-        padding: 10px 25px 20px 25px !important;
-        border-radius: 22px !important;
-        box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8), 0 8px 25px rgba(0, 0, 0, 0.06) !important;
-        margin-top: 12px !important;
-        margin-bottom: 18px !important;
-        border: 1px solid #e2e8f0 !important;
-        position: relative !important;
-        overflow: hidden !important;
-        width: 100% !important;
-        min-height: 100px !important;
-    }
-
-    #filtersForm label.form-label {
-        font-size: 1.5rem !important;
-        color: #0c0c0c !important;
-        font-weight: 700 !important;
-        margin-bottom: 5px !important;
-    }
-
-    #filtersForm .form-select,
-    #filtersForm .form-select option {
+    #filtersForm .form-select, #filtersForm .form-select option {
         font-size: 1.2em !important;
         font-weight: 600 !important;
-    }
-
-    #filtersForm .form-select {
-        background-color: rgba(255, 255, 255, 0.9) !important;
-        backdrop-filter: blur(5px) !important;
-        border: 2px solid #cbd5e0 !important;
-    }
-
-    .view-toggle-wrapper {
-        display: flex;
-        justify-content: flex-end;
-        margin: 10px 0 18px 0;
-    }
-
-    .view-toggle {
-        display: inline-flex;
-        align-items: center;
-        background: #ffffff;
-        border: 1px solid #dbeafe;
-        border-radius: 16px;
-        padding: 6px;
-        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
-        gap: 6px;
     }
 
     .view-toggle-btn {
@@ -450,18 +120,6 @@
         background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
         color: #fff;
         box-shadow: 0 6px 18px rgba(30, 64, 175, 0.25);
-    }
-
-    .tests-table-wrapper {
-        padding: 25px 30px !important;
-    }
-
-    .tests-table-card {
-        background: #fff;
-        border-radius: 18px;
-        border: 1px solid #e2e8f0;
-        overflow: hidden;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
     }
 
     .tests-table {
@@ -495,8 +153,7 @@
         vertical-align: middle !important;
     }
 
-    .tests-table thead th:first-child,
-    .tests-table tbody td:first-child {
+    .tests-table thead th:first-child, .tests-table tbody td:first-child {
         text-align: left !important;
     }
 
@@ -535,8 +192,7 @@
         margin: 0 auto !important;
     }
 
-    .table-price-free,
-    .table-price-paid {
+    .table-price-free, .table-price-paid {
         display: inline-block;
         margin: 0 auto !important;
         text-align: center;
@@ -578,25 +234,6 @@
         font-weight: 600;
     }
 
-
-    .tests-summary-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 16px;
-        margin: 20px 0 18px 0;
-    }
-
-    .tests-summary-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 18px;
-        padding: 20px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-        display: flex;
-        align-items: center;
-        gap: 14px;
-    }
-
     .tests-summary-icon {
         width: 46px;
         height: 46px;
@@ -626,18 +263,6 @@
         font-size: 0.92rem;
     }
 
-    .tests-filter-bar {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 18px;
-        padding: 12px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 18px;
-    }
-
     .tests-filter-btn {
         border: none;
         background: #f1f5f9;
@@ -664,25 +289,6 @@
 
     .test-hidden-by-filter {
         display: none !important;
-    }
-
-
-    .no-tests {
-        text-align: center;
-        padding: 80px 20px;
-        color: #64748b;
-    }
-
-    .no-tests i {
-        font-size: 5rem;
-        margin-bottom: 25px;
-        color: #cbd5e1;
-    }
-
-    .no-tests h3 {
-        font-size: 1.8rem;
-        margin-bottom: 15px;
-        color: #475569;
     }
 
     @media (max-width: 992px) {
@@ -722,7 +328,6 @@
         }
     }
 
-    /* Student tests page responsive polish */
     .main-content {
         max-width: 1480px;
         margin: 0 auto;
@@ -731,6 +336,11 @@
     .page-headers {
         margin-bottom: 18px !important;
         padding: clamp(26px, 4vw, 44px) clamp(18px, 3vw, 34px) !important;
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        color: white !important;
+        border-radius: 20px !important;
+        position: relative !important;
+        overflow: hidden !important;
         box-shadow: 0 18px 42px rgba(30, 64, 175, 0.18);
     }
 
@@ -746,26 +356,43 @@
     }
 
     .stats-summary {
+        position: relative;
+        z-index: 2;
         display: flex;
         justify-content: flex-end;
     }
 
     .stats-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 12px 18px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        font-weight: 700;
+        backdrop-filter: blur(10px);
         min-height: 48px;
         white-space: nowrap;
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
     }
 
     #filtersForm {
+        background: #ffffff !important;
+        padding: 18px !important;
+        border-radius: 22px !important;
+        box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08) !important;
+        margin-top: 12px !important;
+        margin-bottom: 18px !important;
+        border: 1px solid #dbeafe !important;
+        position: relative !important;
+        overflow: hidden !important;
+        width: 100% !important;
+        min-height: 0 !important;
         display: grid !important;
         grid-template-columns: repeat(2, minmax(220px, 1fr));
         align-items: end;
         gap: 16px !important;
-        min-height: 0 !important;
-        padding: 18px !important;
-        background: #ffffff !important;
-        border: 1px solid #dbeafe !important;
-        box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08) !important;
     }
 
     #filtersForm > [class*="col-"] {
@@ -777,15 +404,18 @@
     #filtersForm label.form-label {
         font-size: 0.9rem !important;
         color: #334155 !important;
+        font-weight: 700 !important;
+        margin-bottom: 5px !important;
         letter-spacing: 0.02em;
         text-transform: uppercase;
     }
 
     #filtersForm .form-select {
+        background-color: #f8fafc !important;
+        backdrop-filter: blur(5px) !important;
+        border: 1px solid #cbd5e1 !important;
         min-height: 48px;
         border-radius: 14px !important;
-        border: 1px solid #cbd5e1 !important;
-        background-color: #f8fafc !important;
         font-size: 1rem !important;
         color: #0f172a;
         box-shadow: none !important;
@@ -797,15 +427,22 @@
     }
 
     .tests-summary-grid {
+        display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 14px;
         margin: 18px 0;
     }
 
     .tests-summary-card {
-        min-height: 94px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
         border-radius: 16px;
+        padding: 20px;
         box-shadow: 0 10px 30px rgba(15, 23, 42, 0.07);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-height: 94px;
     }
 
     .tests-summary-card:nth-child(2) .tests-summary-icon {
@@ -823,97 +460,61 @@
         color: #0369a1;
     }
 
-    .tests-filter-bar,
-    .view-toggle-wrapper {
+    .tests-filter-bar, .view-toggle-wrapper {
         margin-bottom: 20px;
     }
 
     .tests-filter-bar {
-        align-items: center;
-        padding: 10px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
         border-radius: 16px;
+        padding: 10px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 18px;
+        align-items: center;
         overflow-x: auto;
     }
 
-    .tests-filter-btn,
-    .view-toggle-btn {
+    .tests-filter-btn, .view-toggle-btn {
         min-height: 42px;
         white-space: nowrap;
         text-decoration: none !important;
     }
 
     .view-toggle-wrapper {
+        display: flex;
         justify-content: space-between;
+        margin: 10px 0 18px 0;
     }
 
     .view-toggle {
+        display: inline-flex;
+        align-items: center;
+        background: #ffffff;
+        border: 1px solid #dbeafe;
+        border-radius: 16px;
+        padding: 6px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+        gap: 6px;
         width: auto;
         margin-left: auto;
     }
 
-    .course-section {
-        margin-bottom: 26px !important;
-        border: 1px solid #e2e8f0;
-        border-radius: 18px;
-        box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
-    }
-
-    .course-section:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 18px 42px rgba(15, 23, 42, 0.11);
-    }
-
-    .course-header {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        margin-bottom: 0 !important;
-        padding: clamp(20px, 3vw, 30px) !important;
-    }
-
-    .course-title {
-        font-size: clamp(1.35rem, 2.2vw, 1.9rem);
-        line-height: 1.18;
-        text-wrap: balance;
-    }
-
     .course-meta {
-        gap: 10px !important;
         margin-top: 0 !important;
-    }
-
-    .course-meta-item {
-        min-height: 38px;
-        padding: 8px 12px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        font-size: 0.92rem;
-    }
-
-    .tests-grid {
-        padding: clamp(18px, 3vw, 30px) !important;
-    }
-
-    .tests-grid .row {
-        row-gap: 22px;
+        gap: 10px !important;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 2;
     }
 
     .tests-grid .row > [class*="col-"] {
         margin-bottom: 0 !important;
-    }
-
-    .test-card {
-        display: flex;
-        flex-direction: column;
-        border-radius: 18px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
-    }
-
-    .test-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
     }
 
     .test-card .card-header {
@@ -924,90 +525,8 @@
         justify-content: center;
     }
 
-    .test-title {
-        font-size: clamp(1.1rem, 1.4vw, 1.32rem);
-        line-height: 1.25;
-        text-wrap: balance;
-    }
-
-    .test-description {
-        display: -webkit-box;
-        overflow: hidden;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-    }
-
-    .test-card .card-body {
-        display: flex;
-        flex: 1;
-        flex-direction: column;
-        padding: 20px !important;
-    }
-
-    .test-stats {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 10px !important;
-    }
-
-    .stat-item {
-        min-width: 0;
-        padding: 12px 8px;
-        border-radius: 14px;
-    }
-
-    .stat-number {
-        font-size: 1.16rem;
-    }
-
-    .stat-label {
-        font-size: 0.78rem;
-        line-height: 1.2;
-        overflow-wrap: anywhere;
-    }
-
-    .price-section {
-        border-radius: 14px;
-        margin-bottom: 16px;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
-    }
-
-    .test-status {
-        margin-top: auto;
-    }
-
-    .status-badge {
-        min-height: 38px;
-        padding: 9px 14px;
-        border-radius: 999px;
-        line-height: 1.15;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.22);
-    }
-
-    .test-actions {
-        margin-top: 14px;
-    }
-
-    .btn-test {
-        min-height: 46px;
-        border-radius: 12px;
-        box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1);
-    }
-
     .btn-test:hover {
         text-decoration: none !important;
-    }
-
-    .btn-warning-test {
-        color: #1f2937 !important;
-        background: linear-gradient(135deg, #facc15 0%, #f59e0b 100%);
-    }
-
-    .course-purchase-section {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 18px;
-        text-align: left;
     }
 
     .course-purchase-section .btn-test {
@@ -1020,7 +539,11 @@
     }
 
     .tests-table-card {
+        background: #fff;
         border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
     }
 
     .tests-table tbody tr:hover td {
@@ -1028,9 +551,11 @@
     }
 
     .no-tests {
+        text-align: center;
+        padding: clamp(46px, 8vw, 84px) 22px;
+        color: #64748b;
         max-width: 680px;
         margin: 32px auto 0;
-        padding: clamp(46px, 8vw, 84px) 22px;
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 22px;
@@ -1038,6 +563,9 @@
     }
 
     .no-tests i {
+        font-size: 3.25rem;
+        margin-bottom: 25px;
+        color: #2563eb;
         width: 92px;
         height: 92px;
         display: inline-flex;
@@ -1045,11 +573,11 @@
         justify-content: center;
         border-radius: 28px;
         background: #eff6ff;
-        color: #2563eb;
-        font-size: 3.25rem;
     }
 
     .no-tests h3 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
         color: #0f172a;
         font-weight: 900;
     }
@@ -1060,8 +588,7 @@
         line-height: 1.65;
     }
 
-    [dir="rtl"] .page-header-content,
-    [dir="rtl"] .course-purchase-section {
+    [dir="rtl"] .page-header-content, [dir="rtl"] .course-purchase-section {
         text-align: right;
     }
 
@@ -1074,10 +601,7 @@
         margin-right: auto;
     }
 
-    [dir="rtl"] .tests-table thead th:first-child,
-    [dir="rtl"] .tests-table tbody td:first-child,
-    [dir="rtl"] .table-test-name,
-    [dir="rtl"] .table-test-desc {
+    [dir="rtl"] .tests-table thead th:first-child, [dir="rtl"] .tests-table tbody td:first-child, [dir="rtl"] .table-test-name, [dir="rtl"] .table-test-desc {
         text-align: right !important;
     }
 
@@ -1224,12 +748,14 @@
         }
     }
 
-    /* Compact professional practice test cards */
     .course-section {
         margin-bottom: 20px !important;
+        background: white;
         border-radius: 10px;
-        border: 1px solid #e2e8f0;
         box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid #e2e8f0;
     }
 
     .course-section:hover {
@@ -1239,24 +765,51 @@
 
     .course-header {
         padding: 16px 20px !important;
+        margin-bottom: 0 !important;
         background: #1e40af;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
         gap: 10px;
     }
 
     .course-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: -60px;
+        width: 120px;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        transform: skewX(-15deg);
         display: none;
     }
 
     .course-title {
         font-size: clamp(1.15rem, 1.6vw, 1.45rem);
+        font-weight: 700;
+        margin: 0;
+        color: white !important;
+        position: relative;
+        z-index: 2;
         line-height: 1.2;
+        text-wrap: balance;
     }
 
     .course-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 0.82rem;
+        font-weight: 500;
         min-height: 30px;
         padding: 6px 10px;
-        font-size: 0.82rem;
+        border-radius: 999px;
         background: rgba(255, 255, 255, 0.13);
+        border: 1px solid rgba(255, 255, 255, 0.16);
     }
 
     .tests-grid {
@@ -1269,11 +822,18 @@
     }
 
     .test-card {
-        border-radius: 14px;
-        border: 1px solid #cbd8ea;
+        margin-bottom: 20px !important;
         background: #fbfdff;
-        box-shadow: 0 10px 24px rgba(30, 64, 175, 0.13);
+        border-radius: 14px;
+        padding: 0;
+        transition: all 0.4s ease;
+        height: 100%;
+        position: relative;
         overflow: hidden;
+        box-shadow: 0 10px 24px rgba(30, 64, 175, 0.13);
+        border: 1px solid #cbd8ea;
+        display: flex;
+        flex-direction: column;
     }
 
     .test-card:hover {
@@ -1281,10 +841,7 @@
         box-shadow: 0 14px 30px rgba(30, 64, 175, 0.17);
     }
 
-    .test-card .card-header,
-    .test-card:nth-child(3n+1) .card-header,
-    .test-card:nth-child(3n+2) .card-header,
-    .test-card:nth-child(3n+3) .card-header {
+    .test-card .card-header, .test-card:nth-child(3n+1) .card-header, .test-card:nth-child(3n+2) .card-header, .test-card:nth-child(3n+3) .card-header {
         min-height: 66px;
         padding: 10px 12px;
         justify-content: flex-start;
@@ -1295,63 +852,84 @@
 
     .test-title {
         font-size: 0.92rem;
-        line-height: 1.25;
+        font-weight: 700;
         color: #0f172a !important;
+        margin: 0 0 5px 0;
+        line-height: 1.25;
+        text-wrap: balance;
         margin-bottom: 3px;
     }
 
     .test-description {
         color: #64748b !important;
         font-size: 0.72rem;
+        margin-bottom: 0;
         line-height: 1.25;
+        display: -webkit-box;
+        overflow: hidden;
         -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
     }
 
     .test-card .card-body {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
         padding: 10px !important;
     }
 
     .test-stats {
+        display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 5px !important;
         margin-bottom: 8px !important;
+        gap: 5px !important;
     }
 
     .stat-item {
+        background: #eef6ff;
         padding: 6px 3px;
         border-radius: 8px;
-        background: #eef6ff;
+        text-align: center;
+        transition: all 0.3s ease;
         border: 1px solid #cfe0f6;
+        min-width: 0;
     }
 
     .stat-item:hover {
+        background: #f1f5f9;
         transform: none;
     }
 
     .stat-number {
         font-size: 0.84rem;
-        margin-bottom: 1px;
+        font-weight: 700;
         color: #1d4ed8;
+        display: block;
+        margin-bottom: 1px;
     }
 
     .stat-label {
         font-size: 0.6rem;
-        line-height: 1.15;
         color: #475569;
+        font-weight: 500;
+        line-height: 1.15;
+        overflow-wrap: anywhere;
     }
 
     .price-section {
-        margin-bottom: 8px;
-        padding: 5px 8px;
-        border-radius: 8px;
         background: #ecfdf5;
         color: #047857;
-        border: 1px solid #bbf7d0;
+        padding: 5px 8px;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 8px;
         box-shadow: none;
+        border: 1px solid #bbf7d0;
     }
 
     .price-amount {
         font-size: 0.86rem;
+        font-weight: 700;
         margin-bottom: 0;
     }
 
@@ -1362,14 +940,19 @@
 
     .test-status {
         margin-bottom: 0 !important;
+        margin-top: auto;
     }
 
     .status-badge {
-        min-height: 24px;
-        padding: 4px 8px;
+        display: inline-flex;
+        align-items: center;
         gap: 5px;
-        font-size: 0.66rem;
+        padding: 4px 8px;
         border-radius: 999px;
+        font-size: 0.66rem;
+        font-weight: 600;
+        min-height: 24px;
+        line-height: 1.15;
         box-shadow: none;
     }
 
@@ -1394,53 +977,76 @@
     }
 
     .test-actions {
-        margin-top: 8px;
+        display: flex;
         gap: 6px !important;
+        margin-top: 8px;
     }
 
     .btn-test {
+        flex: 1;
         min-height: 30px;
         padding: 6px 9px;
         border-radius: 8px;
-        font-size: 0.68rem;
         font-weight: 800;
+        text-decoration: none !important;
+        text-align: center;
+        transition: all 0.3s ease;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 0.68rem;
+        line-height: 1.2;
+        opacity: 1 !important;
+        visibility: visible !important;
+        white-space: nowrap;
         box-shadow: none;
     }
 
     .btn-test span {
         font-size: 0.68rem;
+        font-weight: 800;
     }
 
-    .test-card .btn-primary-test,
-    .test-card:nth-child(3n+1) .btn-primary-test,
-    .test-card:nth-child(3n+2) .btn-primary-test,
-    .test-card:nth-child(3n+3) .btn-primary-test {
+    .test-card .btn-primary-test, .test-card:nth-child(3n+1) .btn-primary-test, .test-card:nth-child(3n+2) .btn-primary-test, .test-card:nth-child(3n+3) .btn-primary-test {
         background: #1d4ed8;
         color: #ffffff !important;
     }
 
     .btn-success-test {
         background: #059669;
+        color: #ffffff !important;
+        border: none;
     }
 
     .btn-warning-test {
         background: #f59e0b;
         color: #111827 !important;
+        border: none;
     }
 
     .course-purchase-section {
         padding: 14px 18px !important;
         margin-top: 0 !important;
         background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        text-align: left;
         border-radius: 0 0 10px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
     }
 
     .course-purchase-price {
         font-size: 1.15rem;
+        font-weight: 700;
+        color: #1e40af;
         margin-bottom: 2px;
     }
 
     .course-purchase-desc {
+        color: #64748b;
         font-size: 0.86rem;
     }
 
@@ -1472,7 +1078,6 @@
         }
     }
 
-    /* Final practice test card visual overrides */
     .tests-grid.tests-view-block {
         background: #eef3fa !important;
         padding: 18px !important;
@@ -1496,10 +1101,7 @@
         box-shadow: 0 14px 30px rgba(31, 73, 125, 0.16) !important;
     }
 
-    .tests-grid.tests-view-block .test-card .card-header,
-    .tests-grid.tests-view-block .test-card:nth-child(3n+1) .card-header,
-    .tests-grid.tests-view-block .test-card:nth-child(3n+2) .card-header,
-    .tests-grid.tests-view-block .test-card:nth-child(3n+3) .card-header {
+    .tests-grid.tests-view-block .test-card .card-header, .tests-grid.tests-view-block .test-card:nth-child(3n+1) .card-header, .tests-grid.tests-view-block .test-card:nth-child(3n+2) .card-header, .tests-grid.tests-view-block .test-card:nth-child(3n+3) .card-header {
         min-height: 62px !important;
         padding: 10px 12px !important;
         background: #f6f9ff !important;
@@ -1597,10 +1199,7 @@
         font-size: 0.68rem !important;
     }
 
-    .tests-grid.tests-view-block .test-card .btn-primary-test,
-    .tests-grid.tests-view-block .test-card:nth-child(3n+1) .btn-primary-test,
-    .tests-grid.tests-view-block .test-card:nth-child(3n+2) .btn-primary-test,
-    .tests-grid.tests-view-block .test-card:nth-child(3n+3) .btn-primary-test {
+    .tests-grid.tests-view-block .test-card .btn-primary-test, .tests-grid.tests-view-block .test-card:nth-child(3n+1) .btn-primary-test, .tests-grid.tests-view-block .test-card:nth-child(3n+2) .btn-primary-test, .tests-grid.tests-view-block .test-card:nth-child(3n+3) .btn-primary-test {
         background: #2454d6 !important;
         color: #ffffff !important;
     }
@@ -1614,7 +1213,6 @@
             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
         }
     }
-
 
     .test-access-badge {
         display: inline-flex;
@@ -1655,6 +1253,43 @@
         padding: 6px 9px;
         font-size: 0.68rem;
         white-space: nowrap;
+    }
+
+
+    /* Final compact hero override - force actual Practice Tests banner height */
+    .page-headers {
+        padding: 14px 24px !important;
+        min-height: 0 !important;
+        margin-bottom: 10px !important;
+        border-radius: 14px !important;
+    }
+
+    .page-headers .container-fluid {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    .page-headers .row {
+        min-height: 0 !important;
+    }
+
+    .page-main-title {
+        font-size: 1.85rem !important;
+        line-height: 1.15 !important;
+        margin-bottom: 4px !important;
+    }
+
+    .page-subtitle {
+        font-size: 0.92rem !important;
+        line-height: 1.35 !important;
+        margin: 0 !important;
+    }
+
+    .stats-badge {
+        min-height: 32px !important;
+        padding: 6px 12px !important;
+        border-radius: 10px !important;
+        font-size: 0.85rem !important;
     }
 
 </style>
@@ -1700,7 +1335,7 @@
         }
     @endphp
 
-    <div class="page-headers">
+    <div class="page-headers" style="padding: 14px 24px !important; min-height: 0 !important; margin-bottom: 10px !important;">
         <div class="container-fluid">
             <div class="row align-items-center">
                 <div class="col-md-8">
