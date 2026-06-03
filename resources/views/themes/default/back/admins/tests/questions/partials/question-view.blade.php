@@ -403,12 +403,13 @@ function showMessage(message, type = 'info') {
     }, 4000);
 }
 
-function showQuestionSavePopup(type, message) {
+if (!window.showQuestionSavePopup) {
+window.showQuestionSavePopup = function (type, message) {
     document.querySelectorAll('.question-save-popup').forEach(el => el.remove());
 
     const div = document.createElement('div');
     const alertClass = type === 'success' ? 'alert-success' : type === 'warning' ? 'alert-warning' : 'alert-danger';
-    const autoCloseDelay = type === 'success' ? 2500 : 8000;
+    const autoCloseDelay = type === 'success' ? 2000 : type === 'warning' ? 5000 : 8000;
 
     div.className = `question-save-popup alert ${alertClass} alert-dismissible fade show`;
     div.setAttribute('role', 'alert');
@@ -417,7 +418,7 @@ function showQuestionSavePopup(type, message) {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        z-index: 10050;
+        z-index: 2147483647;
         width: min(520px, calc(100vw - 32px));
         box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
         font-size: 15px;
@@ -434,6 +435,11 @@ function showQuestionSavePopup(type, message) {
     setTimeout(() => {
         if (div.parentElement) div.remove();
     }, autoCloseDelay);
+};
+}
+
+function showQuestionSavePopup(type, message) {
+    window.showQuestionSavePopup(type, message);
 }
 
 function firstValidationMessage(errors, fallback = 'Save failed') {
@@ -484,7 +490,7 @@ async function safeJson(response) {
 
 async function quickSaveQuestion(questionId) {
     if (savingInProgress) {
-        showMessage('Saving in progress', 'warning');
+        showQuestionSavePopup('warning', 'Saving in progress');
         return;
     }
 

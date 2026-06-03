@@ -648,7 +648,7 @@ function saveQuestion(questionId) {
 
     const questionCard = $(`[data-question-id="${questionId}"]`);
     if (!questionCard.length) {
-        showErrorMessage(window.translations?.question_not_found || 'لم يتم العثور على السؤال');
+        showQuestionSavePopup('error', window.translations?.question_not_found || 'Question not found');
         return;
     }
 
@@ -720,7 +720,7 @@ function saveQuestion(questionId) {
                 if (canAddMore) {
                     addNewQuestion();
                 } else {
-                    showErrorMessage(
+                    showQuestionSavePopup('warning',
                         window.translations?.all_questions_added_already ||
                         'تم إضافة جميع الأسئلة المطلوبة'
                     );
@@ -729,7 +729,7 @@ function saveQuestion(questionId) {
 
             setTimeout(() => {
                 location.reload();
-            }, 1000);
+            }, 2200);
         },
         error: function (xhr) {
             console.error('AJAX Error:', xhr);
@@ -1009,38 +1009,43 @@ function showErrorMessage(message) {
     setTimeout(() => $('.alert-danger').fadeOut(), 7000);
 }
 
-function showQuestionSavePopup(type, message) {
-    $('.question-save-popup').remove();
+window.showQuestionSavePopup = function (type, message) {
+    document.querySelectorAll('.question-save-popup').forEach(popup => popup.remove());
 
     const alertClass = type === 'success' ? 'alert-success' : type === 'warning' ? 'alert-warning' : 'alert-danger';
-    const autoCloseDelay = type === 'success' ? 2500 : 8000;
-    const popup = $(`
-        <div class="question-save-popup alert ${alertClass} alert-dismissible fade show" role="alert">
-            <div class="question-save-popup__message">${message}</div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    `);
+    const autoCloseDelay = type === 'success' ? 2000 : type === 'warning' ? 5000 : 8000;
+    const popup = document.createElement('div');
 
-    popup.css({
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        zIndex: 10050,
-        width: 'min(520px, calc(100vw - 32px))',
-        boxShadow: '0 16px 40px rgba(15, 23, 42, 0.25)',
-        fontSize: '15px',
-        lineHeight: '1.45',
-        textAlign: 'center'
-    });
+    popup.className = `question-save-popup alert ${alertClass} alert-dismissible fade show`;
+    popup.setAttribute('role', 'alert');
+    popup.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2147483647;
+        width: min(520px, calc(100vw - 32px));
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
+        font-size: 15px;
+        line-height: 1.45;
+        text-align: center;
+    `;
+    popup.innerHTML = `
+        <div class="question-save-popup__message">${message}</div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
 
-    $('body').append(popup);
+    document.body.appendChild(popup);
 
     setTimeout(() => {
-        popup.fadeOut(180, function () {
-            $(this).remove();
-        });
+        if (popup.parentElement) {
+            popup.remove();
+        }
     }, autoCloseDelay);
+};
+
+function showQuestionSavePopup(type, message) {
+    window.showQuestionSavePopup(type, message);
 }
 
 function getFirstValidationMessage(errors) {
