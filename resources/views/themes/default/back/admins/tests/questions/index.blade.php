@@ -495,7 +495,11 @@ window.translations = {
 };
 </script>
 
-<script src="{{ asset('js/tests-questions.js') }}"></script>
+@php
+    $testsQuestionsJs = public_path('js/tests-questions.js');
+@endphp
+
+<script src="{{ asset('js/tests-questions.js') }}?v={{ file_exists($testsQuestionsJs) ? filemtime($testsQuestionsJs) : time() }}"></script>
 
 <script>
 (function () {
