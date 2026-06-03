@@ -172,6 +172,8 @@ class TestQuestionsController extends Controller
             ], 404);
         }
 
+        $this->prepareStoreRequestForValidation($request, $test);
+
         $validator = Validator::make($request->all(), [
             'question_text'          => 'required|string',
             'type'                   => 'required|in:mcq,tf,numeric',
@@ -183,8 +185,8 @@ class TestQuestionsController extends Controller
             'question_image'         => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'explanation_image'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'correct_answer'         => 'required_if:type,tf,numeric|nullable',
-            'options'                => 'required_if:type,mcq|array|min:2|max:6',
-            'options.*.option_text'  => 'required_if:type,mcq|string',
+            'options'                => 'required_if:type,mcq|array|max:6',
+            'options.*.option_text'  => 'nullable|string',
             'options.*.is_correct'   => 'nullable|boolean',
             'options.*.option_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
@@ -197,9 +199,11 @@ class TestQuestionsController extends Controller
             ], 422);
         }
 
+        $submittedOptions = $request->all()['options'] ?? [];
+
         if ($request->type === 'mcq' && $request->has('options')) {
             $hasCorrectAnswer = false;
-            foreach ($request->options as $option) {
+            foreach ($submittedOptions as $option) {
                 if (isset($option['is_correct']) && $option['is_correct']) {
                     $hasCorrectAnswer = true;
                     break;
@@ -214,6 +218,26 @@ class TestQuestionsController extends Controller
                 ], 422);
             }
         }
+
+        $submittedOptions = $request->all()['options'] ?? [];
+
+        if ($optionCountErrors = $this->validateCompleteMcqOptions($submittedOptions, $request->type)) {
+            return response()->json([
+                'success' => false,
+                'message' => __('l.validation_error'),
+                'errors'  => $optionCountErrors
+            ], 422);
+        }
+
+        if ($duplicateErrors = $this->validateUniqueMcqOptions($submittedOptions, $request->type)) {
+            return response()->json([
+                'success' => false,
+                'message' => __('l.validation_error'),
+                'errors'  => $duplicateErrors
+            ], 422);
+        }
+
+        $this->keepOnlyUsableMcqOptionsForSaving($request);
 
         $selectedPart = $request->part;
         $countField   = $selectedPart . '_questions_count';
@@ -369,8 +393,8 @@ class TestQuestionsController extends Controller
             'question_image'         => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'explanation_image'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'correct_answer'         => 'required_if:type,tf,numeric|nullable',
-            'options'                => 'required_if:type,mcq|array|min:2|max:6',
-            'options.*.option_text'  => 'required_if:type,mcq|string',
+            'options'                => 'required_if:type,mcq|array|max:6',
+            'options.*.option_text'  => 'nullable|string',
             'options.*.is_correct'   => 'nullable|boolean',
             'options.*.option_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
@@ -383,9 +407,11 @@ class TestQuestionsController extends Controller
             ], 422);
         }
 
+        $submittedOptions = $request->all()['options'] ?? [];
+
         if ($request->type === 'mcq' && $request->has('options')) {
             $hasCorrectAnswer = false;
-            foreach ($request->options as $option) {
+            foreach ($submittedOptions as $option) {
                 if (isset($option['is_correct']) && $option['is_correct']) {
                     $hasCorrectAnswer = true;
                     break;
@@ -400,6 +426,24 @@ class TestQuestionsController extends Controller
                 ], 422);
             }
         }
+
+        if ($optionCountErrors = $this->validateCompleteMcqOptions($submittedOptions, $request->type, $question)) {
+            return response()->json([
+                'success' => false,
+                'message' => __('l.validation_error'),
+                'errors'  => $optionCountErrors
+            ], 422);
+        }
+
+        if ($duplicateErrors = $this->validateUniqueMcqOptions($submittedOptions, $request->type, $question)) {
+            return response()->json([
+                'success' => false,
+                'message' => __('l.validation_error'),
+                'errors'  => $duplicateErrors
+            ], 422);
+        }
+
+        $this->keepOnlyUsableMcqOptionsForSaving($request, $question);
 
         $selectedPart = $request->part;
         $oldPart      = $question->part;
@@ -571,6 +615,169 @@ class TestQuestionsController extends Controller
             'part2Questions',
             'modulesQuestions'
         ));
+    }
+
+    private function validateCompleteMcqOptions(array $options, string $questionType, ?TestQuestion $question = null): ?array
+    {
+        if ($questionType !== 'mcq') {
+            return null;
+        }
+
+        $existingOptions = $question
+            ? $question->options->keyBy('id')
+            : collect();
+
+        $usableOptions = array_filter(
+            $options,
+            fn($optionData) => $this->mcqOptionHasUsableContent($optionData, $existingOptions)
+        );
+
+        if (count($usableOptions) !== 4) {
+            return [
+                'options' => ['Multiple choice questions must have 4 answer choices.']
+            ];
+        }
+
+        return null;
+    }
+
+    private function validateUniqueMcqOptions(array $options, string $questionType, ?TestQuestion $question = null): ?array
+    {
+        if ($questionType !== 'mcq') {
+            return null;
+        }
+
+        $existingOptions = $question
+            ? $question->options->keyBy('id')
+            : collect();
+
+        $seen = [];
+
+        foreach ($options as $optionData) {
+            if (!$this->mcqOptionHasUsableContent($optionData, $existingOptions)) {
+                continue;
+            }
+
+            $text = $this->normalizeOptionTextForDuplicateCheck($optionData['option_text'] ?? '');
+            $imageIdentifier = $this->optionImageIdentifierForDuplicateCheck($optionData, $existingOptions);
+
+            if ($imageIdentifier === null && $text === '') {
+                continue;
+            }
+
+            $key = $imageIdentifier === null
+                ? 'text:' . $text
+                : 'text-image:' . $text . '|image:' . $imageIdentifier;
+
+            if (isset($seen[$key])) {
+                return [
+                    'options' => ['Duplicate answer choices detected. Please make each option unique.']
+                ];
+            }
+
+            $seen[$key] = true;
+        }
+
+        return null;
+    }
+
+    private function prepareStoreRequestForValidation(Request $request, Test $test): void
+    {
+        if ((int) $request->input('score', 0) < 1) {
+            $score = $this->scoreForStoreRequest($request, $test);
+
+            if ($score !== null) {
+                $request->merge(['score' => $score]);
+            }
+        }
+    }
+
+    private function keepOnlyUsableMcqOptionsForSaving(Request $request, ?TestQuestion $question = null): void
+    {
+        if ($request->input('type') !== 'mcq') {
+            return;
+        }
+
+        $options = $request->all()['options'] ?? null;
+
+        if (!is_array($options)) {
+            return;
+        }
+
+        $existingOptions = $question
+            ? $question->options->keyBy('id')
+            : collect();
+
+        $request->merge([
+            'options' => array_values(array_filter(
+                $options,
+                fn($option) => $this->mcqOptionHasUsableContent($option, $existingOptions)
+            ))
+        ]);
+    }
+
+    private function mcqOptionHasUsableContent(mixed $option, $existingOptions): bool
+    {
+        if (!is_array($option)) {
+            return false;
+        }
+
+        if ($this->normalizeOptionTextForDuplicateCheck($option['option_text'] ?? '') !== '') {
+            return true;
+        }
+
+        if (($option['option_image'] ?? null) instanceof \Illuminate\Http\UploadedFile) {
+            return true;
+        }
+
+        if (isset($option['id']) && is_numeric($option['id'])) {
+            $existingOption = $existingOptions->get((int) $option['id']);
+
+            return $existingOption
+                && (string) ($option['remove_image'] ?? '0') !== '1'
+                && filled($existingOption->option_image);
+        }
+
+        return false;
+    }
+
+    private function scoreForStoreRequest(Request $request, Test $test): ?int
+    {
+        $part = (string) $request->input('part', '');
+        $difficulty = (string) $request->input('difficulty', '');
+
+        if (!preg_match('/^part([1-5])$/', $part, $matches) || !in_array($difficulty, ['easy', 'medium', 'hard'], true)) {
+            return null;
+        }
+
+        $field = 'module' . $matches[1] . '_' . $difficulty . '_score';
+        $score = (int) ($test->$field ?? 0);
+
+        return $score > 0 ? $score : null;
+    }
+
+    private function normalizeOptionTextForDuplicateCheck(mixed $value): string
+    {
+        return preg_replace('/\s+/u', ' ', trim((string) $value)) ?? '';
+    }
+
+    private function optionImageIdentifierForDuplicateCheck(array $optionData, $existingOptions): ?string
+    {
+        if (($optionData['option_image'] ?? null) instanceof \Illuminate\Http\UploadedFile) {
+            $hash = hash_file('sha256', $optionData['option_image']->getRealPath());
+
+            return $hash ? 'upload:' . $hash : null;
+        }
+
+        if (isset($optionData['id']) && is_numeric($optionData['id'])) {
+            $option = $existingOptions->get((int) $optionData['id']);
+
+            if ($option && (string) ($optionData['remove_image'] ?? '0') !== '1' && filled($option->option_image)) {
+                return 'existing:' . trim((string) $option->option_image);
+            }
+        }
+
+        return null;
     }
 
     public function delete(Request $request)

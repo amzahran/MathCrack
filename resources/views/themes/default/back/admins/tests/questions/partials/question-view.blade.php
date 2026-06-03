@@ -153,7 +153,7 @@
                                 {{ $option->is_correct ? 'checked' : '' }}>
                             <label class="ms-2 small text-muted">@lang('l.correct_answer')</label>
                             <div class="ms-auto">
-                                <button type="button" class="btn btn-outline-danger btn-sm"
+                                <button type="button" class="btn btn-outline-danger btn-sm btn-remove-option"
                                     onclick="removeMCQOption(this)">
                                     <i class="fas fa-times"></i>
                                 </button>
@@ -199,7 +199,7 @@
                             class="form-check-input ms-2 correct-radio" checked>
                         <label class="ms-2 small text-muted">@lang('l.correct_answer')</label>
                         <div class="ms-auto">
-                            <button type="button" class="btn btn-outline-danger btn-sm"
+                            <button type="button" class="btn btn-outline-danger btn-sm btn-remove-option"
                                 onclick="removeMCQOption(this)">
                                 <i class="fas fa-times"></i>
                             </button>
@@ -230,7 +230,7 @@
                             class="form-check-input ms-2 correct-radio">
                         <label class="ms-2 small text-muted">@lang('l.correct_answer')</label>
                         <div class="ms-auto">
-                            <button type="button" class="btn btn-outline-danger btn-sm"
+                            <button type="button" class="btn btn-outline-danger btn-sm btn-remove-option"
                                 onclick="removeMCQOption(this)">
                                 <i class="fas fa-times"></i>
                             </button>
@@ -343,6 +343,36 @@ function getQuestionCard(questionId) {
     return document.querySelector(`[data-question-id="${questionId}"]`);
 }
 
+function restoreOptionDeleteButtons(card) {
+    if (!card) return;
+
+    card.querySelectorAll('.btn-remove-option').forEach(button => {
+        button.style.display = '';
+    });
+}
+
+function readQuestionSelectValue(card, selector) {
+    const field = card.querySelector(selector);
+    if (!field) return '';
+
+    if (field.value && field.value.trim() !== '') {
+        return field.value.trim();
+    }
+
+    const selectedOption = field.querySelector('option:checked');
+    if (selectedOption && selectedOption.value && selectedOption.value.trim() !== '') {
+        return selectedOption.value.trim();
+    }
+
+    if (window.jQuery && jQuery(field).hasClass('select2-hidden-accessible') && jQuery(field).select2) {
+        const selectedData = jQuery(field).select2('data') || [];
+        const firstSelected = selectedData.find(item => item && item.id && String(item.id).trim() !== '');
+        if (firstSelected) return String(firstSelected.id).trim();
+    }
+
+    return '';
+}
+
 function showMessage(message, type = 'info') {
     document.querySelectorAll('.message-alert').forEach(el => el.remove());
 
@@ -373,6 +403,76 @@ function showMessage(message, type = 'info') {
     }, 4000);
 }
 
+function showQuestionSavePopup(type, message) {
+    document.querySelectorAll('.question-save-popup').forEach(el => el.remove());
+
+    const div = document.createElement('div');
+    const alertClass = type === 'success' ? 'alert-success' : type === 'warning' ? 'alert-warning' : 'alert-danger';
+    const autoCloseDelay = type === 'success' ? 2500 : 8000;
+
+    div.className = `question-save-popup alert ${alertClass} alert-dismissible fade show`;
+    div.setAttribute('role', 'alert');
+    div.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10050;
+        width: min(520px, calc(100vw - 32px));
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
+        font-size: 15px;
+        line-height: 1.45;
+        text-align: center;
+    `;
+    div.innerHTML = `
+        <div>${message}</div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+    document.body.appendChild(div);
+
+    setTimeout(() => {
+        if (div.parentElement) div.remove();
+    }, autoCloseDelay);
+}
+
+function firstValidationMessage(errors, fallback = 'Save failed') {
+    if (!errors) return fallback;
+
+    for (const error of Object.values(errors)) {
+        if (Array.isArray(error) && error.length) {
+            return error[0];
+        }
+
+        if (typeof error === 'string' && error.trim()) {
+            return error;
+        }
+    }
+
+    return fallback;
+}
+
+function showQuestionValidationMessage(card, message) {
+    card.querySelectorAll('.question-validation-alert').forEach(el => el.remove());
+
+    const div = document.createElement('div');
+    div.className = 'question-validation-alert alert alert-danger alert-dismissible fade show mt-3 mb-3';
+    div.setAttribute('role', 'alert');
+    div.innerHTML = `
+        <strong>Save failed.</strong> ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+    const body = card.querySelector('.card-body');
+    if (body) {
+        body.prepend(div);
+    } else {
+        card.prepend(div);
+    }
+
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
 async function safeJson(response) {
     const text = await response.text();
     try {
@@ -390,6 +490,7 @@ async function quickSaveQuestion(questionId) {
 
     const card = getQuestionCard(questionId);
     if (!card) return;
+    restoreOptionDeleteButtons(card);
 
     const saveBtn = card.querySelector('.btn-save');
     const originalHtml = saveBtn ? saveBtn.innerHTML : '';
@@ -408,11 +509,11 @@ async function quickSaveQuestion(questionId) {
     const contentSel = card.querySelector('.question-content-select');
 
     formData.append('question_text', qText ? qText.value : '');
-    formData.append('part', partSel ? partSel.value : 'part1');
+    formData.append('part', readQuestionSelectValue(card, '.question-part, .part-select, select[name="part"]') || 'part1');
     formData.append('score', scoreIn ? scoreIn.value : 15);
     formData.append('type', typeSel ? typeSel.value : 'mcq');
-    formData.append('difficulty', difficultySel ? difficultySel.value : '');
-    formData.append('content', contentSel ? contentSel.value : '');
+    formData.append('difficulty', readQuestionSelectValue(card, '.question-difficulty, select[name="difficulty"]'));
+    formData.append('content', readQuestionSelectValue(card, '.question-content-select, select[name="content"], select[name="content_id"], select[name="test_content_id"]'));
     formData.append('explanation', expText ? expText.value : '');
 
     const qType = typeSel ? typeSel.value : 'mcq';
@@ -420,25 +521,24 @@ async function quickSaveQuestion(questionId) {
     if (qType === 'mcq') {
         const optionEls = card.querySelectorAll('.option-item');
 
-        optionEls.forEach((optEl) => {
-            const realIndex = optEl.getAttribute('data-option-index');
+        optionEls.forEach((optEl, submitIndex) => {
             const optionId = optEl.getAttribute('data-option-id');
             const optText = optEl.querySelector('.option-text-editor');
             const correctRadio = optEl.querySelector('.correct-radio, input[type="radio"]');
             const optImgInput = optEl.querySelector('.option-image-input, .option-image');
             const removeOpt = optEl.querySelector(`input[id^="remove-option-"]`);
 
-            formData.append(`options[${realIndex}][option_text]`, optText ? optText.value : '');
-            formData.append(`options[${realIndex}][is_correct]`, correctRadio && correctRadio.checked ? '1' : '0');
-            formData.append(`options[${realIndex}][remove_image]`, removeOpt ? (removeOpt.value || '0') : '0');
+            formData.append(`options[${submitIndex}][option_text]`, optText ? optText.value : '');
+            formData.append(`options[${submitIndex}][is_correct]`, correctRadio && correctRadio.checked ? '1' : '0');
+            formData.append(`options[${submitIndex}][remove_image]`, removeOpt ? (removeOpt.value || '0') : '0');
 
             if (optionId) {
-                formData.append(`options[${realIndex}][id]`, optionId);
+                formData.append(`options[${submitIndex}][id]`, optionId);
                 formData.append(`remove_option_image[${optionId}]`, removeOpt ? (removeOpt.value || '0') : '0');
             }
 
             if (optImgInput && optImgInput.files && optImgInput.files[0]) {
-                formData.append(`options[${realIndex}][option_image]`, optImgInput.files[0]);
+                formData.append(`options[${submitIndex}][option_image]`, optImgInput.files[0]);
             }
         });
     }
@@ -494,42 +594,27 @@ async function quickSaveQuestion(questionId) {
         });
 
         if (response.status === 419) {
-            showMessage('CSRF token expired. Refresh the page', 'danger');
+            showQuestionSavePopup('error', 'Something went wrong. Please try again.');
             return;
         }
 
         const data = await safeJson(response);
 
         if (!response.ok) {
-            let msg = data.message || 'Save failed';
+            let firstError = firstValidationMessage(data.errors, 'Something went wrong. Please try again.');
 
-            if (data.errors) {
-                const lines = [];
-                Object.keys(data.errors).forEach(key => {
-                    const arr = data.errors[key];
-                    if (Array.isArray(arr)) {
-                        arr.forEach(item => lines.push(item));
-                    } else {
-                        lines.push(arr);
-                    }
-                });
-
-                if (lines.length) {
-                    msg += '\n' + lines.join('\n');
-                }
-            }
-
-            showMessage(msg, 'danger');
+            showQuestionValidationMessage(card, firstError);
+            showQuestionSavePopup('error', firstError);
             return;
         }
 
         if (data.success) {
-            showMessage(data.message || 'Saved', 'success');
+            showQuestionSavePopup('success', 'Question updated successfully.');
         } else {
-            showMessage(data.message || 'Save failed', 'danger');
+            showQuestionSavePopup('error', 'Something went wrong. Please try again.');
         }
     } catch (err) {
-        showMessage('Network error', 'danger');
+        showQuestionSavePopup('error', 'Something went wrong. Please try again.');
     } finally {
         savingInProgress = false;
         if (saveBtn) {
@@ -694,6 +779,7 @@ function removeMCQOption(button) {
 
     optionItem.remove();
     reindexMCQOptions(container);
+    restoreOptionDeleteButtons(container.closest('[data-question-id]'));
 }
 
 function reindexMCQOptions(container) {
@@ -767,7 +853,7 @@ function addMCQOption(questionId) {
                     class="form-check-input ms-2 correct-radio">
                 <label class="ms-2 small text-muted">@lang('l.correct_answer')</label>
                 <div class="ms-auto">
-                    <button type="button" class="btn btn-outline-danger btn-sm"
+                    <button type="button" class="btn btn-outline-danger btn-sm btn-remove-option"
                         onclick="removeMCQOption(this)">
                         <i class="fas fa-times"></i>
                     </button>
@@ -794,9 +880,12 @@ function addMCQOption(questionId) {
 
     container.insertAdjacentHTML('beforeend', html);
     reindexMCQOptions(container);
+    restoreOptionDeleteButtons(container.closest('[data-question-id]'));
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-question-id]').forEach(restoreOptionDeleteButtons);
+
     document.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 's') {
             e.preventDefault();

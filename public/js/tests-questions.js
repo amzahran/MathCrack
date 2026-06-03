@@ -481,7 +481,7 @@ function createOptionHtml(questionId, optionIndex, letter, radioGroupName = null
                 </label>
                 <div class="ms-auto">
                     <button type="button"
-                            class="btn btn-sm btn-outline-danger"
+                            class="btn btn-sm btn-outline-danger btn-remove-option"
                             onclick="removeMCQOption(this)">
                         <i class="fas fa-times"></i>
                     </button>
@@ -566,12 +566,15 @@ function createTrueFalseOptions(questionId, originalQuestionId = null) {
 
 /* إضافة / حذف خيارات MCQ */
 function addMCQOption(questionId) {
-    let container = $(`#options-${questionId} .mcq-options`);
+    let container = $(`#options-${questionId} .mcq-options .options-list`);
 
     if (!container.length) {
-        container = $(`[data-question-id="${questionId}"] .mcq-options .options-list`);
+        container = $(`#options-${questionId} .mcq-options`);
         if (!container.length) {
-            container = $(`[data-question-id="${questionId}"] .mcq-options`);
+            container = $(`[data-question-id="${questionId}"] .mcq-options .options-list`);
+            if (!container.length) {
+                container = $(`[data-question-id="${questionId}"] .mcq-options`);
+            }
         }
     }
 
@@ -601,16 +604,26 @@ function addMCQOption(questionId) {
 
 function updateDeleteButtonsVisibility(container) {
     const optionCount = container.children('.option-item').length;
+
+    if (container.hasClass('options-list')) {
+        container.find('.btn-remove-option').show();
+        return;
+    }
+
     if (optionCount <= 2) {
-        container.find('.btn-outline-danger').hide();
+        container.find('.btn-remove-option').hide();
     } else {
-        container.find('.btn-outline-danger').show();
+        container.find('.btn-remove-option').show();
     }
 }
 
 function removeMCQOption(button) {
     const optionItem = $(button).closest('.option-item');
-    const container = optionItem.closest('.mcq-options');
+    let container = optionItem.closest('.options-list');
+
+    if (!container.length) {
+        container = optionItem.closest('.mcq-options');
+    }
 
     optionItem.remove();
 
@@ -640,7 +653,7 @@ function saveQuestion(questionId) {
     }
 
     const questionData = extractQuestionData(questionCard);
-    if (!validateQuestionData(questionData)) {
+    if (!validateQuestionData(questionData, questionCard)) {
         return;
     }
 
@@ -692,11 +705,7 @@ function saveQuestion(questionId) {
         contentType: false,
         success: function (response) {
             showLoading(false);
-            showSuccessMessage(
-                response.message ||
-                window.translations?.question_saved_successfully ||
-                'تم حفظ السؤال بنجاح'
-            );
+            showQuestionSavePopup('success', isNewQuestion ? 'Question saved successfully.' : 'Question updated successfully.');
 
             setTimeout(() => {
                 const modulesArr = getModulesArray();
@@ -728,14 +737,11 @@ function saveQuestion(questionId) {
 
             if (xhr.status === 422) {
                 const errors = xhr.responseJSON?.errors || {};
-                showValidationErrors(errors);
+                const firstMessage = getFirstValidationMessage(errors);
+                showQuestionCardError(questionCard, firstMessage);
+                showQuestionSavePopup('error', firstMessage);
             } else {
-                const errorMessage = xhr.responseJSON?.message || xhr.responseText ||
-                    window.translations?.unknown_error || 'خطأ غير معروف';
-                showErrorMessage(
-                    (window.translations?.save_question_error || 'خطأ في حفظ السؤال') +
-                    ': ' + errorMessage
-                );
+                showQuestionSavePopup('error', 'Something went wrong. Please try again.');
             }
         }
     });
@@ -746,10 +752,10 @@ function extractQuestionData(questionCard) {
     const questionType = questionCard.find('.question-type-select').val();
     const questionText = questionCard.find('.question-text-editor').val();
     const questionImage = questionCard.find('.question-image')[0]?.files[0];
-    const questionPart = questionCard.find('.question-part').val();
+    const questionPart = readQuestionSelectValue(questionCard, '.question-part, .part-select, select[name="part"]');
     const score = questionCard.find('.question-score').val();
-    const difficulty = questionCard.find('.question-difficulty').val();
-    const content = questionCard.find('.question-content-select').val();
+    const difficulty = readQuestionSelectValue(questionCard, '.question-difficulty, select[name="difficulty"]');
+    const content = readQuestionSelectValue(questionCard, '.question-content-select, select[name="content"], select[name="content_id"], select[name="test_content_id"]');
     const explanation = questionCard.find('.question-explanation').val();
     const explanationImage = questionCard.find('.explanation-image')[0]?.files[0];
 
@@ -781,6 +787,32 @@ function extractQuestionData(questionCard) {
     return data;
 }
 
+function readQuestionSelectValue(questionCard, selector) {
+    const field = questionCard.find(selector).first();
+    if (!field.length) return '';
+
+    const rawValue = field.val();
+    if (Array.isArray(rawValue)) {
+        const firstValue = rawValue.find(value => String(value || '').trim() !== '');
+        if (firstValue) return String(firstValue).trim();
+    } else if (String(rawValue || '').trim() !== '') {
+        return String(rawValue).trim();
+    }
+
+    const selectedValue = field.find('option:selected').val();
+    if (String(selectedValue || '').trim() !== '') {
+        return String(selectedValue).trim();
+    }
+
+    if (field.hasClass('select2-hidden-accessible') && field.select2) {
+        const selectedData = field.select2('data') || [];
+        const firstSelected = selectedData.find(item => String(item?.id || '').trim() !== '');
+        if (firstSelected) return String(firstSelected.id).trim();
+    }
+
+    return '';
+}
+
 function extractMCQOptions(questionCard) {
     const options = [];
     const optionItems = questionCard.find('.mcq-options .option-item');
@@ -810,24 +842,24 @@ function extractTFAnswer(questionCard) {
 }
 
 /* Validation */
-function validateQuestionData(data) {
+function validateQuestionData(data, questionCard = null) {
     if (!data.question_text.trim()) {
-        showErrorMessage(window.translations?.question_text_required || 'Question text is required');
+        showQuestionValidationPopup(questionCard, window.translations?.question_text_required || 'Question text is required');
         return false;
     }
 
     if (!data.part) {
-        showErrorMessage(window.translations?.question_part_required || 'Please select a module');
+        showQuestionValidationPopup(questionCard, window.translations?.question_part_required || 'Please select a module');
         return false;
     }
 
     if (!data.difficulty) {
-        showErrorMessage(window.translations?.difficulty_required || 'Please select difficulty');
+        showQuestionValidationPopup(questionCard, window.translations?.difficulty_required || 'Please select difficulty');
         return false;
     }
 
     if (!data.content) {
-        showErrorMessage(window.translations?.content_required || 'Please select content');
+        showQuestionValidationPopup(questionCard, window.translations?.content_required || 'Please select content');
         return false;
     }
 
@@ -842,39 +874,55 @@ function validateQuestionData(data) {
         const canAdd = m.hasOwnProperty('can_add') ? !!m.can_add : remaining > 0;
 
         if (!canAdd) {
-            showErrorMessage('This module is already full. Please select another module.');
+            showQuestionValidationPopup(questionCard, 'This module is already full. Please select another module.');
             return false;
         }
     }
 
     if (data.type === 'mcq') {
-        if (!data.options || data.options.length < 2) {
-            showErrorMessage(window.translations?.min_two_options_required || 'At least 2 options required');
+        if (countUsableMcqOptions(data.options) !== 4) {
+            showQuestionValidationPopup(questionCard, 'Multiple choice questions must have 4 answer choices.');
             return false;
         }
 
         const hasCorrectAnswer = data.options.some(o => o.is_correct === true);
         if (!hasCorrectAnswer) {
-            showErrorMessage(window.translations?.must_select_correct_answer || 'Must select correct answer');
+            showQuestionValidationPopup(questionCard, window.translations?.must_select_correct_answer || 'Please select the correct answer.');
             return false;
         }
     }
 
     if (data.type === 'tf') {
         if (!data.correct_answer && data.correct_answer !== '0') {
-            showErrorMessage(window.translations?.must_select_tf_answer || 'Please select true/false answer');
+            showQuestionValidationPopup(questionCard, window.translations?.must_select_tf_answer || 'Please select true/false answer');
             return false;
         }
     }
 
     if (data.type === 'numeric') {
         if (!data.correct_answer || data.correct_answer.toString().trim() === '') {
-            showErrorMessage(window.translations?.numeric_answer_required || 'Numeric answer required');
+            showQuestionValidationPopup(questionCard, window.translations?.numeric_answer_required || 'Numeric answer required');
             return false;
         }
     }
 
     return true;
+}
+
+function countUsableMcqOptions(options) {
+    if (!Array.isArray(options)) return 0;
+
+    return options.filter(option => {
+        const text = String(option?.option_text || '').trim();
+        return text !== '' || !!option?.option_image;
+    }).length;
+}
+
+function showQuestionValidationPopup(questionCard, message) {
+    if (questionCard) {
+        showQuestionCardError(questionCard, message);
+    }
+    showQuestionSavePopup('error', message);
 }
 
 /* Delete Question */
@@ -959,6 +1007,74 @@ function showErrorMessage(message) {
     `;
     $('.main-content').prepend(alert);
     setTimeout(() => $('.alert-danger').fadeOut(), 7000);
+}
+
+function showQuestionSavePopup(type, message) {
+    $('.question-save-popup').remove();
+
+    const alertClass = type === 'success' ? 'alert-success' : type === 'warning' ? 'alert-warning' : 'alert-danger';
+    const autoCloseDelay = type === 'success' ? 2500 : 8000;
+    const popup = $(`
+        <div class="question-save-popup alert ${alertClass} alert-dismissible fade show" role="alert">
+            <div class="question-save-popup__message">${message}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `);
+
+    popup.css({
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        zIndex: 10050,
+        width: 'min(520px, calc(100vw - 32px))',
+        boxShadow: '0 16px 40px rgba(15, 23, 42, 0.25)',
+        fontSize: '15px',
+        lineHeight: '1.45',
+        textAlign: 'center'
+    });
+
+    $('body').append(popup);
+
+    setTimeout(() => {
+        popup.fadeOut(180, function () {
+            $(this).remove();
+        });
+    }, autoCloseDelay);
+}
+
+function getFirstValidationMessage(errors) {
+    for (const error of Object.values(errors || {})) {
+        if (Array.isArray(error) && error.length) {
+            return error[0];
+        }
+
+        if (typeof error === 'string' && error.trim()) {
+            return error;
+        }
+    }
+
+    return window.translations?.validation_error || 'Please correct the validation errors.';
+}
+
+function showQuestionCardError(questionCard, message) {
+    questionCard.find('.question-validation-alert').remove();
+
+    const alert = $(`
+        <div class="question-validation-alert alert alert-danger alert-dismissible fade show mt-3 mb-3" role="alert">
+            <strong>Save failed.</strong> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `);
+
+    const cardBody = questionCard.find('.card-body').first();
+    if (cardBody.length) {
+        cardBody.prepend(alert);
+    } else {
+        questionCard.prepend(alert);
+    }
+
+    questionCard[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function showValidationErrors(errors) {
@@ -1098,3 +1214,4 @@ $(document).on('change', '.question-difficulty, .question-part', function () {
     }
 
 });
+
