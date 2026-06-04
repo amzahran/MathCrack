@@ -337,7 +337,8 @@
 </div>
 
 <script>
-let savingInProgress = false;
+window.adminQuestionSaveState = window.adminQuestionSaveState || {};
+window.adminQuestionSaveState.saving = window.adminQuestionSaveState.saving || {};
 
 function getQuestionCard(questionId) {
     return document.querySelector(`[data-question-id="${questionId}"]`);
@@ -351,7 +352,7 @@ function restoreOptionDeleteButtons(card) {
     });
 }
 
-function readQuestionSelectValue(card, selector) {
+function readExistingQuestionSelectValue(card, selector) {
     const field = card.querySelector(selector);
     if (!field) return '';
 
@@ -489,7 +490,7 @@ async function safeJson(response) {
 }
 
 async function quickSaveQuestion(questionId) {
-    if (savingInProgress) {
+    if (window.adminQuestionSaveState.saving[questionId]) {
         showQuestionSavePopup('warning', 'Saving in progress');
         return;
     }
@@ -515,11 +516,11 @@ async function quickSaveQuestion(questionId) {
     const contentSel = card.querySelector('.question-content-select');
 
     formData.append('question_text', qText ? qText.value : '');
-    formData.append('part', readQuestionSelectValue(card, '.question-part, .part-select, select[name="part"]') || 'part1');
+    formData.append('part', readExistingQuestionSelectValue(card, '.question-part, .part-select, select[name="part"]') || 'part1');
     formData.append('score', scoreIn ? scoreIn.value : 15);
     formData.append('type', typeSel ? typeSel.value : 'mcq');
-    formData.append('difficulty', readQuestionSelectValue(card, '.question-difficulty, select[name="difficulty"]'));
-    formData.append('content', readQuestionSelectValue(card, '.question-content-select, select[name="content"], select[name="content_id"], select[name="test_content_id"]'));
+    formData.append('difficulty', readExistingQuestionSelectValue(card, '.question-difficulty, select[name="difficulty"]'));
+    formData.append('content', readExistingQuestionSelectValue(card, '.question-content-select, select[name="content"], select[name="content_id"], select[name="test_content_id"]'));
     formData.append('explanation', expText ? expText.value : '');
 
     const qType = typeSel ? typeSel.value : 'mcq';
@@ -586,7 +587,7 @@ async function quickSaveQuestion(questionId) {
         saveBtn.innerHTML = 'Saving';
     }
 
-    savingInProgress = true;
+    window.adminQuestionSaveState.saving[questionId] = true;
 
     try {
         const response = await fetch(url, {
@@ -622,7 +623,7 @@ async function quickSaveQuestion(questionId) {
     } catch (err) {
         showQuestionSavePopup('error', 'Something went wrong. Please try again.');
     } finally {
-        savingInProgress = false;
+        window.adminQuestionSaveState.saving[questionId] = false;
         if (saveBtn) {
             saveBtn.disabled = false;
             saveBtn.innerHTML = originalHtml;
