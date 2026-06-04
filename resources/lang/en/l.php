@@ -2011,5 +2011,16 @@ return [
     'course_parts' => 'Course Parts',
     'updated_since' => 'Updated :time',
     'complete' => 'Complete',
-    'L.print'=>'Print'
+    'L.print' => 'Print',
+    'active' => 'Active',
+    'inactive' => 'Inactive',
+    'paid' => 'Paid',
+    'added_questions' => 'Added Questions',
+    'time' => 'Time',
+    'description' => 'Description',
+    'score_statistics' => 'Score Statistics',
+    'highest_score' => 'Highest Score',
+    'lowest_score' => 'Lowest Score',
+    'detailed_reports' => 'Detailed Reports',
 ];
+
