@@ -2010,4 +2010,11 @@ return [
     'course_count' => 'كورس',
     'course_parts' => 'أجزاء الكورس',
     'updated_since' => 'تم التحديث :time',
+    'active' => 'نشط',
+'inactive' => 'غير نشط',
+'description' => 'الوصف',
+'score_statistics' => 'إحصائيات الدرجات',
+'highest_score' => 'أعلى درجة',
+'lowest_score' => 'أقل درجة',
+'detailed_reports' => 'التقارير التفصيلية',
 ];
