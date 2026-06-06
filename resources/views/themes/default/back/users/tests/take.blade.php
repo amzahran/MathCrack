@@ -1,6 +1,6 @@
 {{-- resources/views/themes/default/back/users/tests/take.blade.php --}}
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -1145,6 +1145,95 @@
     gap:8px !important;
   }
 
+html[lang="ar"] .topbar-inner,
+html[lang="ar"] .timer-controls,
+html[lang="ar"] .banner,
+html[lang="ar"] .module-indicator,
+html[lang="ar"] .q-card,
+html[lang="ar"] .q-head,
+html[lang="ar"] .q-body,
+html[lang="ar"] .question-item,
+html[lang="ar"] .options,
+html[lang="ar"] .q-nav,
+html[lang="ar"] .questions-bar-inner,
+html[lang="ar"] .questions-numbers,
+html[lang="ar"] .footer-inner {
+    direction: rtl;
+}
+
+html[lang="ar"] .stem,
+html[lang="ar"] .stem p,
+html[lang="ar"] .option-text,
+html[lang="ar"] .option-text p {
+    direction: rtl;
+    text-align: right;
+}
+
+html[lang="ar"] .option-row {
+    flex-direction: row-reverse;
+}
+
+html[lang="ar"] .option-item {
+    direction: rtl;
+    grid-template-columns: 1fr 44px !important;
+    text-align: right;
+}
+
+html[lang="ar"] .option-label,
+html[lang="ar"] .external-elimination-letter {
+    grid-column: 2;
+}
+
+html[lang="ar"] .option-text {
+    grid-column: 1;
+}
+
+html[lang="ar"] .option-strike {
+    right: auto;
+    left: 0;
+}
+
+html[lang="ar"] mjx-container {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+html[lang="ar"] .option-item {
+    display: grid !important;
+    grid-template-columns: 44px 1fr !important;
+    direction: rtl !important;
+    text-align: right !important;
+    align-items: center !important;
+    gap: 12px !important;
+    min-height: 54px !important;
+    padding: 12px 16px !important;
+}
+
+html[lang="ar"] .option-label,
+html[lang="ar"] .external-elimination-letter {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    justify-self: start !important;
+    margin: 0 !important;
+}
+
+html[lang="ar"] .option-text {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    text-align: right !important;
+    direction: rtl !important;
+    justify-self: stretch !important;
+}
+
+html[lang="ar"] .option-text p {
+    text-align: right !important;
+    direction: rtl !important;
+}
+
+html[lang="ar"] mjx-container {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
 </style>
 
   <script src="https://www.desmos.com/api/v1.10/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
