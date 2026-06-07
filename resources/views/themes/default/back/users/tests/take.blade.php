@@ -1295,6 +1295,47 @@ html[lang="ar"] mjx-container {
     flex-shrink: 0 !important;
   }
 }
+@media (min-width: 768px) {
+  html[lang="ar"] .topbar-control-group .btn-sm {
+    height: 42px !important;
+    padding: 10px 18px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    border-radius: 9px !important;
+  }
+
+  html[lang="ar"] .topbar-control-group .timer-btn {
+    height: 42px !important;
+    padding: 10px 22px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+  }
+}
+
+@media (min-width: 768px) {
+  html[lang="ar"] #btnCalc,
+  html[lang="ar"] #btnRef,
+  html[lang="ar"] #btnFullScreen {
+    height: 44px !important;
+    padding: 10px 20px !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    border-radius: 10px !important;
+    line-height: 1.2 !important;
+  }
+
+  html[lang="ar"] #pauseTimerBtn,
+  html[lang="ar"] #resumeTimerBtn {
+    height: 44px !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+  }
+}
+
+
+
+  letter-spacing: 0 !important;
+}
 </style>
 
   <script src="https://www.desmos.com/api/v1.10/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
