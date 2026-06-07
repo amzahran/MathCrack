@@ -87,7 +87,7 @@
     if ($maxModule === 0) $maxModule = max($moduleNumber, 1);
 
     $totalQuestions = $questions->count() ?? 0;
-    $headerTitle    = $test->name ?? $test->title ?? "Digital SAT Practice #{$testNumber} - Math - Module {$moduleNumber}";
+    $headerTitle    = $test->name ?? $test->title ?? __('l.digital_sat_practice_module_title', ['number' => $testNumber, 'module' => $moduleNumber]);
 
     $TIMER_URL_BASE   = route('dashboard.users.tests.remaining-time', ['id' => $test->id]);
     $SUBMIT_PART1_URL = route('dashboard.users.tests.submit-part1', ['id' => $test->id]);
@@ -1254,12 +1254,12 @@ html[lang="ar"] mjx-container {
       <div class="timer" id="timer-display">--:--</div>
 
       <div class="timer-controls">
-        <button type="button" class="timer-btn pause-btn" id="pauseTimerBtn">Pause</button>
-        <button type="button" class="timer-btn resume-btn" id="resumeTimerBtn" style="display:none">Resume</button>
+        <button type="button" class="timer-btn pause-btn" id="pauseTimerBtn">{{ __('l.pause') }}</button>
+        <button type="button" class="timer-btn resume-btn" id="resumeTimerBtn" style="display:none">{{ __('l.resume') }}</button>
 
-        <button type="button" class="btn-sm" id="btnCalc">🧮 Calculator</button>
-        <button type="button" class="btn-sm" id="btnRef">📄 Reference</button>
-        <button type="button" class="btn-sm" id="btnFullScreen">⛶ Full Screen</button>
+        <button type="button" class="btn-sm" id="btnCalc">🧮 {{ __('l.calculator') }}</button>
+        <button type="button" class="btn-sm" id="btnRef">📄 {{ __('l.reference') }}</button>
+        <button type="button" class="btn-sm" id="btnFullScreen">⛶ {{ __('l.full_screen') }}</button>
       </div>
     </div>
   </div>
@@ -1270,55 +1270,55 @@ html[lang="ar"] mjx-container {
         <div class="module-indicator">
           <div class="module-indicator-dot"></div>
           <div class="module-indicator-text">
-            <span class="module-indicator-label">Current module</span>
+            <span class="module-indicator-label">{{ __('l.current_module') }}</span>
             <span class="module-indicator-value">
-              Module <span class="module-indicator-number">{{ $moduleNumber }}</span>
+              {{ __('l.module') }} <span class="module-indicator-number">{{ $moduleNumber }}</span>
               @if($maxModule > 1)
-                <span class="module-indicator-total">of {{ $maxModule }}</span>
+                <span class="module-indicator-total">{{ __('l.of') }} {{ $maxModule }}</span>
               @endif
             </span>
           </div>
         </div>
-        <div class="banner-title">THIS IS A PRACTICE TEST</div>
+        <div class="banner-title">{{ __('l.this_is_a_practice_test') }}</div>
         <div class="banner-balance" aria-hidden="true"></div>
       </div>
 
       <div class="workspace no-calc" id="workspace">
 
-        <aside id="calcPane" class="calc-pane" aria-label="Calculator">
+        <aside id="calcPane" class="calc-pane" aria-label="{{ __('l.calculator') }}">
           <div class="calc-header">
             <div class="calc-title">
               <i class="fas fa-calculator"></i>
-              <span>Calculator</span>
+              <span>{{ __('l.calculator') }}</span>
             </div>
             <div class="calc-controls">
-              <button type="button" id="btnExpandCalc" class="btn-sm">↕️ Expand</button>
-              <button type="button" id="btnCloseCalc" class="btn calc-close-btn">Close</button>
+              <button type="button" id="btnExpandCalc" class="btn-sm">↕️ {{ __('l.expand') }}</button>
+              <button type="button" id="btnCloseCalc" class="btn calc-close-btn">{{ __('l.close') }}</button>
             </div>
           </div>
 
           <div class="calc-subheader">
-            <span>Graphing Calculator</span>
-            <small>Use the graph area and keypad for calculations</small>
+            <span>{{ __('l.graphing_calculator') }}</span>
+            <small>{{ __('l.graphing_calculator_help') }}</small>
           </div>
 
           <div class="calc-shell">
             <div class="calc-body" id="calcBody">
               <div id="desmosCalc">
-                Loading Calculator...
+                {{ __('l.loading_calculator') }}
               </div>
             </div>
           </div>
 
           <div class="calc-footer">
-            <span>Keyboard and expressions remain powered by the embedded calculator.</span>
+            <span>{{ __('l.calculator_powered_note') }}</span>
             <div class="calc-keypad-preview" aria-hidden="true">
               <span class="calc-key">7</span>
               <span class="calc-key">8</span>
               <span class="calc-key">9</span>
               <span class="calc-key operator">+</span>
               <span class="calc-key operator">−</span>
-              <span class="calc-key action">graph</span>
+              <span class="calc-key action">{{ __('l.graph') }}</span>
             </div>
           </div>
         </aside>
@@ -1327,10 +1327,10 @@ html[lang="ar"] mjx-container {
           <div class="q-head">
             <div class="q-head-left">
               <div class="q-num" id="current-question-display">1</div>
-              <button type="button" id="btnMark" class="mark-pill">🔖 Mark for Review</button>
+              <button type="button" id="btnMark" class="mark-pill">🔖 {{ __('l.mark_for_review') }}</button>
             </div>
             <div class="q-head-right">
-              <button type="button" id="btnABC" class="abc-toggle-btn">✏️ Elimination Mode</button>
+              <button type="button" id="btnABC" class="abc-toggle-btn">✏️ {{ __('l.elimination_mode') }}</button>
             </div>
           </div>
 
@@ -1348,7 +1348,7 @@ html[lang="ar"] mjx-container {
 
                   @if(!empty($q->question_image))
                     <div class="question-image">
-                      <img src="{{ asset($q->question_image) }}" alt="Question Image" onerror="this.style.display='none';">
+                      <img src="{{ asset($q->question_image) }}" alt="{{ __('l.question_image') }}" onerror="this.style.display='none';">
                     </div>
                   @endif
 
@@ -1366,7 +1366,7 @@ html[lang="ar"] mjx-container {
                                 {!! nl2br($opt->option_text) !!}
                                 @if($optionImage)
                                   <div class="option-image">
-                                    <img src="{{ asset($optionImage) }}" alt="Option Image" onerror="this.style.display='none';">
+                                    <img src="{{ asset($optionImage) }}" alt="{{ __('l.option_image') }}" onerror="this.style.display='none';">
                                   </div>
                                 @endif
                               </div>
@@ -1385,7 +1385,7 @@ html[lang="ar"] mjx-container {
                       <div class="option-row">
                         <div class="option-item tf-option" data-value="True" onclick="selectTFOption(this, {{ $q->id }})">
                           <div class="option-label"><span>T</span></div>
-                          <div class="option-text">True</div>
+                          <div class="option-text">{{ __('l.true') }}</div>
                           <div class="option-strike"></div>
                         </div>
                         <div class="external-elimination-letter" data-letter="T">T</div>
@@ -1394,7 +1394,7 @@ html[lang="ar"] mjx-container {
                       <div class="option-row">
                         <div class="option-item tf-option" data-value="False" onclick="selectTFOption(this, {{ $q->id }})">
                           <div class="option-label"><span>F</span></div>
-                          <div class="option-text">False</div>
+                          <div class="option-text">{{ __('l.false') }}</div>
                           <div class="option-strike"></div>
                         </div>
                         <div class="external-elimination-letter" data-letter="F">F</div>
@@ -1411,7 +1411,7 @@ html[lang="ar"] mjx-container {
                             inputmode="decimal"
                             dir="ltr"
                             autocomplete="off"
-                            placeholder="e.g. 0.5, 1/2, or 3 2"
+                            placeholder="{{ __('l.numeric_answer_placeholder') }}"
                             oninput="
                               this.value = sanitizeSatNumeric(this.value);
                               updateAnswerPreview({{ $q->id }}, this.value);
@@ -1421,7 +1421,7 @@ html[lang="ar"] mjx-container {
                         </div>
 
                         <div class="answer-preview-wrap answer-preview-empty" id="answerPreviewWrap-{{ $q->id }}">
-                          <span class="answer-preview-label">Answer Preview</span>
+                          <span class="answer-preview-label">{{ __('l.answer_preview') }}</span>
                           <span class="answer-preview-value" id="answerPreviewValue-{{ $q->id }}"></span>
                         </div>
                       </div>
@@ -1434,8 +1434,8 @@ html[lang="ar"] mjx-container {
 
             <div class="q-nav">
               <div class="q-nav-buttons">
-                <button type="button" class="btn" id="prev-btn" onclick="previousQuestion()">Previous</button>
-                <button type="button" class="btn" id="next-btn" onclick="nextQuestion()">Next</button>
+                <button type="button" class="btn" id="prev-btn" onclick="previousQuestion()">{{ __('l.previous') }}</button>
+                <button type="button" class="btn" id="next-btn" onclick="nextQuestion()">{{ __('l.next') }}</button>
                 @php
                   $isLastModule = ((int)$moduleNumber >= (int)$maxModule);
                 @endphp
@@ -1447,7 +1447,7 @@ html[lang="ar"] mjx-container {
                   style="display:none"
                   onclick="submitPart()"
                 >
-                  {{ $isLastModule ? 'Submit Test' : 'Submit Module' }}
+                  {{ $isLastModule ? __('l.submit_test') : __('l.submit_module') }}
                 </button>
               </div>
             </div>
@@ -1460,7 +1460,7 @@ html[lang="ar"] mjx-container {
 
   <div class="questions-bar">
     <div class="questions-bar-inner">
-      <div class="questions-bar-title">Questions:</div>
+      <div class="questions-bar-title">{{ __('l.questions') }}:</div>
       <div class="questions-scroll-container">
         <div class="questions-numbers" id="questionsBarNumbers">
           @foreach($questions as $i => $q)
@@ -1473,29 +1473,29 @@ html[lang="ar"] mjx-container {
           @endforeach
         </div>
       </div>
-      <button type="button" class="btn" onclick="nextQuestion()" style="background:#374151;padding:8px 16px;font-size:14px">Next</button>
+      <button type="button" class="btn" onclick="nextQuestion()" style="background:#374151;padding:8px 16px;font-size:14px">{{ __('l.next') }}</button>
     </div>
   </div>
 
   <div class="footer">
     <div class="footer-inner">
-      <div>{{ auth()->user()->name ?? 'Student' }}</div>
-      <div class="pill">Question <span id="current-question-number">1</span> of {{ $totalQuestions }}</div>
-      <button type="button" class="btn" onclick="nextQuestion()" style="margin-left:auto">Next</button>
+      <div>{{ auth()->user()->name ?? __('l.student') }}</div>
+      <div class="pill">{{ __('l.question') }} <span id="current-question-number">1</span> {{ __('l.of') }} {{ $totalQuestions }}</div>
+      <button type="button" class="btn" onclick="nextQuestion()" style="margin-left:auto">{{ __('l.next') }}</button>
     </div>
   </div>
 
   <div id="refBackdrop" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.85);z-index:2000;align-items:center;justify-content:center">
     <div class="ref-modal">
       <div class="ref-modal-header">
-        <h3 style="margin:0;font-size:22px">Reference Sheet</h3>
+        <h3 style="margin:0;font-size:22px">{{ __('l.reference_sheet') }}</h3>
         <button type="button" id="refClose" style="border:none;background:transparent;color:#fff;font-size:22px;width:36px;height:36px;border-radius:8px;cursor:pointer">×</button>
       </div>
       <div class="ref-modal-body">
         <iframe
           src="{{ asset('Pdfs/References.pdf') }}#toolbar=0&navpanes=0&scrollbar=0"
           class="pdf-iframe"
-          title="SAT Reference Sheet">
+          title="{{ __('l.sat_reference_sheet') }}">
         </iframe>
       </div>
     </div>
@@ -1505,24 +1505,24 @@ html[lang="ar"] mjx-container {
     <div class="warning-modal">
       <div class="modal-header">
         <div class="warning-icon">⚠️</div>
-        <h2 class="modal-title">Unanswered Questions</h2>
+        <h2 class="modal-title">{{ __('l.unanswered_questions') }}</h2>
       </div>
 
       <div class="modal-body">
         <div class="unanswered-count" id="unansweredCount">0</div>
-        <div class="unanswered-text">You have unanswered questions in your test</div>
+        <div class="unanswered-text">{{ __('l.unanswered_questions_message') }}</div>
 
         <div class="questions-preview">
-          <div style="font-size: 14px; color: #6b7280; margin-bottom: 10px;">Unanswered questions:</div>
+          <div style="font-size: 14px; color: #6b7280; margin-bottom: 10px;">{{ __('l.unanswered_questions_label') }}:</div>
           <div class="questions-scroll" id="questionsList"></div>
         </div>
 
-        <div style="color: #6b7280; font-size: 14px;">Are you sure you want to submit the test</div>
+        <div style="color: #6b7280; font-size: 14px;">{{ __('l.submit_confirmation') }}</div>
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="modal-btn btn-cancel" onclick="closeWarningModal()">Cancel</button>
-        <button type="button" class="modal-btn btn-submit pulse" id="submitAnywayBtn">Submit Anyway</button>
+        <button type="button" class="modal-btn btn-cancel" onclick="closeWarningModal()">{{ __('l.cancel') }}</button>
+        <button type="button" class="modal-btn btn-submit pulse" id="submitAnywayBtn">{{ __('l.submit_anyway') }}</button>
       </div>
     </div>
   </div>
@@ -1547,6 +1547,55 @@ html[lang="ar"] mjx-container {
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
 <script>
+  const TestTranslations = {
+    pause: @json(__('l.pause')),
+    resume: @json(__('l.resume')),
+    calculator: @json(__('l.calculator')),
+    reference: @json(__('l.reference')),
+    fullScreen: @json(__('l.full_screen')),
+    exitFullScreen: @json(__('l.exit_full_screen')),
+    currentModule: @json(__('l.current_module')),
+    module: @json(__('l.module')),
+    of: @json(__('l.of')),
+    thisIsPracticeTest: @json(__('l.this_is_a_practice_test')),
+    markForReview: @json(__('l.mark_for_review')),
+    marked: @json(__('l.marked')),
+    eliminationMode: @json(__('l.elimination_mode')),
+    eliminationModeOn: @json(__('l.elimination_mode_on')),
+    eliminationModeOnTitle: @json(__('l.elimination_mode_on_title')),
+    eliminationModeHelp: @json(__('l.elimination_mode_help')),
+    nonEliminatedOptionsHelp: @json(__('l.non_eliminated_options_help')),
+    previous: @json(__('l.previous')),
+    next: @json(__('l.next')),
+    submitTest: @json(__('l.submit_test')),
+    submitModule: @json(__('l.submit_module')),
+    questions: @json(__('l.questions')),
+    question: @json(__('l.question')),
+    referenceSheet: @json(__('l.reference_sheet')),
+    satReferenceSheet: @json(__('l.sat_reference_sheet')),
+    unansweredQuestions: @json(__('l.unanswered_questions')),
+    unansweredQuestionsMessage: @json(__('l.unanswered_questions_message')),
+    unansweredQuestionsLabel: @json(__('l.unanswered_questions_label')),
+    submitConfirmation: @json(__('l.submit_confirmation')),
+    cancel: @json(__('l.cancel')),
+    submitAnyway: @json(__('l.submit_anyway')),
+    timeIsUp: @json(__('l.time_is_up')),
+    submittingTestAutomatically: @json(__('l.submitting_test_automatically')),
+    andMore: @json(__('l.and_more')),
+    expand: @json(__('l.expand')),
+    collapse: @json(__('l.collapse')),
+    close: @json(__('l.close')),
+    desmosCalculator: @json(__('l.desmos_calculator')),
+    graphingCalculator: @json(__('l.graphing_calculator')),
+    graphingCalculatorHelp: @json(__('l.graphing_calculator_help')),
+    loadingCalculator: @json(__('l.loading_calculator')),
+    calculatorPoweredNote: @json(__('l.calculator_powered_note')),
+    true: @json(__('l.true')),
+    false: @json(__('l.false')),
+    answerPreview: @json(__('l.answer_preview')),
+    numericAnswerPlaceholder: @json(__('l.numeric_answer_placeholder'))
+  };
+
   const TestConfig = {
     TEST_ID: @json($test->id ?? ($test_id ?? request()->route('id'))),
     currentPart: @json($currentPart ?? 'part1'),
@@ -1671,7 +1720,7 @@ html[lang="ar"] mjx-container {
         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         font-weight: 600;
       `;
-      alertBox.innerHTML = `<div style="font-size: 18px; margin-bottom: 10px;">⏰ Time is up</div><div>Submitting your test automatically</div>`;
+      alertBox.innerHTML = `<div style="font-size: 18px; margin-bottom: 10px;">⏰ ${TestTranslations.timeIsUp}</div><div>${TestTranslations.submittingTestAutomatically}</div>`;
       document.body.appendChild(alertBox);
 
       setTimeout(() => {
@@ -1792,7 +1841,7 @@ html[lang="ar"] mjx-container {
 
       if (btnABC) {
         btnABC.classList.toggle('active', TestState.eliminationMode);
-        btnABC.innerHTML = TestState.eliminationMode ? '✏️ Elimination Mode (ON)' : '✏️ Elimination Mode';
+        btnABC.innerHTML = TestState.eliminationMode ? `✏️ ${TestTranslations.eliminationModeOn}` : `✏️ ${TestTranslations.eliminationMode}`;
       }
 
       if (qCard) qCard.classList.toggle('elimination-mode-active', TestState.eliminationMode);
@@ -1814,7 +1863,7 @@ html[lang="ar"] mjx-container {
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         text-align: center;
       `;
-      tooltip.innerHTML = `<strong>Elimination mode ON</strong><br>Click the red letters to eliminate options<br><small>You can still select non eliminated options</small>`;
+      tooltip.innerHTML = `<strong>${TestTranslations.eliminationModeOnTitle}</strong><br>${TestTranslations.eliminationModeHelp}<br><small>${TestTranslations.nonEliminatedOptionsHelp}</small>`;
       document.body.appendChild(tooltip);
 
       setTimeout(() => { if (tooltip.parentNode) tooltip.parentNode.removeChild(tooltip); }, 4000);
@@ -1909,7 +1958,7 @@ html[lang="ar"] mjx-container {
       if (unansweredQuestions.length > 12) {
         const moreText = document.createElement('div');
         moreText.style.cssText = 'color:#6b7280;font-size:14px;margin-top:8px;';
-        moreText.textContent = `and ${unansweredQuestions.length - 12} more`;
+        moreText.textContent = TestTranslations.andMore.replace(':count', unansweredQuestions.length - 12);
         questionsList.appendChild(moreText);
       }
 
@@ -2051,7 +2100,7 @@ setTimeout(() => this.desmosCalc?.resize?.(), 150);
     el.innerHTML = '';
     const f = document.createElement('iframe');
     f.src = 'https://www.desmos.com/calculator?embed&lang=en';
-    f.title = 'Desmos Calculator';
+    f.title = TestTranslations.desmosCalculator;
     f.allow = 'fullscreen';
     f.className = 'calc-iframe';
     el.appendChild(f);
@@ -2098,7 +2147,7 @@ setTimeout(() => this.desmosCalc?.resize?.(), 150);
     if (pane) pane.classList.toggle('calc-expanded', !isExpanded);
 
     const btn = document.getElementById('btnExpandCalc');
-    if (btn) btn.textContent = isExpanded ? '↕️ Expand' : '↕️ Collapse';
+    if (btn) btn.textContent = isExpanded ? `↕️ ${TestTranslations.expand}` : `↕️ ${TestTranslations.collapse}`;
 
     setTimeout(() => this.desmosCalc?.resize?.(), 250);
   }
@@ -2126,7 +2175,7 @@ setTimeout(() => this.desmosCalc?.resize?.(), 150);
       const syncMark = () => {
         const isMarked = markedField.value === '1';
         btnMark.classList.toggle('active', isMarked);
-        btnMark.innerHTML = isMarked ? '🔖 Marked' : '🔖 Mark for Review';
+        btnMark.innerHTML = isMarked ? `🔖 ${TestTranslations.marked}` : `🔖 ${TestTranslations.markForReview}`;
 
         if (isMarked) TestState.markedQuestions.add(TestState.currentQuestionIndex);
         else TestState.markedQuestions.delete(TestState.currentQuestionIndex);
@@ -2302,7 +2351,7 @@ setTimeout(() => this.desmosCalc?.resize?.(), 150);
     updateButton() {
       const btn = document.getElementById('btnFullScreen');
       if (!btn) return;
-      btn.textContent = document.fullscreenElement ? '⤫ Exit Full Screen' : '⛶ Full Screen';
+      btn.textContent = document.fullscreenElement ? `⤫ ${TestTranslations.exitFullScreen}` : `⛶ ${TestTranslations.fullScreen}`;
     }
   };
 
