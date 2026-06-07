@@ -1239,7 +1239,7 @@ html[lang="ar"] mjx-container {
   display: contents;
 }
 
-@media (min-width: 992px) {
+@media (min-width: 768px) {
   html[lang="ar"] .topbar-inner {
     display: grid !important;
     grid-template-columns: minmax(300px, 1fr) auto minmax(300px, 1fr) minmax(180px, auto) !important;
