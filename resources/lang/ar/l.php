@@ -2041,4 +2041,9 @@ return [
     'cancel' => 'إلغاء',
         'submit_anyway' => 'تسليم على أي حال',
     'and_more' => 'وعدد :count إضافي',
+    'graphing_calculator' => 'الآلة الحاسبة البيانية',
+    'graphing_calculator_help' => 'استخدم منطقة الرسم ولوحة المفاتيح لإجراء الحسابات',
+    'loading_calculator' => 'جارٍ تحميل الآلة الحاسبة...',
+    'calculator_powered_note' => 'تظل لوحة المفاتيح والتعبيرات مدعومة من الآلة الحاسبة المدمجة.',
+    'desmos_calculator' => 'آلة ديسموس الحاسبة',
 ];
