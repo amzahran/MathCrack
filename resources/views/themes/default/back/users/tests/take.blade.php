@@ -1234,6 +1234,67 @@ html[lang="ar"] mjx-container {
     direction: ltr;
     unicode-bidi: isolate;
 }
+
+.topbar-control-group {
+  display: contents;
+}
+
+@media (min-width: 992px) {
+  html[lang="ar"] .topbar-inner {
+    display: grid !important;
+    grid-template-columns: minmax(300px, 1fr) auto minmax(300px, 1fr) minmax(180px, auto) !important;
+    grid-template-areas: "secondary timer primary brand" !important;
+    align-items: center !important;
+    gap: 20px !important;
+    direction: ltr !important;
+  }
+
+  html[lang="ar"] .brand {
+    grid-area: brand !important;
+    justify-self: end !important;
+    text-align: right !important;
+    direction: rtl !important;
+    white-space: nowrap !important;
+  }
+
+  html[lang="ar"] .timer {
+    grid-area: timer !important;
+    position: static !important;
+    left: auto !important;
+    transform: none !important;
+    justify-self: center !important;
+  }
+
+  html[lang="ar"] .timer-controls {
+    display: contents !important;
+    margin-left: 0 !important;
+    justify-content: initial !important;
+  }
+
+  html[lang="ar"] .topbar-control-group {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-wrap: nowrap !important;
+    direction: rtl !important;
+  }
+
+  html[lang="ar"] .topbar-control-secondary {
+    grid-area: secondary !important;
+    justify-self: end !important;
+  }
+
+  html[lang="ar"] .topbar-control-primary {
+    grid-area: primary !important;
+    justify-self: start !important;
+  }
+
+  html[lang="ar"] .topbar-control-group .btn-sm,
+  html[lang="ar"] .topbar-control-group .timer-btn {
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+}
 </style>
 
   <script src="https://www.desmos.com/api/v1.10/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
@@ -1253,14 +1314,18 @@ html[lang="ar"] mjx-container {
 
       <div class="timer" id="timer-display">--:--</div>
 
-      <div class="timer-controls">
-        <button type="button" class="timer-btn pause-btn" id="pauseTimerBtn">{{ __('l.pause') }}</button>
-        <button type="button" class="timer-btn resume-btn" id="resumeTimerBtn" style="display:none">{{ __('l.resume') }}</button>
+    <div class="timer-controls">
+  <div class="topbar-control-group topbar-control-primary">
+    <button type="button" class="timer-btn pause-btn" id="pauseTimerBtn">{{ __('l.pause') }}</button>
+    <button type="button" class="timer-btn resume-btn" id="resumeTimerBtn" style="display:none">{{ __('l.resume') }}</button>
+    <button type="button" class="btn-sm" id="btnCalc">🧮 {{ __('l.calculator') }}</button>
+  </div>
 
-        <button type="button" class="btn-sm" id="btnCalc">🧮 {{ __('l.calculator') }}</button>
-        <button type="button" class="btn-sm" id="btnRef">📄 {{ __('l.reference') }}</button>
-        <button type="button" class="btn-sm" id="btnFullScreen">⛶ {{ __('l.full_screen') }}</button>
-      </div>
+  <div class="topbar-control-group topbar-control-secondary">
+    <button type="button" class="btn-sm" id="btnRef">📄 {{ __('l.reference') }}</button>
+    <button type="button" class="btn-sm" id="btnFullScreen">⛶ {{ __('l.full_screen') }}</button>
+  </div>
+</div>
     </div>
   </div>
 
