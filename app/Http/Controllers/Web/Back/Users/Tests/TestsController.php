@@ -96,6 +96,8 @@ class TestsController extends Controller
             })->values();
         }
 
+        $tests = $this->sortTestsNaturally($tests);
+
         return [
             'id'                => $course->id,
             'name'              => $course->name,
@@ -805,6 +807,34 @@ $studentTest->updateCurrentScore();
         }
 
         return 'not_started';
+    }
+
+
+    private function sortTestsNaturally($tests)
+    {
+        return $tests->sort(function ($a, $b) {
+            return $this->compareNaturalTestNames($a, $b);
+        })->values();
+    }
+
+    private function compareNaturalTestNames($a, $b): int
+    {
+        $aKey = $this->naturalTestNameKey($a['name'] ?? '', (int) ($a['id'] ?? 0));
+        $bKey = $this->naturalTestNameKey($b['name'] ?? '', (int) ($b['id'] ?? 0));
+
+        return $aKey <=> $bKey;
+    }
+
+    private function naturalTestNameKey($name, int $id): array
+    {
+        $normalizedName = trim((string) $name);
+        $lowerName = strtolower($normalizedName);
+
+        if (preg_match('/^Test\s*(\d+)/i', $normalizedName, $matches)) {
+            return [1, (int) $matches[1], $lowerName, $id];
+        }
+
+        return [0, 0, $lowerName, $id];
     }
 
     private function formatTestData($test, $user)
