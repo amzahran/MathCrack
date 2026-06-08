@@ -44,7 +44,10 @@ class TestsController extends Controller
                     'part4_questions_count',
                     'part5_questions_count',
                 ])
-                ->orderBy('id', 'asc');
+             ->orderByRaw("CASE WHEN name REGEXP '^Test[[:space:]]*[0-9]+' THEN 1 ELSE 0 END ASC")
+->orderByRaw("CASE WHEN name REGEXP '^Test[[:space:]]*[0-9]+' THEN CAST(TRIM(SUBSTRING(name, 5)) AS UNSIGNED) ELSE 0 END ASC")
+->orderBy('name', 'asc')
+->orderBy('id', 'asc');
 
             if ($request->filled('course_id')) {
                 $tests->where('course_id', $request->course_id);
@@ -141,6 +144,16 @@ class TestsController extends Controller
                     $buttons .= '</div>';
                     return $buttons;
                 })
+                ->orderColumn('name', function ($query, $order) {
+    $direction = strtolower($order) === 'desc' ? 'desc' : 'asc';
+
+    $query
+        ->reorder()
+        ->orderByRaw("CASE WHEN name REGEXP '^Test[[:space:]]*[0-9]+' THEN 1 ELSE 0 END {$direction}")
+        ->orderByRaw("CASE WHEN name REGEXP '^Test[[:space:]]*[0-9]+' THEN CAST(TRIM(SUBSTRING(name, 5)) AS UNSIGNED) ELSE 0 END {$direction}")
+        ->orderBy('name', $direction)
+        ->orderBy('id', $direction);
+})
                 ->rawColumns(['price_formatted', 'questions_status', 'status', 'action'])
                 ->make(true);
         }
