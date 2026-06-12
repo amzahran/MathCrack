@@ -9,6 +9,7 @@ use App\Models\Test;
 use App\Models\Course;
 use App\Models\TestQuestion;
 use App\Models\TestQuestionOption;
+use App\Services\Tests\TestQuestionScoreSyncer;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -377,7 +378,11 @@ class TestsController extends Controller
             // يتم إعادة حساب total_score لاحقًا بعد تحديث الأسئلة
             $data['total_score'] = $test->total_score ?? 0;
 
-            $test->update($data);
+            DB::transaction(function () use ($test, $data) {
+                $test->update($data);
+
+                app(TestQuestionScoreSyncer::class)->sync($test->fresh());
+            });
 
             return redirect()->back()->with('success', __('l.test_updated_successfully'));
         } catch (\Exception $e) {
