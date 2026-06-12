@@ -733,6 +733,37 @@
   .ref-modal-body{ flex:1; padding:0; overflow:hidden; }
   .pdf-iframe{ width:100%; height:100%; border:none; display:block; }
 
+  .reference-pdf-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #f4f6f8;
+    padding: 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .reference-pdf-pages {
+    width: 100%;
+  }
+
+  .reference-pdf-page {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0 auto 16px auto;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  .reference-pdf-status {
+    padding: 14px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+  }
+
   .warning-modal-backdrop{
     display:none;
     position:fixed;
@@ -2005,26 +2036,19 @@ html[lang="ar"] mjx-container {
       color: #fff;
     }
 
-    .pdf-iframe {
-      display: block;
-      width: 100%;
-      min-width: 0;
+    .reference-pdf-wrapper {
+      flex: 1 1 auto;
       min-height: 0;
       height: 100%;
-      flex: 1 1 auto;
-      background: #fff;
-      overflow: auto;
+      padding: 10px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: #f4f6f8;
+      -webkit-overflow-scrolling: touch;
     }
 
     .ref-viewer-fallback {
-      display: block;
-      flex: 0 0 auto;
-      padding: 8px 10px;
-      border-top: 1px solid #e5e7eb;
-      background: #fff;
-      color: #64748b;
-      font-size: 11px;
-      text-align: center;
+      display: none !important;
     }
 
     .calc-pane.show {
@@ -2336,15 +2360,12 @@ html[lang="ar"] mjx-container {
             <button type="button" class="ref-action-button" data-ref-close>Back to Test</button>
           </div>
         </div>
-        <iframe
-          src="{{ asset('Pdfs/References.pdf') }}#toolbar=1&navpanes=0&scrollbar=1&view=FitH"
-          data-pdf-src="{{ asset('Pdfs/References.pdf') }}#toolbar=1&navpanes=0&scrollbar=1&view=FitH"
-          class="pdf-iframe"
-          title="{{ __('l.sat_reference_sheet') }}"
-          loading="eager">
-        </iframe>
-        <div class="ref-viewer-fallback">
-          If the inline PDF viewer is blank, your browser may not support embedded PDFs. Back to Test stays available here.
+        <div class="reference-pdf-wrapper">
+          <div
+            id="referencePdfPages"
+            class="reference-pdf-pages"
+            data-pdf-src="{{ asset('Pdfs/References.pdf') }}">
+          </div>
         </div>
       </div>
     </div>
@@ -2394,6 +2415,7 @@ html[lang="ar"] mjx-container {
   };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
 <script>
   const TestTranslations = {
@@ -3036,6 +3058,11 @@ html[lang="ar"] mjx-container {
     }
   };
   const ReferenceSystem = {
+    pdfDocument: null,
+    rendered: false,
+    rendering: false,
+    resizeTimer: null,
+
     init() {
       const refBtn = document.getElementById('btnRef');
       const refModal = document.getElementById('refBackdrop');
@@ -3043,13 +3070,11 @@ html[lang="ar"] mjx-container {
       if (!refBtn || !refModal) return;
 
       const openReferences = () => {
-        const iframe = refModal.querySelector('.pdf-iframe');
-        if (iframe?.dataset.pdfSrc && iframe.src !== iframe.dataset.pdfSrc) {
-          iframe.src = iframe.dataset.pdfSrc;
-        }
         refModal.style.display = 'flex';
         document.body.classList.add('references-open');
         CalculatorSystem.updateMobileViewport?.();
+
+        setTimeout(() => this.renderPdf(), 80);
       };
 
       const closeReferences = () => {
@@ -3064,6 +3089,73 @@ html[lang="ar"] mjx-container {
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && refModal.style.display === 'flex') closeReferences();
       });
+
+      window.addEventListener('resize', () => {
+        if (refModal.style.display !== 'flex' || !this.rendered) return;
+
+        clearTimeout(this.resizeTimer);
+        this.resizeTimer = setTimeout(() => {
+          this.rendered = false;
+          this.renderPdf();
+        }, 300);
+      });
+    },
+
+    async renderPdf() {
+      const container = document.getElementById('referencePdfPages');
+      if (!container || this.rendering) return;
+
+      if (!window.pdfjsLib) {
+        container.innerHTML = '<div class="reference-pdf-status">PDF viewer is loading. Please try again.</div>';
+        return;
+      }
+
+      this.rendering = true;
+      container.innerHTML = '<div class="reference-pdf-status">Loading reference sheet...</div>';
+
+      try {
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        const pdfUrl = container.dataset.pdfSrc;
+
+        if (!this.pdfDocument) {
+          this.pdfDocument = await pdfjsLib.getDocument(pdfUrl).promise;
+        }
+
+        container.innerHTML = '';
+
+        for (let pageNumber = 1; pageNumber <= this.pdfDocument.numPages; pageNumber++) {
+          const page = await this.pdfDocument.getPage(pageNumber);
+
+          const baseViewport = page.getViewport({ scale: 1 });
+          const containerWidth = Math.max(container.clientWidth || 320, 280);
+          const scale = containerWidth / baseViewport.width;
+          const viewport = page.getViewport({ scale });
+
+          const canvas = document.createElement('canvas');
+          canvas.className = 'reference-pdf-page';
+
+          const context = canvas.getContext('2d');
+
+          canvas.width = Math.floor(viewport.width);
+          canvas.height = Math.floor(viewport.height);
+
+          await page.render({
+            canvasContext: context,
+            viewport
+          }).promise;
+
+          container.appendChild(canvas);
+        }
+
+        this.rendered = true;
+      } catch (error) {
+        console.error('Reference PDF render error:', error);
+        container.innerHTML = '<div class="reference-pdf-status">Reference sheet could not be loaded.</div>';
+      } finally {
+        this.rendering = false;
+      }
     }
   };
 
