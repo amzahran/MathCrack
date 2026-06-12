@@ -1877,6 +1877,128 @@ html[lang="ar"] mjx-container {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
+
+  /* Remaining mobile fixes: references, fullscreen fallback, calculator keyboard */
+  .ref-mobile-actions {
+    display: none;
+  }
+
+  body.mobile-fullscreen-mode {
+    overflow: hidden;
+  }
+
+  body.mobile-fullscreen-mode .app {
+    position: fixed;
+    inset: 0;
+    z-index: 18000;
+    background: var(--bg);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  body.mobile-fullscreen-mode .topbar {
+    top: 0;
+  }
+
+  @media (max-width: 767.98px) {
+    :root {
+      --mc-visual-viewport-height: 100vh;
+    }
+
+    .ref-modal {
+      width: calc(100vw - 16px);
+      height: min(calc(var(--mc-visual-viewport-height) - 24px), 92vh);
+      max-height: calc(var(--mc-visual-viewport-height) - 24px);
+      border-radius: 12px;
+    }
+
+    .ref-modal-header {
+      padding: 12px 14px;
+      gap: 10px;
+    }
+
+    .ref-modal-header h3 {
+      min-width: 0;
+      font-size: 17px !important;
+      overflow-wrap: anywhere;
+    }
+
+    .ref-modal-body {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      background: #f8fafc;
+    }
+
+    .ref-mobile-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      background: #fff;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .ref-open-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: 7px 10px;
+      border-radius: 9px;
+      background: #1d4ed8;
+      color: #fff;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .ref-open-link:hover,
+    .ref-open-link:focus {
+      color: #fff;
+    }
+
+    .pdf-iframe {
+      min-height: 0;
+      height: 100%;
+      flex: 1 1 auto;
+      background: #fff;
+    }
+
+    .calc-pane.show {
+      top: 8px;
+      width: calc(100vw - 16px);
+      max-width: calc(100vw - 16px);
+      height: calc(var(--mc-visual-viewport-height) - 16px);
+      max-height: calc(var(--mc-visual-viewport-height) - 16px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .calc-pane.calc-keyboard-open {
+      top: 4px;
+      height: calc(var(--mc-visual-viewport-height) - 8px);
+      max-height: calc(var(--mc-visual-viewport-height) - 8px);
+    }
+
+    .calc-shell {
+      min-height: 280px;
+    }
+
+    .calc-body {
+      min-height: 260px;
+    }
+
+    body.mobile-fullscreen-mode .app {
+      height: var(--mc-visual-viewport-height);
+    }
+  }
 </style>
 
   <script src="https://www.desmos.com/api/v1.10/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
@@ -2151,8 +2273,12 @@ html[lang="ar"] mjx-container {
         <button type="button" id="refClose" style="border:none;background:transparent;color:#fff;font-size:22px;width:36px;height:36px;border-radius:8px;cursor:pointer">×</button>
       </div>
       <div class="ref-modal-body">
+        <div class="ref-mobile-actions">
+          <span>{{ __('l.sat_reference_sheet') }}</span>
+          <a class="ref-open-link" href="{{ asset('Pdfs/References.pdf') }}" target="_blank" rel="noopener">Open PDF</a>
+        </div>
         <iframe
-          src="{{ asset('Pdfs/References.pdf') }}#toolbar=0&navpanes=0&scrollbar=0"
+          src="{{ asset('Pdfs/References.pdf') }}#toolbar=0&navpanes=0&scrollbar=1&view=FitH"
           class="pdf-iframe"
           title="{{ __('l.sat_reference_sheet') }}">
         </iframe>
@@ -2670,147 +2796,181 @@ html[lang="ar"] mjx-container {
   };
 
   const CalculatorSystem = {
-  desmosCalc: null,
-  calculatorInitialized: false,
-  DESMOS_FALLBACK_MS: 2000,
+    desmosCalc: null,
+    calculatorInitialized: false,
+    DESMOS_FALLBACK_MS: 2000,
 
+    init() {
+      const btnOpen = document.getElementById('btnCalc');
+      const btnClose = document.getElementById('btnCloseCalc');
+      const btnExpandCalc = document.getElementById('btnExpandCalc');
 
-  init() {
-    const btnOpen = document.getElementById('btnCalc');
-    const btnClose = document.getElementById('btnCloseCalc');
-    const btnExpandCalc = document.getElementById('btnExpandCalc');
+      if (btnOpen) btnOpen.addEventListener('click', () => this.open());
+      if (btnClose) btnClose.addEventListener('click', () => this.close());
+      if (btnExpandCalc) btnExpandCalc.addEventListener('click', () => this.toggleExpand());
 
-    if (btnOpen) btnOpen.addEventListener('click', () => this.open());
-    if (btnClose) btnClose.addEventListener('click', () => this.close());
+      this.setupMobileViewport();
+      this.setupMobileFocusHandling();
+    },
 
+    open() {
+      const pane = document.getElementById('calcPane');
+      const workspace = document.getElementById('workspace');
+      const contentWrapper = document.querySelector('.content-wrapper');
+      if (!pane || !workspace) return;
 
-    if (btnExpandCalc) btnExpandCalc.addEventListener('click', () => this.toggleExpand());
-  },
+      pane.classList.add('show');
+      workspace.classList.remove('no-calc');
+      workspace.classList.add('with-calc');
+      workspace.classList.add('calculator-open');
+      if (contentWrapper) contentWrapper.classList.add('calculator-open');
 
-  open() {
-    const pane = document.getElementById('calcPane');
-    const workspace = document.getElementById('workspace');
-    const contentWrapper = document.querySelector('.content-wrapper');
-    if (!pane || !workspace) return;
+      this.ensureInit();
+      this.updateMobileViewport();
+      setTimeout(() => pane.scrollIntoView({ block: 'start', inline: 'nearest' }), 80);
+    },
 
-    pane.classList.add('show');
-    workspace.classList.remove('no-calc');
-    workspace.classList.add('with-calc');
-    workspace.classList.add('calculator-open');
-    if (contentWrapper) contentWrapper.classList.add('calculator-open');
-
-    this.ensureInit();
-  },
-
-  ensureInit() {
-    if (this.calculatorInitialized) {
-      setTimeout(() => this.desmosCalc?.resize?.(), 120);
-      return;
-    }
-
-    const el = document.getElementById('desmosCalc');
-    if (!el) return;
-
-    const waitForDesmos = () => {
-      if (window.Desmos && window.Desmos.GraphingCalculator) {
-        el.innerHTML = '';
-
-        this.desmosCalc = Desmos.GraphingCalculator(el, {
-  keypad: true,
-  expressions: true,
-  settingsMenu: true,
-  expressionsCollapsed: true
-});
-
-this.calculatorInitialized = true;
-this.keypadVisible = true;
-
-setTimeout(() => this.desmosCalc?.resize?.(), 150);
-        setTimeout(() => this.desmosCalc?.resize?.(), 150);
-      } else {
-        setTimeout(waitForDesmos, 200);
+    ensureInit() {
+      if (this.calculatorInitialized) {
+        setTimeout(() => this.desmosCalc?.resize?.(), 120);
+        return;
       }
-    };
 
-    waitForDesmos();
+      const el = document.getElementById('desmosCalc');
+      if (!el) return;
 
-    setTimeout(() => {
-      if (!this.calculatorInitialized) this.fallback();
-    }, this.DESMOS_FALLBACK_MS);
-  },
+      const waitForDesmos = () => {
+        if (window.Desmos && window.Desmos.GraphingCalculator) {
+          el.innerHTML = '';
 
-  close() {
-    const pane = document.getElementById('calcPane');
-    const workspace = document.getElementById('workspace');
-    const contentWrapper = document.querySelector('.content-wrapper');
-    if (!pane || !workspace) return;
+          this.desmosCalc = Desmos.GraphingCalculator(el, {
+            keypad: true,
+            expressions: true,
+            settingsMenu: true,
+            expressionsCollapsed: true
+          });
 
-    pane.classList.remove('show');
-    workspace.classList.remove('with-calc');
-    workspace.classList.remove('calculator-open');
-    workspace.classList.add('no-calc');
-    if (contentWrapper) contentWrapper.classList.remove('calculator-open');
-  },
+          this.calculatorInitialized = true;
+          this.keypadVisible = true;
+          setTimeout(() => this.desmosCalc?.resize?.(), 150);
+        } else {
+          setTimeout(waitForDesmos, 200);
+        }
+      };
 
-  fallback() {
-    const el = document.getElementById('desmosCalc');
-    if (!el || el.__iframeMounted) return;
+      waitForDesmos();
 
-    el.innerHTML = '';
-    const f = document.createElement('iframe');
-    f.src = 'https://www.desmos.com/calculator?embed&lang=en';
-    f.title = TestTranslations.desmosCalculator;
-    f.allow = 'fullscreen';
-    f.className = 'calc-iframe';
-    el.appendChild(f);
-    el.__iframeMounted = true;
+      setTimeout(() => {
+        if (!this.calculatorInitialized) this.fallback();
+      }, this.DESMOS_FALLBACK_MS);
+    },
 
-    const btn = document.getElementById('btnToggleKeypad');
-    if (btn) {
-      btn.disabled = true;
-      btn.textContent = '⌨️ Keypad not available';
+    close() {
+      const pane = document.getElementById('calcPane');
+      const workspace = document.getElementById('workspace');
+      const contentWrapper = document.querySelector('.content-wrapper');
+      if (!pane || !workspace) return;
+
+      pane.classList.remove('show');
+      pane.classList.remove('calc-keyboard-open');
+      workspace.classList.remove('with-calc');
+      workspace.classList.remove('calculator-open');
+      workspace.classList.add('no-calc');
+      if (contentWrapper) contentWrapper.classList.remove('calculator-open');
+    },
+
+    fallback() {
+      const el = document.getElementById('desmosCalc');
+      if (!el || el.__iframeMounted) return;
+
+      el.innerHTML = '';
+      const f = document.createElement('iframe');
+      f.src = 'https://www.desmos.com/calculator?embed&lang=en';
+      f.title = TestTranslations.desmosCalculator;
+      f.allow = 'fullscreen';
+      f.className = 'calc-iframe';
+      el.appendChild(f);
+      el.__iframeMounted = true;
+    },
+
+    toggleKeypad() {
+      const pane = document.getElementById('calcPane');
+
+      if (!pane?.classList.contains('show')) {
+        this.open();
+      }
+
+      if (!this.calculatorInitialized) {
+        setTimeout(() => this.toggleKeypad(), 250);
+        return;
+      }
+
+      if (!this.desmosCalc?.updateSettings) return;
+
+      this.keypadVisible = !this.keypadVisible;
+      this.desmosCalc.updateSettings({ keypad: this.keypadVisible });
+      setTimeout(() => this.desmosCalc?.resize?.(), 120);
+    },
+
+    toggleExpand() {
+      const calcBody = document.getElementById('calcBody');
+      const pane = document.getElementById('calcPane');
+      if (!calcBody) return;
+
+      const isExpanded = calcBody.classList.contains('expanded');
+      calcBody.classList.toggle('expanded', !isExpanded);
+      if (pane) pane.classList.toggle('calc-expanded', !isExpanded);
+
+      const btn = document.getElementById('btnExpandCalc');
+      if (btn) btn.textContent = isExpanded ? `↕️ ${TestTranslations.expand}` : `↕️ ${TestTranslations.collapse}`;
+
+      setTimeout(() => this.desmosCalc?.resize?.(), 250);
+    },
+
+    setupMobileViewport() {
+      if (this.mobileViewportSetup) return;
+      this.mobileViewportSetup = true;
+
+      const update = () => this.updateMobileViewport();
+      update();
+      window.addEventListener('resize', update);
+      window.addEventListener('orientationchange', () => setTimeout(update, 250));
+
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', update);
+        window.visualViewport.addEventListener('scroll', update);
+      }
+    },
+
+    updateMobileViewport() {
+      const height = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      if (height) {
+        document.documentElement.style.setProperty('--mc-visual-viewport-height', `${Math.round(height)}px`);
+      }
+
+      setTimeout(() => this.desmosCalc?.resize?.(), 120);
+    },
+
+    setupMobileFocusHandling() {
+      if (this.mobileFocusSetup) return;
+      this.mobileFocusSetup = true;
+
+      const pane = document.getElementById('calcPane');
+      if (!pane) return;
+
+      pane.addEventListener('focusin', (event) => {
+        pane.classList.add('calc-keyboard-open');
+        this.updateMobileViewport();
+        setTimeout(() => {
+          event.target?.scrollIntoView?.({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+        }, 120);
+      });
+
+      pane.addEventListener('focusout', () => {
+        setTimeout(() => pane.classList.remove('calc-keyboard-open'), 180);
+      });
     }
-  },
-
-  toggleKeypad() {
-    const pane = document.getElementById('calcPane');
-
-    if (!pane?.classList.contains('show')) {
-      this.open();
-    }
-
-    if (!this.calculatorInitialized) {
-      setTimeout(() => this.toggleKeypad(), 250);
-      return;
-    }
-
-    if (!this.desmosCalc?.updateSettings) return;
-
-    this.keypadVisible = !this.keypadVisible;
-    this.desmosCalc.updateSettings({ keypad: this.keypadVisible });
-
-    this.syncKeypadButton();
-
-    setTimeout(() => this.desmosCalc?.resize?.(), 120);
-  },
-
-
-
-  toggleExpand() {
-    const calcBody = document.getElementById('calcBody');
-    const pane = document.getElementById('calcPane');
-    if (!calcBody) return;
-
-    const isExpanded = calcBody.classList.contains('expanded');
-    calcBody.classList.toggle('expanded', !isExpanded);
-    if (pane) pane.classList.toggle('calc-expanded', !isExpanded);
-
-    const btn = document.getElementById('btnExpandCalc');
-    if (btn) btn.textContent = isExpanded ? `↕️ ${TestTranslations.expand}` : `↕️ ${TestTranslations.collapse}`;
-
-    setTimeout(() => this.desmosCalc?.resize?.(), 250);
-  }
-};
+  };
   const ReferenceSystem = {
     init() {
       const refBtn = document.getElementById('btnRef');
@@ -2988,29 +3148,69 @@ setTimeout(() => this.desmosCalc?.resize?.(), 150);
   }
 
   const FullScreenSystem = {
+    fallbackActive: false,
+
     init() {
       const btn = document.getElementById('btnFullScreen');
       if (!btn) return;
 
       btn.addEventListener('click', () => {
-        if (!document.fullscreenElement) this.enter();
-        else this.exit();
+        if (this.isActive()) this.exit();
+        else this.enter();
       });
 
       document.addEventListener('fullscreenchange', () => this.updateButton());
+      document.addEventListener('webkitfullscreenchange', () => this.updateButton());
       this.updateButton();
     },
+
+    isActive() {
+      return !!(document.fullscreenElement || document.webkitFullscreenElement || this.fallbackActive);
+    },
+
     enter() {
       const el = document.documentElement;
-      if (el.requestFullscreen) el.requestFullscreen();
-      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-      else if (el.msRequestFullscreen) el.msRequestFullscreen();
+      const request = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+
+      if (request) {
+        try {
+          const result = request.call(el);
+          if (result && typeof result.catch === 'function') {
+            result.catch(() => this.enterFallback());
+          }
+          return;
+        } catch (error) {
+          this.enterFallback();
+          return;
+        }
+      }
+
+      this.enterFallback();
     },
-    exit() { if (document.exitFullscreen) document.exitFullscreen(); },
+
+    enterFallback() {
+      this.fallbackActive = true;
+      document.body.classList.add('mobile-fullscreen-mode');
+      CalculatorSystem.updateMobileViewport?.();
+      this.updateButton();
+    },
+
+    exit() {
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitFullscreenElement && document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+
+      this.fallbackActive = false;
+      document.body.classList.remove('mobile-fullscreen-mode');
+      this.updateButton();
+    },
+
     updateButton() {
       const btn = document.getElementById('btnFullScreen');
       if (!btn) return;
-      btn.textContent = document.fullscreenElement ? `⤫ ${TestTranslations.exitFullScreen}` : `⛶ ${TestTranslations.fullScreen}`;
+      btn.textContent = this.isActive() ? `⤫ ${TestTranslations.exitFullScreen}` : `⛶ ${TestTranslations.fullScreen}`;
     }
   };
 
