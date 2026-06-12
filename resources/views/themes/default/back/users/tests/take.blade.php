@@ -7,7 +7,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @php
-    $now = \Carbon\Carbon::now();
+    $now = \Carbon\Carbon:now();
 
     $currentPartNumber = 1;
 
