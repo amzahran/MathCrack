@@ -1883,7 +1883,10 @@ html[lang="ar"] mjx-container {
     display: none;
   }
 
+  html.mobile-fullscreen-mode,
   body.mobile-fullscreen-mode {
+    width: 100%;
+    height: 100%;
     overflow: hidden;
   }
 
@@ -1891,9 +1894,13 @@ html[lang="ar"] mjx-container {
     position: fixed;
     inset: 0;
     z-index: 18000;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
     background: var(--bg);
     overflow-y: auto;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 
   body.mobile-fullscreen-mode .topbar {
@@ -1946,21 +1953,41 @@ html[lang="ar"] mjx-container {
       flex-shrink: 0;
     }
 
-    .ref-open-link {
+    .ref-action-controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    .ref-open-link,
+    .ref-action-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       min-height: 36px;
       padding: 7px 10px;
       border-radius: 9px;
+      border: 0;
       background: #1d4ed8;
       color: #fff;
+      font: inherit;
+      line-height: 1.1;
       text-decoration: none;
       white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .ref-action-button {
+      background: #0f172a;
     }
 
     .ref-open-link:hover,
-    .ref-open-link:focus {
+    .ref-open-link:focus,
+    .ref-action-button:hover,
+    .ref-action-button:focus {
       color: #fff;
     }
 
@@ -1997,6 +2024,7 @@ html[lang="ar"] mjx-container {
 
     body.mobile-fullscreen-mode .app {
       height: var(--mc-visual-viewport-height);
+      max-height: var(--mc-visual-viewport-height);
     }
   }
 </style>
@@ -2270,12 +2298,15 @@ html[lang="ar"] mjx-container {
     <div class="ref-modal">
       <div class="ref-modal-header">
         <h3 style="margin:0;font-size:22px">{{ __('l.reference_sheet') }}</h3>
-        <button type="button" id="refClose" style="border:none;background:transparent;color:#fff;font-size:22px;width:36px;height:36px;border-radius:8px;cursor:pointer">×</button>
+        <button type="button" id="refClose" data-ref-close style="border:none;background:transparent;color:#fff;font-size:22px;width:36px;height:36px;border-radius:8px;cursor:pointer">×</button>
       </div>
       <div class="ref-modal-body">
         <div class="ref-mobile-actions">
           <span>{{ __('l.sat_reference_sheet') }}</span>
-          <a class="ref-open-link" href="{{ asset('Pdfs/References.pdf') }}" target="_blank" rel="noopener">Open PDF</a>
+          <div class="ref-action-controls">
+            <button type="button" class="ref-action-button" data-ref-close>Back to Test</button>
+            <a class="ref-open-link" href="{{ asset('Pdfs/References.pdf') }}" target="_blank" rel="noopener">Open PDF in new tab</a>
+          </div>
         </div>
         <iframe
           src="{{ asset('Pdfs/References.pdf') }}#toolbar=0&navpanes=0&scrollbar=1&view=FitH"
@@ -2975,13 +3006,27 @@ html[lang="ar"] mjx-container {
     init() {
       const refBtn = document.getElementById('btnRef');
       const refModal = document.getElementById('refBackdrop');
-      const refClose = document.getElementById('refClose');
 
-      if (!refBtn || !refModal || !refClose) return;
+      if (!refBtn || !refModal) return;
 
-      refBtn.onclick = () => refModal.style.display = 'flex';
-      refClose.onclick = () => refModal.style.display = 'none';
-      refModal.addEventListener('click', e => { if (e.target === refModal) refModal.style.display = 'none'; });
+      const openReferences = () => {
+        refModal.style.display = 'flex';
+        document.body.classList.add('references-open');
+        CalculatorSystem.updateMobileViewport?.();
+      };
+
+      const closeReferences = () => {
+        refModal.style.display = 'none';
+        document.body.classList.remove('references-open');
+        refBtn.focus?.({ preventScroll: true });
+      };
+
+      refBtn.addEventListener('click', openReferences);
+      document.querySelectorAll('[data-ref-close]').forEach(btn => btn.addEventListener('click', closeReferences));
+      refModal.addEventListener('click', e => { if (e.target === refModal) closeReferences(); });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && refModal.style.display === 'flex') closeReferences();
+      });
     }
   };
 
@@ -3159,58 +3204,94 @@ html[lang="ar"] mjx-container {
         else this.enter();
       });
 
-      document.addEventListener('fullscreenchange', () => this.updateButton());
-      document.addEventListener('webkitfullscreenchange', () => this.updateButton());
+      document.addEventListener('fullscreenchange', () => this.syncNativeState());
+      document.addEventListener('webkitfullscreenchange', () => this.syncNativeState());
+      window.addEventListener('orientationchange', () => {
+        if (this.fallbackActive) setTimeout(() => CalculatorSystem.updateMobileViewport?.(), 250);
+      });
       this.updateButton();
     },
 
+    isMobileFallbackPreferred() {
+      const mobileViewport = window.matchMedia?.('(max-width: 767.98px)')?.matches;
+      const coarsePointer = window.matchMedia?.('(pointer: coarse)')?.matches;
+      const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      return !!(isiOS || mobileViewport || coarsePointer);
+    },
+
+    isNativeActive() {
+      return !!(document.fullscreenElement || document.webkitFullscreenElement);
+    },
+
     isActive() {
-      return !!(document.fullscreenElement || document.webkitFullscreenElement || this.fallbackActive);
+      return this.isNativeActive() || this.fallbackActive;
     },
 
     enter() {
+      if (this.isMobileFallbackPreferred()) {
+        this.enterFallback();
+        return;
+      }
+
       const el = document.documentElement;
       const request = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
 
-      if (request) {
-        try {
-          const result = request.call(el);
-          if (result && typeof result.catch === 'function') {
-            result.catch(() => this.enterFallback());
-          }
-          return;
-        } catch (error) {
-          this.enterFallback();
-          return;
-        }
+      if (!request) {
+        this.enterFallback();
+        return;
       }
 
-      this.enterFallback();
+      try {
+        const result = request.call(el);
+        if (result && typeof result.then === 'function') {
+          result.then(() => this.updateButton()).catch(() => this.enterFallback());
+        } else {
+          setTimeout(() => {
+            if (!this.isNativeActive()) this.enterFallback();
+            else this.updateButton();
+          }, 250);
+        }
+      } catch (error) {
+        this.enterFallback();
+      }
     },
 
     enterFallback() {
       this.fallbackActive = true;
+      document.documentElement.classList.add('mobile-fullscreen-mode');
       document.body.classList.add('mobile-fullscreen-mode');
       CalculatorSystem.updateMobileViewport?.();
+      setTimeout(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }), 0);
       this.updateButton();
     },
 
     exit() {
-      if (document.fullscreenElement && document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitFullscreenElement && document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
+      if (this.isNativeActive()) {
+        if (document.exitFullscreen) document.exitFullscreen().catch?.(() => {});
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
       }
 
       this.fallbackActive = false;
+      document.documentElement.classList.remove('mobile-fullscreen-mode');
       document.body.classList.remove('mobile-fullscreen-mode');
+      CalculatorSystem.updateMobileViewport?.();
+      this.updateButton();
+    },
+
+    syncNativeState() {
+      if (this.isNativeActive()) {
+        this.fallbackActive = false;
+        document.documentElement.classList.remove('mobile-fullscreen-mode');
+        document.body.classList.remove('mobile-fullscreen-mode');
+      }
       this.updateButton();
     },
 
     updateButton() {
       const btn = document.getElementById('btnFullScreen');
       if (!btn) return;
-      btn.textContent = this.isActive() ? `⤫ ${TestTranslations.exitFullScreen}` : `⛶ ${TestTranslations.fullScreen}`;
+      btn.textContent = this.isActive() ? `Exit ${TestTranslations.fullScreen}` : TestTranslations.fullScreen;
+      btn.setAttribute('aria-pressed', this.isActive() ? 'true' : 'false');
     }
   };
 
