@@ -852,6 +852,42 @@
   .btn-submit:hover{ background:#b91c1c; transform: translateY(-1px); }
 
   .numeric-answer-wrapper{ margin-top:1.5rem; display:flex; justify-content:flex-start; }
+
+  .numeric-answer-entry{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    max-width:360px;
+    width:100%;
+  }
+
+  .numeric-answer-entry > div{
+    flex:1 1 auto;
+    min-width:0;
+  }
+
+  .numeric-fraction-btn{
+    width:52px;
+    height:52px;
+    border-radius:14px;
+    border:2px solid #111827;
+    background:#ffffff;
+    color:#111827;
+    font-size:28px;
+    font-weight:900;
+    line-height:1;
+    cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,0.12);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 auto;
+    touch-action:manipulation;
+  }
+
+  .numeric-fraction-btn:active{
+    transform:scale(0.96);
+  }
   .numeric-answer-box{
   position:relative;
   width:65%;
@@ -2265,27 +2301,36 @@ html[lang="ar"] mjx-container {
 
                   @elseif($q->type === 'numeric')
                     <div class="numeric-answer-wrapper">
-                      <div>
-                        <div class="numeric-answer-box">
-                          <input
-                            class="numeric-answer-input"
-                            type="text"
-                            inputmode="decimal"
-                            dir="ltr"
-                            autocomplete="off"
-                            placeholder="{{ __('l.numeric_answer_placeholder') }}"
-                            oninput="
-                              this.value = sanitizeSatNumeric(this.value);
-                              updateAnswerPreview({{ $q->id }}, this.value);
-                              saveNumericAnswer(this, {{ $q->id }});
-                            "
-                          >
+                      <div class="numeric-answer-entry">
+                        <div>
+                          <div class="numeric-answer-box">
+                            <input
+                              class="numeric-answer-input"
+                              type="text"
+                              inputmode="decimal"
+                              dir="ltr"
+                              autocomplete="off"
+                              placeholder="{{ __('l.numeric_answer_placeholder') }}"
+                              oninput="
+                                this.value = sanitizeSatNumeric(this.value);
+                                updateAnswerPreview({{ $q->id }}, this.value);
+                                saveNumericAnswer(this, {{ $q->id }});
+                              "
+                            >
+                          </div>
+
+                          <div class="answer-preview-wrap answer-preview-empty" id="answerPreviewWrap-{{ $q->id }}">
+                            <span class="answer-preview-label">{{ __('l.answer_preview') }}</span>
+                            <span class="answer-preview-value" id="answerPreviewValue-{{ $q->id }}"></span>
+                          </div>
                         </div>
 
-                        <div class="answer-preview-wrap answer-preview-empty" id="answerPreviewWrap-{{ $q->id }}">
-                          <span class="answer-preview-label">{{ __('l.answer_preview') }}</span>
-                          <span class="answer-preview-value" id="answerPreviewValue-{{ $q->id }}"></span>
-                        </div>
+                        <button
+                          type="button"
+                          class="numeric-fraction-btn"
+                          onclick="insertNumericSlash(this)"
+                          aria-label="Insert fraction slash"
+                        >/</button>
                       </div>
                     </div>
                   @endif
@@ -3263,6 +3308,17 @@ html[lang="ar"] mjx-container {
     const pos = start + text.length;
     input.setSelectionRange(pos, pos);
     input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  function insertNumericSlash(button) {
+    const wrapper = button.closest('.numeric-answer-entry');
+    if (!wrapper) return;
+
+    const input = wrapper.querySelector('.numeric-answer-input');
+    if (!input) return;
+
+    input.focus();
+    insertAtCursor(input, '/');
   }
 
   function attachSatNumericArabicFix() {
