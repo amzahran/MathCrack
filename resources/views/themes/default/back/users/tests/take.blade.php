@@ -1360,8 +1360,8 @@ html[lang="ar"] mjx-container {
     }
 
     .topbar-inner {
-      display: grid;
-      grid-template-columns: minmax(116px, 1fr) repeat(2, minmax(0, 1fr));
+      display: grid !important;
+      grid-template-columns: minmax(120px, 1fr) repeat(2, minmax(0, 1fr)) !important;
       grid-template-areas:
         "brand brand brand"
         "pause timer timer"
@@ -1395,13 +1395,13 @@ html[lang="ar"] mjx-container {
     }
 
     .timer-controls {
-      display: contents;
+      display: contents !important;
       width: 100%;
       margin: 0;
     }
 
     .topbar-control-group {
-      display: contents;
+      display: contents !important;
     }
 
     .timer-btn,
@@ -1476,13 +1476,39 @@ html[lang="ar"] mjx-container {
     }
 
     .q-head {
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-areas: "number actions";
+      align-items: center;
+      gap: 10px;
       padding: 12px;
     }
 
-    .q-head-left,
-    .q-head-right {
-      flex-wrap: wrap;
+    .q-head-left {
+      grid-area: number;
       min-width: 0;
+      justify-content: flex-start !important;
+    }
+
+    .q-head-right {
+      grid-area: actions;
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      min-width: 0;
+      justify-content: stretch !important;
+    }
+
+    .mark-pill,
+    .abc-toggle-btn {
+      width: 100%;
+      min-height: 40px;
+      padding: 8px 10px;
+      justify-content: center;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.15;
+      white-space: normal;
     }
 
     .q-body {
@@ -1594,7 +1620,7 @@ html[lang="ar"] mjx-container {
 
   @media (max-width: 480px) {
     .topbar-inner {
-      grid-template-columns: minmax(108px, 1fr) repeat(2, minmax(0, 1fr));
+      grid-template-columns: minmax(116px, 1fr) repeat(2, minmax(0, 1fr)) !important;
       gap: 7px;
       padding-left: 10px;
       padding-right: 10px;
@@ -1636,7 +1662,7 @@ html[lang="ar"] mjx-container {
 
   @media (max-width: 420px) {
     .topbar-inner {
-      grid-template-columns: minmax(104px, 1fr) repeat(2, minmax(0, 1fr));
+      grid-template-columns: minmax(108px, 1fr) repeat(2, minmax(0, 1fr)) !important;
       gap: 6px;
     }
 
@@ -1644,6 +1670,27 @@ html[lang="ar"] mjx-container {
     .topbar-control-group .btn-sm,
     .topbar-control-group .btn {
       min-height: 44px;
+      font-size: 11.5px;
+    }
+
+    .q-head {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "number"
+        "actions";
+    }
+
+    .q-head-left {
+      justify-content: center !important;
+    }
+
+    .q-head-right {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mark-pill,
+    .abc-toggle-btn {
+      min-height: 42px;
       font-size: 11.5px;
     }
 
