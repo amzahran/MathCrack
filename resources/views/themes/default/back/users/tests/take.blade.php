@@ -1978,8 +1978,6 @@ html[lang="ar"] mjx-container {
       min-width: 0;
       flex-wrap: nowrap;
     }
-
-    .ref-open-link,
     .ref-action-button {
       display: inline-flex;
       align-items: center;
@@ -2001,19 +1999,6 @@ html[lang="ar"] mjx-container {
       font-weight: 800;
     }
 
-    .ref-open-link {
-      background: transparent;
-      color: #475569;
-      min-height: 32px;
-      padding-inline: 4px;
-      font-size: 11px;
-      text-decoration: underline;
-    }
-
-    .ref-open-link:hover,
-    .ref-open-link:focus {
-      color: #1d4ed8;
-    }
 
     .ref-action-button:hover,
     .ref-action-button:focus {
@@ -2349,7 +2334,6 @@ html[lang="ar"] mjx-container {
           <span>{{ __('l.sat_reference_sheet') }}</span>
           <div class="ref-action-controls">
             <button type="button" class="ref-action-button" data-ref-close>Back to Test</button>
-            <a class="ref-open-link" href="{{ asset('Pdfs/References.pdf') }}" target="_blank" rel="noopener">Open in new tab</a>
           </div>
         </div>
         <iframe
@@ -2360,7 +2344,7 @@ html[lang="ar"] mjx-container {
           loading="eager">
         </iframe>
         <div class="ref-viewer-fallback">
-          If the inline PDF viewer is blank, use Open in new tab. Back to Test stays available here.
+          If the inline PDF viewer is blank, your browser may not support embedded PDFs. Back to Test stays available here.
         </div>
       </div>
     </div>
@@ -3075,12 +3059,6 @@ html[lang="ar"] mjx-container {
       };
 
       refBtn.addEventListener('click', openReferences);
-      refModal.querySelectorAll('.ref-open-link').forEach(link => {
-        link.addEventListener('click', event => {
-          event.preventDefault();
-          window.open(link.href, '_blank', 'noopener');
-        });
-      });
       document.querySelectorAll('[data-ref-close]').forEach(btn => btn.addEventListener('click', closeReferences));
       refModal.addEventListener('click', e => { if (e.target === refModal) closeReferences(); });
       document.addEventListener('keydown', e => {
