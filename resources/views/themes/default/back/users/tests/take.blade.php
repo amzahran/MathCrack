@@ -6,10 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  @php
-     Carbon\$now = \Carbon\Carbon\Carbon::now();a
-
+    @php
     $now = \Carbon\Carbon::now();
+
+    $currentPartNumber = 1;
 
     $currentPartNumber = 1;
     if (isset($module) && !empty($module->number)) {
