@@ -1879,7 +1879,8 @@ html[lang="ar"] mjx-container {
   }
 
   /* Remaining mobile fixes: references, fullscreen fallback, calculator keyboard */
-  .ref-mobile-actions {
+  .ref-mobile-actions,
+  .ref-viewer-fallback {
     display: none;
   }
 
@@ -1912,14 +1913,26 @@ html[lang="ar"] mjx-container {
       --mc-visual-viewport-height: 100vh;
     }
 
+    #refBackdrop {
+      align-items: stretch !important;
+      justify-content: stretch !important;
+      background: #fff !important;
+      overflow: hidden;
+    }
+
     .ref-modal {
-      width: calc(100vw - 16px);
-      height: min(calc(var(--mc-visual-viewport-height) - 24px), 92vh);
-      max-height: calc(var(--mc-visual-viewport-height) - 24px);
-      border-radius: 12px;
+      width: 100vw;
+      height: var(--mc-visual-viewport-height);
+      max-height: var(--mc-visual-viewport-height);
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
     }
 
     .ref-modal-header {
+      position: sticky;
+      top: 0;
+      z-index: 3;
       padding: 12px 14px;
       gap: 10px;
     }
@@ -1933,13 +1946,17 @@ html[lang="ar"] mjx-container {
     .ref-modal-body {
       display: flex;
       flex-direction: column;
+      flex: 1 1 auto;
       min-height: 0;
-      overflow: auto;
+      overflow: hidden;
       -webkit-overflow-scrolling: touch;
       background: #f8fafc;
     }
 
     .ref-mobile-actions {
+      position: sticky;
+      top: 0;
+      z-index: 2;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -1959,7 +1976,7 @@ html[lang="ar"] mjx-container {
       justify-content: flex-end;
       gap: 6px;
       min-width: 0;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
     }
 
     .ref-open-link,
@@ -1971,7 +1988,6 @@ html[lang="ar"] mjx-container {
       padding: 7px 10px;
       border-radius: 9px;
       border: 0;
-      background: #1d4ed8;
       color: #fff;
       font: inherit;
       line-height: 1.1;
@@ -1982,20 +1998,48 @@ html[lang="ar"] mjx-container {
 
     .ref-action-button {
       background: #0f172a;
+      font-weight: 800;
+    }
+
+    .ref-open-link {
+      background: transparent;
+      color: #475569;
+      min-height: 32px;
+      padding-inline: 4px;
+      font-size: 11px;
+      text-decoration: underline;
     }
 
     .ref-open-link:hover,
-    .ref-open-link:focus,
+    .ref-open-link:focus {
+      color: #1d4ed8;
+    }
+
     .ref-action-button:hover,
     .ref-action-button:focus {
       color: #fff;
     }
 
     .pdf-iframe {
+      display: block;
+      width: 100%;
+      min-width: 0;
       min-height: 0;
       height: 100%;
       flex: 1 1 auto;
       background: #fff;
+      overflow: auto;
+    }
+
+    .ref-viewer-fallback {
+      display: block;
+      flex: 0 0 auto;
+      padding: 8px 10px;
+      border-top: 1px solid #e5e7eb;
+      background: #fff;
+      color: #64748b;
+      font-size: 11px;
+      text-align: center;
     }
 
     .calc-pane.show {
@@ -2305,14 +2349,19 @@ html[lang="ar"] mjx-container {
           <span>{{ __('l.sat_reference_sheet') }}</span>
           <div class="ref-action-controls">
             <button type="button" class="ref-action-button" data-ref-close>Back to Test</button>
-            <a class="ref-open-link" href="{{ asset('Pdfs/References.pdf') }}" target="_blank" rel="noopener">Open PDF in new tab</a>
+            <a class="ref-open-link" href="{{ asset('Pdfs/References.pdf') }}" target="_blank" rel="noopener">Open in new tab</a>
           </div>
         </div>
         <iframe
-          src="{{ asset('Pdfs/References.pdf') }}#toolbar=0&navpanes=0&scrollbar=1&view=FitH"
+          src="{{ asset('Pdfs/References.pdf') }}#toolbar=1&navpanes=0&scrollbar=1&view=FitH"
+          data-pdf-src="{{ asset('Pdfs/References.pdf') }}#toolbar=1&navpanes=0&scrollbar=1&view=FitH"
           class="pdf-iframe"
-          title="{{ __('l.sat_reference_sheet') }}">
+          title="{{ __('l.sat_reference_sheet') }}"
+          loading="eager">
         </iframe>
+        <div class="ref-viewer-fallback">
+          If the inline PDF viewer is blank, use Open in new tab. Back to Test stays available here.
+        </div>
       </div>
     </div>
   </div>
@@ -3010,6 +3059,10 @@ html[lang="ar"] mjx-container {
       if (!refBtn || !refModal) return;
 
       const openReferences = () => {
+        const iframe = refModal.querySelector('.pdf-iframe');
+        if (iframe?.dataset.pdfSrc && iframe.src !== iframe.dataset.pdfSrc) {
+          iframe.src = iframe.dataset.pdfSrc;
+        }
         refModal.style.display = 'flex';
         document.body.classList.add('references-open');
         CalculatorSystem.updateMobileViewport?.();
@@ -3022,6 +3075,12 @@ html[lang="ar"] mjx-container {
       };
 
       refBtn.addEventListener('click', openReferences);
+      refModal.querySelectorAll('.ref-open-link').forEach(link => {
+        link.addEventListener('click', event => {
+          event.preventDefault();
+          window.open(link.href, '_blank', 'noopener');
+        });
+      });
       document.querySelectorAll('[data-ref-close]').forEach(btn => btn.addEventListener('click', closeReferences));
       refModal.addEventListener('click', e => { if (e.target === refModal) closeReferences(); });
       document.addEventListener('keydown', e => {
