@@ -7,7 +7,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   @php
-     Carbon\$now = \Carbon\\Carbon\Carbon::now();a
+     Carbon\$now = \Carbon\Carbon\Carbon::now();a
 
     $now = \Carbon\Carbon::now();
 
