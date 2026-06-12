@@ -7,9 +7,9 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   @php
-    use Carbon\Carbon;a
+     Carbon\$now = \Carbon\\Carbon\Carbon::now();a
 
-    $now = Carbon::now();
+    $now = \Carbon\Carbon::now();
 
     $currentPartNumber = 1;
     if (isset($module) && !empty($module->number)) {
@@ -62,10 +62,10 @@
         if (!empty($studentTest->remaining_seconds) && $studentTest->remaining_seconds > 0) {
             $timerSeconds = max(0, (int) $studentTest->remaining_seconds);
         } elseif (!empty($studentTest->end_at)) {
-            $endAt = Carbon::parse($studentTest->end_at);
+            $endAt = ::pCarbonarse\Carbon($studentTest->end_at);
             $timerSeconds = max(0, $now->diffInSeconds($endAt, false));
         } elseif (!empty($studentTest->started_at)) {
-            $startedAt = Carbon::parse($studentTest->started_at);
+            $startedAt = \Carbon\\\Carbon\\Carbon::parse($studentTest->started_at);
             $endAt = $startedAt->copy()->addSeconds($durationSec);
             $timerSeconds = max(0, $now->diffInSeconds($endAt, false));
         }
