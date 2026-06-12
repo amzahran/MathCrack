@@ -1336,6 +1336,326 @@ html[lang="ar"] mjx-container {
 
   letter-spacing: 0 !important;
 }
+
+  /* Mobile containment pass for test-taking layout */
+  @media (max-width: 767.98px) {
+    html,
+    body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    .app,
+    .content-wrapper,
+    .container,
+    .workspace,
+    .q-card,
+    .q-body,
+    .questions-bar,
+    .footer-inner {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .topbar-inner {
+      display: grid;
+      grid-template-columns: minmax(116px, 1fr) repeat(2, minmax(0, 1fr));
+      grid-template-areas:
+        "brand brand brand"
+        "pause timer timer"
+        "calc ref fullscreen";
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+    }
+
+    .brand {
+      grid-area: brand;
+      min-width: 0;
+      overflow-wrap: anywhere;
+      font-size: 0.98rem;
+      line-height: 1.25;
+      text-align: center;
+    }
+
+    .timer {
+      grid-area: timer;
+      position: static;
+      transform: none;
+      justify-self: end;
+      width: auto;
+      max-width: 160px;
+      margin: 0;
+      min-width: 86px;
+      padding: 7px 12px;
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .timer-controls {
+      display: contents;
+      width: 100%;
+      margin: 0;
+    }
+
+    .topbar-control-group {
+      display: contents;
+    }
+
+    .timer-btn,
+    .topbar-control-group .btn-sm,
+    .topbar-control-group .btn {
+      width: 100%;
+      min-width: 0;
+      min-height: 42px;
+      padding: 8px 8px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      line-height: 1.15;
+      white-space: normal;
+      text-align: center;
+      justify-content: center;
+    }
+
+    #pauseTimerBtn,
+    #resumeTimerBtn {
+      grid-area: pause;
+    }
+
+    #btnCalc {
+      grid-area: calc;
+    }
+
+    #btnRef {
+      grid-area: ref;
+    }
+
+    #btnFullScreen {
+      grid-area: fullscreen;
+    }
+
+    .workspace.no-calc,
+    .workspace.with-calc,
+    .workspace.calculator-open {
+      grid-template-columns: minmax(0, 1fr) !important;
+      justify-content: stretch;
+      gap: 12px;
+    }
+
+    .content-wrapper.calculator-open .container {
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .container {
+      margin: 12px auto 18px;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .banner {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .banner-title,
+    .banner-balance {
+      grid-column: auto;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .module-indicator {
+      justify-self: center;
+      max-width: 100%;
+    }
+
+    .q-head {
+      padding: 12px;
+    }
+
+    .q-head-left,
+    .q-head-right {
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .q-body {
+      padding: 18px !important;
+      overflow-wrap: anywhere;
+    }
+
+    .stem,
+    .option-text {
+      max-width: 100%;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .stem mjx-container,
+    .stem .MathJax,
+    .stem .MathJax_Display,
+    .stem .mjx-chtml,
+    .option-text mjx-container {
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      display: block;
+    }
+
+    .question-image,
+    .option-image,
+    .option-text {
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .question-image img,
+    .stem img {
+      max-width: 100% !important;
+      max-height: 320px !important;
+      width: auto !important;
+      height: auto !important;
+    }
+
+    .option-text img,
+    .option-image img {
+      max-width: 100% !important;
+      max-height: 220px !important;
+      width: auto !important;
+      height: auto !important;
+    }
+
+    .option-row {
+      width: 100%;
+      align-items: stretch;
+    }
+
+    .option-item {
+      width: 100%;
+      min-width: 0;
+      grid-template-columns: 40px minmax(0, 1fr) !important;
+      gap: 10px !important;
+      padding: 11px 12px !important;
+      min-height: 54px;
+      touch-action: manipulation;
+    }
+
+    .option-label {
+      width: 36px !important;
+      height: 36px !important;
+      flex: 0 0 auto;
+    }
+
+    .questions-scroll-container {
+      max-width: 100%;
+    }
+
+    .calc-pane {
+      left: 50%;
+      right: auto;
+      width: calc(100vw - 16px);
+      max-width: calc(100vw - 16px);
+    }
+
+    html[lang="ar"] .topbar-inner {
+      direction: rtl;
+    }
+
+    html[lang="ar"] .timer {
+      justify-self: start;
+    }
+
+    html[lang="ar"] .option-row {
+      flex-direction: row-reverse;
+    }
+
+    html[lang="ar"] .option-item {
+      grid-template-columns: 40px minmax(0, 1fr) !important;
+      direction: rtl !important;
+    }
+
+    html[lang="ar"] .option-label,
+    html[lang="ar"] .external-elimination-letter {
+      grid-column: 1 !important;
+      justify-self: start !important;
+    }
+
+    html[lang="ar"] .option-text {
+      grid-column: 2 !important;
+      min-width: 0;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .topbar-inner {
+      grid-template-columns: minmax(108px, 1fr) repeat(2, minmax(0, 1fr));
+      gap: 7px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .timer {
+      justify-self: end;
+      max-width: 150px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .timer-btn,
+    .topbar-control-group .btn-sm,
+    .topbar-control-group .btn {
+      min-height: 42px;
+      padding-left: 6px;
+      padding-right: 6px;
+      font-size: 12px;
+    }
+
+    .container {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .q-body {
+      padding: 14px !important;
+    }
+
+    .stem,
+    .stem p,
+    .option-text,
+    .option-text p {
+      font-size: 16px !important;
+      line-height: 1.65 !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .topbar-inner {
+      grid-template-columns: minmax(104px, 1fr) repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .timer-btn,
+    .topbar-control-group .btn-sm,
+    .topbar-control-group .btn {
+      min-height: 44px;
+      font-size: 11.5px;
+    }
+
+    .option-item {
+      grid-template-columns: 38px minmax(0, 1fr) !important;
+      padding: 10px !important;
+    }
+
+    html[lang="ar"] .option-item {
+      grid-template-columns: 38px minmax(0, 1fr) !important;
+    }
+  }
 </style>
 
   <script src="https://www.desmos.com/api/v1.10/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
