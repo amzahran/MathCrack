@@ -1703,6 +1703,180 @@ html[lang="ar"] mjx-container {
       grid-template-columns: 38px minmax(0, 1fr) !important;
     }
   }
+
+  /* Final mobile structure override: exact Blade hooks */
+  .mobile-pause-timer-row {
+    display: contents;
+  }
+
+  .topbar-pause-slot {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  .topbar .timer-controls {
+    margin-left: 0;
+  }
+
+  @media (max-width: 767.98px) {
+    .topbar-inner {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) !important;
+      grid-template-areas:
+        "brand"
+        "pauseTimer"
+        "tools";
+      gap: 8px !important;
+      padding: 10px 12px !important;
+      align-items: stretch !important;
+    }
+
+    .topbar-inner .brand {
+      grid-area: brand;
+      width: 100%;
+      text-align: center;
+      justify-self: stretch;
+    }
+
+    .mobile-pause-timer-row {
+      grid-area: pauseTimer;
+      display: grid !important;
+      grid-template-columns: minmax(118px, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .topbar-pause-slot {
+      display: flex !important;
+      align-items: center;
+      min-width: 0;
+      margin: 0;
+    }
+
+    .topbar-pause-slot .timer-btn {
+      width: 100%;
+      min-width: 0;
+      min-height: 42px;
+      padding: 8px 12px;
+      font-size: 13px;
+      white-space: normal;
+    }
+
+    .mobile-pause-timer-row .timer {
+      position: static !important;
+      transform: none !important;
+      justify-self: end;
+      width: auto;
+      min-width: 88px;
+      max-width: 150px;
+      margin: 0;
+      padding: 8px 12px;
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .topbar-inner .timer-controls {
+      grid-area: tools;
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+    }
+
+    .topbar-inner .topbar-control-group {
+      display: contents !important;
+    }
+
+    .topbar-inner #btnCalc,
+    .topbar-inner #btnRef,
+    .topbar-inner #btnFullScreen {
+      width: 100%;
+      min-width: 0;
+      min-height: 42px;
+      padding: 8px 6px;
+      font-size: 12px;
+      line-height: 1.15;
+      white-space: normal;
+      text-align: center;
+      justify-content: center;
+    }
+
+    .q-head {
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-areas: "number actions";
+      align-items: center;
+      gap: 10px;
+    }
+
+    .q-head-left {
+      grid-area: number;
+      min-width: 0;
+    }
+
+    .q-head-actions {
+      grid-area: actions;
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .q-head-actions .mark-pill,
+    .q-head-actions .abc-toggle-btn {
+      width: 100%;
+      min-width: 0;
+      min-height: 40px;
+      padding: 8px 10px;
+      justify-content: center;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.15;
+      white-space: normal;
+    }
+
+    html[lang="ar"] .mobile-pause-timer-row,
+    html[lang="ar"] .q-head-actions {
+      direction: rtl;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .topbar-inner .timer-controls {
+      gap: 6px;
+    }
+
+    .topbar-inner #btnCalc,
+    .topbar-inner #btnRef,
+    .topbar-inner #btnFullScreen {
+      min-height: 44px;
+      padding-left: 4px;
+      padding-right: 4px;
+      font-size: 11px;
+    }
+
+    .q-head {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "number"
+        "actions";
+    }
+
+    .q-head-left {
+      justify-content: center !important;
+    }
+
+    .q-head-actions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
 </style>
 
   <script src="https://www.desmos.com/api/v1.10/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
@@ -1720,20 +1894,30 @@ html[lang="ar"] mjx-container {
     <div class="topbar-inner">
       <div class="brand">{{ $headerTitle }}</div>
 
-      <div class="timer" id="timer-display">--:--</div>
+      <div class="mobile-pause-timer-row">
+        <div class="topbar-pause-slot">
 
-    <div class="timer-controls">
-  <div class="topbar-control-group topbar-control-primary">
-    <button type="button" class="timer-btn pause-btn" id="pauseTimerBtn">{{ __('l.pause') }}</button>
-    <button type="button" class="timer-btn resume-btn" id="resumeTimerBtn" style="display:none">{{ __('l.resume') }}</button>
-    <button type="button" class="btn-sm" id="btnCalc">🧮 {{ __('l.calculator') }}</button>
-  </div>
+<button type="button" class="timer-btn pause-btn" id="pauseTimerBtn">{{ __('l.pause') }}</button>
 
-  <div class="topbar-control-group topbar-control-secondary">
-    <button type="button" class="btn-sm" id="btnRef">📄 {{ __('l.reference') }}</button>
-    <button type="button" class="btn-sm" id="btnFullScreen">⛶ {{ __('l.full_screen') }}</button>
-  </div>
-</div>
+<button type="button" class="timer-btn resume-btn" id="resumeTimerBtn" style="display:none">{{ __('l.resume') }}</button>
+        </div>
+
+        <div class="timer" id="timer-display">--:--</div>
+      </div>
+
+      <div class="timer-controls">
+        <div class="topbar-control-group topbar-control-primary">
+
+<button type="button" class="btn-sm" id="btnCalc">🧮 {{ __('l.calculator') }}</button>
+        </div>
+
+        <div class="topbar-control-group topbar-control-secondary">
+
+<button type="button" class="btn-sm" id="btnRef">📄 {{ __('l.reference') }}</button>
+
+<button type="button" class="btn-sm" id="btnFullScreen">⛶ {{ __('l.full_screen') }}</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1800,10 +1984,12 @@ html[lang="ar"] mjx-container {
           <div class="q-head">
             <div class="q-head-left">
               <div class="q-num" id="current-question-display">1</div>
-              <button type="button" id="btnMark" class="mark-pill">🔖 {{ __('l.mark_for_review') }}</button>
             </div>
-            <div class="q-head-right">
-              <button type="button" id="btnABC" class="abc-toggle-btn">✏️ {{ __('l.elimination_mode') }}</button>
+            <div class="q-head-actions">
+
+<button type="button" id="btnMark" class="mark-pill">🔖 {{ __('l.mark_for_review') }}</button>
+
+<button type="button" id="btnABC" class="abc-toggle-btn">✏️ {{ __('l.elimination_mode') }}</button>
             </div>
           </div>
 
@@ -2487,7 +2673,7 @@ html[lang="ar"] mjx-container {
   desmosCalc: null,
   calculatorInitialized: false,
   DESMOS_FALLBACK_MS: 2000,
-  
+
 
   init() {
     const btnOpen = document.getElementById('btnCalc');
@@ -2497,7 +2683,7 @@ html[lang="ar"] mjx-container {
     if (btnOpen) btnOpen.addEventListener('click', () => this.open());
     if (btnClose) btnClose.addEventListener('click', () => this.close());
 
-    
+
     if (btnExpandCalc) btnExpandCalc.addEventListener('click', () => this.toggleExpand());
   },
 
@@ -2608,7 +2794,7 @@ setTimeout(() => this.desmosCalc?.resize?.(), 150);
     setTimeout(() => this.desmosCalc?.resize?.(), 120);
   },
 
-  
+
 
   toggleExpand() {
     const calcBody = document.getElementById('calcBody');
