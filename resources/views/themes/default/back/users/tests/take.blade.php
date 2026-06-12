@@ -7,7 +7,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   @php
-    use Carbon\Carbon;a
+    use Carbon\Carbon;
 
     $now = Carbon::now();
 
@@ -2056,63 +2056,9 @@ html[lang="ar"] mjx-container {
       max-height: var(--mc-visual-viewport-height);
     }
   }
-
-
-  /* PDF.js reference sheet renderer */
-  .ref-modal-body {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-  }
-
-  .reference-pdf-wrapper {
-    flex: 1 1 auto;
-    min-height: 0;
-    width: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    background: #f4f6f8;
-    padding: 12px;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .reference-pdf-pages {
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-  }
-
-  .reference-pdf-page {
-    display: block;
-    width: 100%;
-    height: auto;
-    margin: 0 auto 16px auto;
-    background: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  }
-
-  .reference-pdf-status {
-    padding: 18px;
-    text-align: center;
-    color: #475569;
-    font-weight: 700;
-  }
-
-  @media (max-width: 767.98px) {
-    .reference-pdf-wrapper {
-      padding: 8px;
-      background: #f4f6f8;
-    }
-
-    .reference-pdf-page {
-      margin-bottom: 12px;
-      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.14);
-    }
-  }
 </style>
 
   <script src="https://www.desmos.com/api/v1.10/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 
 <body>
@@ -2390,12 +2336,15 @@ html[lang="ar"] mjx-container {
             <button type="button" class="ref-action-button" data-ref-close>Back to Test</button>
           </div>
         </div>
-        <div class="reference-pdf-wrapper" id="referencePdfWrapper">
-          <div
-            id="referencePdfPages"
-            class="reference-pdf-pages"
-            data-pdf-src="{{ asset('Pdfs/References.pdf') }}">
-          </div>
+        <iframe
+          src="{{ asset('Pdfs/References.pdf') }}#toolbar=1&navpanes=0&scrollbar=1&view=FitH"
+          data-pdf-src="{{ asset('Pdfs/References.pdf') }}#toolbar=1&navpanes=0&scrollbar=1&view=FitH"
+          class="pdf-iframe"
+          title="{{ __('l.sat_reference_sheet') }}"
+          loading="eager">
+        </iframe>
+        <div class="ref-viewer-fallback">
+          If the inline PDF viewer is blank, your browser may not support embedded PDFs. Back to Test stays available here.
         </div>
       </div>
     </div>
@@ -3086,98 +3035,21 @@ html[lang="ar"] mjx-container {
       });
     }
   };
-  const ReferencePdfRenderer = {
-    pdf: null,
-    rendering: false,
-    renderedWidth: 0,
-    renderTimer: null,
-
-    async render(force = false) {
-      const container = document.getElementById('referencePdfPages');
-      const wrapper = document.getElementById('referencePdfWrapper');
-
-      if (!container || !wrapper) return;
-
-      const pdfUrl = container.dataset.pdfSrc;
-      const containerWidth = Math.floor(container.clientWidth || wrapper.clientWidth || 0);
-
-      if (!pdfUrl || containerWidth <= 0) return;
-      if (this.rendering) return;
-      if (!force && this.pdf && Math.abs(this.renderedWidth - containerWidth) < 8 && container.children.length > 0) return;
-
-      this.rendering = true;
-      this.renderedWidth = containerWidth;
-      container.innerHTML = '<div class="reference-pdf-status">Loading reference sheet...</div>';
-
-      try {
-        if (!window.pdfjsLib) {
-          throw new Error('PDF.js library is not loaded.');
-        }
-
-        pdfjsLib.GlobalWorkerOptions.workerSrc =
-          'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-        if (!this.pdf) {
-          this.pdf = await pdfjsLib.getDocument(pdfUrl).promise;
-        }
-
-        container.innerHTML = '';
-
-        for (let pageNumber = 1; pageNumber <= this.pdf.numPages; pageNumber++) {
-          const page = await this.pdf.getPage(pageNumber);
-          const viewport = page.getViewport({ scale: 1 });
-          const scale = containerWidth / viewport.width;
-          const scaledViewport = page.getViewport({ scale });
-          const outputScale = Math.min(window.devicePixelRatio || 1, 2);
-
-          const canvas = document.createElement('canvas');
-          canvas.className = 'reference-pdf-page';
-          canvas.width = Math.floor(scaledViewport.width * outputScale);
-          canvas.height = Math.floor(scaledViewport.height * outputScale);
-          canvas.style.width = Math.floor(scaledViewport.width) + 'px';
-          canvas.style.height = Math.floor(scaledViewport.height) + 'px';
-
-          const context = canvas.getContext('2d');
-          context.setTransform(outputScale, 0, 0, outputScale, 0, 0);
-
-          container.appendChild(canvas);
-
-          await page.render({
-            canvasContext: context,
-            viewport: scaledViewport
-          }).promise;
-        }
-      } catch (error) {
-        container.innerHTML = '<div class="reference-pdf-status">Reference sheet could not load. Please try again.</div>';
-        console.error('Reference PDF render error:', error);
-      } finally {
-        this.rendering = false;
-      }
-    },
-
-    scheduleRender(force = false) {
-      clearTimeout(this.renderTimer);
-      this.renderTimer = setTimeout(() => this.render(force), 120);
-    }
-  };
-
   const ReferenceSystem = {
     init() {
       const refBtn = document.getElementById('btnRef');
       const refModal = document.getElementById('refBackdrop');
-      const refWrapper = document.getElementById('referencePdfWrapper');
 
       if (!refBtn || !refModal) return;
 
       const openReferences = () => {
+        const iframe = refModal.querySelector('.pdf-iframe');
+        if (iframe?.dataset.pdfSrc && iframe.src !== iframe.dataset.pdfSrc) {
+          iframe.src = iframe.dataset.pdfSrc;
+        }
         refModal.style.display = 'flex';
         document.body.classList.add('references-open');
         CalculatorSystem.updateMobileViewport?.();
-
-        requestAnimationFrame(() => {
-          ReferencePdfRenderer.scheduleRender(false);
-          if (refWrapper) refWrapper.scrollTop = 0;
-        });
       };
 
       const closeReferences = () => {
@@ -3191,12 +3063,6 @@ html[lang="ar"] mjx-container {
       refModal.addEventListener('click', e => { if (e.target === refModal) closeReferences(); });
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && refModal.style.display === 'flex') closeReferences();
-      });
-
-      window.addEventListener('resize', () => {
-        if (refModal.style.display === 'flex') {
-          ReferencePdfRenderer.scheduleRender(true);
-        }
       });
     }
   };
