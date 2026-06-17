@@ -29,6 +29,26 @@
         .main-content{
             max-width: 1900px;
             margin: 0 auto 40px;
+            min-width:0;
+        }
+
+        .mc-wrap img,
+        .mc-wrap video,
+        .mc-wrap iframe{
+            max-width:100%;
+            height:auto;
+        }
+
+        .mc-wrap .row > [class*="col-"],
+        .test-hero h1,
+        .test-hero p,
+        .hero-badge,
+        .card-body-custom,
+        .status-action-panel,
+        .status-info,
+        .module-step span:last-child{
+            min-width:0;
+            overflow-wrap:anywhere;
         }
 
         .test-hero{
@@ -388,7 +408,11 @@
             align-items:center;
             gap:10px;
         }
-        .attempts-table-container{ overflow-x:auto; }
+        .attempts-table-container{
+            max-width:100%;
+            overflow-x:auto;
+            -webkit-overflow-scrolling:touch;
+        }
         .attempts-table{
             margin:0;
             border-radius:12px;
@@ -493,6 +517,8 @@
         .status-sidebar-sticky {
             position: sticky;
             top: 95px;
+            max-width: 760px;
+            margin: 0 auto;
         }
 
         .status-action-panel {
@@ -664,14 +690,70 @@
 
 
         @media (max-width:768px){
+            .mc-wrap{
+                width:100%;
+                max-width:100%;
+                overflow-x:clip;
+                padding-bottom:20px;
+            }
+            .test-hero{
+                padding:28px 0;
+                margin-bottom:20px;
+                border-radius:12px;
+            }
             .test-hero h1{ font-size:1.8rem; }
             .info-grid{ grid-template-columns:1fr; }
             .part-stats{ grid-template-columns:repeat(2,1fr); }
             .action-buttons{ flex-direction:column; }
-            .btn-action{ justify-content:center; }
+            .btn-action{
+                width:100%;
+                min-height:48px;
+                justify-content:center;
+                text-align:center;
+                white-space:normal;
+            }
             .hero-score-box{ width:100%; }
             .test-hero h1{ line-height:1.25; }
             .status-sidebar-sticky{ position: static; }
+            .attempts-table{ min-width:680px; }
+            .attempt-highlight{
+                max-width:100%;
+                white-space:normal;
+            }
+        }
+
+        @media (max-width:575.98px){
+            .test-hero{
+                padding:22px 0;
+                border-radius:10px;
+            }
+            .test-hero h1{ font-size:1.45rem; }
+            .test-hero p{ font-size:.95rem; }
+            .hero-badges{
+                display:grid;
+                grid-template-columns:1fr;
+                gap:8px;
+            }
+            .hero-badge{
+                width:100%;
+                padding:8px 12px;
+                border-radius:12px;
+            }
+            .hero-score-box{
+                min-width:0;
+                padding:15px 18px;
+            }
+            .card-header-custom,
+            .card-body-custom,
+            .status-section,
+            .previous-attempts{
+                padding:16px;
+            }
+            .status-action-panel{ padding:16px; }
+            .part-content{ padding:12px; }
+            .part-stats{ grid-template-columns:1fr; }
+            .attempts-mini-grid{ gap:8px; }
+            .attempt-mini-card{ padding:12px 8px; }
         }
     </style>
 @endsection
@@ -836,153 +918,15 @@
     <div class="test-hero">
         <div class="container-fluid">
             <div class="row align-items-center">
-                <div class="col-lg-8">
+                <div class="col-12">
                     <h1>{{ $test->name }}</h1>
-                    <p>{{ $test->description ?: __('l.test_information') }}</p>
-
-                    <div class="hero-badges">
-                        <span class="hero-badge">
-                            <i class="fas fa-book"></i>
-                            {{ $test->course->name ?? '' }}
-                        </span>
-
-                        <span class="hero-badge">
-                            <i class="fas fa-layer-group"></i>
-                            {{ count($modules) }} @lang('l.modules')
-                        </span>
-
-                        <span class="hero-badge">
-                            <i class="fas fa-question-circle"></i>
-                            {{ $test->total_questions_count }} @lang('l.questions')
-                        </span>
-
-                        <span class="hero-badge">
-                            <i class="fas fa-clock"></i>
-                            {{ $test->total_time_minutes }} @lang('l.minutes')
-                        </span>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-                    <div class="hero-score-box ms-lg-auto">
-                        <div class="hero-score-number">{{ $maxScore }}</div>
-                        <div class="hero-score-label">@lang('l.total_score')</div>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-lg-8">
-            <div class="test-info-card">
-                <div class="card-header-custom">
-                    <h3>@lang('l.test_information')</h3>
-                </div>
-
-                <div class="card-body-custom">
-                    <div class="course-info">
-                        <h6>@lang('l.course')</h6>
-                        <p>{{ $test->course->name ?? '' }}</p>
-                    </div>
-
-                    @if($test->description)
-                        <div class="test-description">
-                            <h5>@lang('l.description')</h5>
-                            <p>{{ $test->description }}</p>
-                        </div>
-                    @endif
-
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-label">@lang('l.total_questions')</div>
-                            <div class="info-value">{{ $test->total_questions_count }} @lang('l.questions')</div>
-                        </div>
-
-                        <div class="info-item">
-                            <div class="info-label">@lang('l.total_time')</div>
-                            <div class="info-value">{{ $test->total_time_minutes }} @lang('l.minutes')</div>
-                        </div>
-
-                        <div class="info-item">
-                            <div class="info-label">@lang('l.total_score')</div>
-                            <div class="info-value">{{ $maxScore }} @lang('l.points')</div>
-                        </div>
-
-                        <div class="info-item">
-                            <div class="info-label">@lang('l.initial_score')</div>
-                            <div class="info-value">{{ $baseScore }} @lang('l.points')</div>
-                        </div>
-
-                        <div class="info-item">
-                            <div class="info-label">@lang('l.max_attempts')</div>
-                            <div class="info-value">{{ $test->max_attempts ?? 1 }} @lang('l.attempts')</div>
-                        </div>
-                    </div>
-
-                    <div class="test-description">
-                        <h5 class="section-title">
-                            <i class="fas fa-info-circle"></i>
-                            @lang('l.important_notice')
-                        </h5>
-
-                        <ul class="instruction-list">
-                            <li>
-                                <i class="fas fa-check-circle"></i>
-                                <span>Read each question carefully before choosing your answer.</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check-circle"></i>
-                                <span>The timer starts once you press Start Test.</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check-circle"></i>
-                                <span>You can continue an unfinished attempt from where you stopped.</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check-circle"></i>
-                                <span>Your final result appears after completing all modules.</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <h5 class="mb-3" style="font-weight:900; color:var(--mc-text);">
-                        @lang('l.test_parts')
-                    </h5>
-
-                    @forelse($modules as $module)
-                        <div class="part-section">
-                            <div class="part-header">{{ $module['title'] }}</div>
-                            <div class="part-content">
-                                <div class="part-stats">
-                                    <div class="part-stat-item">
-                                        <span class="part-stat-number">{{ $module['questions_count'] }}</span>
-                                        <div class="part-stat-label">@lang('l.questions')</div>
-                                    </div>
-
-                                    <div class="part-stat-item">
-                                        <span class="part-stat-number">{{ $module['time_minutes'] }}</span>
-                                        <div class="part-stat-label">@lang('l.minutes')</div>
-                                    </div>
-
-                                    <div class="part-stat-item">
-                                        <span class="part-stat-number">{{ (int) round($module['max_points']) }}</span>
-                                        <div class="part-stat-label">@lang('l.max_points')</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="alert alert-warning mb-0">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            No modules found for this test.
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
+        <div class="col-12">
             <div class="status-sidebar-sticky">
                 <div class="status-section">
                     <div class="status-action-panel">
@@ -992,60 +936,6 @@
 
                         <h3 class="status-main-title">{{ $statusUiTitle }}</h3>
                         <p class="status-main-desc">{{ $statusUiDesc }}</p>
-
-                        <div class="attempt-highlight">
-                            <i class="fas fa-redo"></i>
-                            Attempt {{ $nextAttemptNumber }} of {{ $maxAttemptsAllowed }}
-                        </div>
-
-                        <div class="attempts-mini-grid">
-                            <div class="attempt-mini-card">
-                                <span class="attempt-mini-number">{{ $remainingAttemptsCount }}</span>
-                                <span class="attempt-mini-label">Attempts Left</span>
-                            </div>
-
-                            <div class="attempt-mini-card">
-                                <span class="attempt-mini-number">{{ $bestScore800 ?? '-' }}</span>
-                                <span class="attempt-mini-label">Best Score</span>
-                            </div>
-                        </div>
-
-                        @if($activeAttempt && in_array($activeStatus, ['part1_in_progress', 'part2_in_progress', 'break_time']))
-                            <div class="module-progress-mini">
-                                <div class="module-progress-title">
-                                    <i class="fas fa-route"></i>
-                                    Test Progress
-                                </div>
-
-                                <div class="module-steps">
-                                    @foreach($modules as $module)
-                                        @php
-                                            $moduleClass = '';
-
-                                            if ($module['number'] < $currentModuleNumber) {
-                                                $moduleClass = 'done';
-                                            } elseif ($module['number'] === $currentModuleNumber) {
-                                                $moduleClass = 'current';
-                                            }
-                                        @endphp
-
-                                        <div class="module-step {{ $moduleClass }}">
-                                            <span class="module-step-icon">
-                                                @if($moduleClass === 'done')
-                                                    <i class="fas fa-check"></i>
-                                                @elseif($moduleClass === 'current')
-                                                    <i class="fas fa-play"></i>
-                                                @else
-                                                    {{ $module['number'] }}
-                                                @endif
-                                            </span>
-
-                                            <span>{{ $module['title'] }}</span>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
 
                         @if(!$activeAttempt || $activeStatus === 'not_started')
                             <div class="warning-notice">
@@ -1109,71 +999,6 @@
                         </div>
                     </div>
 
-                    @if(($allAttempts->where('status', 'completed')->count() ?? 0) > 0)
-                        <div class="previous-attempts mt-4">
-                            <div class="attempts-header">
-                                <h5>
-                                    <i class="fas fa-history"></i>
-                                    @lang('l.previous_attempts')
-                                </h5>
-                            </div>
-
-                            <div class="attempts-table-container">
-                                <table class="table table-hover attempts-table">
-                                    <thead>
-                                        <tr>
-                                            <th>@lang('l.attempt_number')</th>
-                                            <th>@lang('l.attempt_date')</th>
-                                            <th>@lang('l.attempt_score')</th>
-                                            <th>@lang('l.percentage')</th>
-                                            <th>@lang('l.actions')</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($allAttempts->where('status', 'completed')->sortByDesc('created_at') as $attempt)
-                                            @php
-                                                $rawEarned = $calcRawEarnedForAttempt($attempt->id);
-                                                $score800  = $calcScaled800($rawEarned);
-                                                $percentage = round(($score800 / $maxScore) * 100, 1);
-
-                                                if ($percentage >= 80) {
-                                                    $badgeClass = 'excellent';
-                                                } elseif ($percentage >= 60) {
-                                                    $badgeClass = 'good';
-                                                } else {
-                                                    $badgeClass = 'needs-improvement';
-                                                }
-                                            @endphp
-                                            <tr class="attempt-row">
-                                                <td><span class="attempt-number-badge">{{ $attempt->attempt_number }}</span></td>
-                                                <td>
-                                                    <div class="attempt-date">
-                                                        <div class="date">{{ $attempt->created_at->format('Y-m-d') }}</div>
-                                                        <small class="time">{{ $attempt->created_at->format('H:i') }}</small>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="score-display">
-                                                        <span class="score-value">{{ $score800 }}</span>
-                                                        <span class="score-total">/ {{ $maxScore }}</span>
-                                                    </div>
-                                                </td>
-                                                <td><span class="percentage-badge {{ $badgeClass }}">{{ $percentage }}%</span></td>
-                                                <td>
-                                                    <a class="btn btn-sm btn-outline-primary view-attempt-btn"
-                                                       href="{{ route('dashboard.users.tests.results', $test->id) }}?attempt_id={{ $attempt->id }}"
-                                                       title="@lang('l.view_details')">
-                                                        <i class="fas fa-eye me-1"></i>
-                                                        @lang('l.view_details')
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    @endif
                 </div>
             </div>
         </div>
