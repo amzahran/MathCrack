@@ -1292,6 +1292,40 @@
         font-size: 0.85rem !important;
     }
 
+    @media (max-width: 768px) {
+        .main-content {
+            max-width: 100%;
+            overflow-x: hidden;
+            overflow-x: clip;
+        }
+
+        .view-toggle {
+            grid-template-columns: 1fr;
+        }
+
+        #tableToggleBtn,
+        .tests-view-block[data-view="table"] {
+            display: none !important;
+        }
+
+        .tests-view-block[data-view="cards"] {
+            display: block !important;
+            max-width: 100%;
+        }
+
+        .tests-grid.tests-view-block .test-actions {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        .tests-grid.tests-view-block .btn-test {
+            width: 100% !important;
+            min-height: 48px !important;
+            padding: 11px 14px !important;
+            white-space: normal !important;
+        }
+    }
+
 </style>
 @endsection
 
@@ -1902,9 +1936,12 @@
         const tableBlocks = document.querySelectorAll('.tests-view-block[data-view="table"]');
         const cardsBtn = document.getElementById('cardsToggleBtn');
         const tableBtn = document.getElementById('tableToggleBtn');
+        const mobileViewQuery = window.matchMedia('(max-width: 768px)');
 
         function setTestsView(viewType) {
-            if (viewType === 'table') {
+            const effectiveView = mobileViewQuery.matches ? 'cards' : viewType;
+
+            if (effectiveView === 'table') {
                 cardsBlocks.forEach(function (block) {
                     block.style.setProperty('display', 'none', 'important');
                 });
@@ -1928,9 +1965,23 @@
                 if (cardsBtn) cardsBtn.classList.add('active');
             }
 
-            try {
-                localStorage.setItem('testsViewMode', viewType);
-            } catch (e) {}
+            if (!mobileViewQuery.matches) {
+                try {
+                    localStorage.setItem('testsViewMode', effectiveView);
+                } catch (e) {}
+            }
+        }
+
+        function applyResponsiveTestsView() {
+            let preferredView = 'cards';
+
+            if (!mobileViewQuery.matches) {
+                try {
+                    preferredView = localStorage.getItem('testsViewMode') || 'cards';
+                } catch (e) {}
+            }
+
+            setTestsView(preferredView);
         }
 
         if (cardsBtn) {
@@ -1947,13 +1998,13 @@
             });
         }
 
-        let savedView = 'cards';
+        applyResponsiveTestsView();
 
-        try {
-            savedView = localStorage.getItem('testsViewMode') || 'cards';
-        } catch (e) {}
-
-        setTestsView(savedView);
+        if (typeof mobileViewQuery.addEventListener === 'function') {
+            mobileViewQuery.addEventListener('change', applyResponsiveTestsView);
+        } else if (typeof mobileViewQuery.addListener === 'function') {
+            mobileViewQuery.addListener(applyResponsiveTestsView);
+        }
 
         const form = document.getElementById('filtersForm');
         const levelSelect = document.getElementById('levelSelect');
