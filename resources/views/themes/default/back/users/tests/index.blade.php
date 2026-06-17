@@ -1299,6 +1299,23 @@
             overflow-x: clip;
         }
 
+        .tests-filter-bar {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-x: contain;
+            padding: 10px 20px 12px 10px !important;
+            scroll-padding: 0 20px 0 10px;
+        }
+
+        .tests-filter-btn {
+            flex: 0 0 auto;
+        }
+
         .view-toggle {
             grid-template-columns: 1fr;
         }
