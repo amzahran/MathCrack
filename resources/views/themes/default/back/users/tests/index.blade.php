@@ -1449,48 +1449,6 @@
 
 
     @if($coursesWithTests->count() > 0)
-        <div class="tests-summary-grid">
-            <div class="tests-summary-card">
-                <span class="tests-summary-icon">
-                    <i class="fas fa-clipboard-list"></i>
-                </span>
-                <span>
-                    <span class="tests-summary-number">{{ $totalTests }}</span>
-                    <span class="tests-summary-label">Total Tests</span>
-                </span>
-            </div>
-
-            <div class="tests-summary-card">
-                <span class="tests-summary-icon">
-                    <i class="fas fa-check-circle"></i>
-                </span>
-                <span>
-                    <span class="tests-summary-number">{{ $completedTests }}</span>
-                    <span class="tests-summary-label">Completed</span>
-                </span>
-            </div>
-
-            <div class="tests-summary-card">
-                <span class="tests-summary-icon">
-                    <i class="fas fa-clock"></i>
-                </span>
-                <span>
-                    <span class="tests-summary-number">{{ $inProgressTests }}</span>
-                    <span class="tests-summary-label">In Progress</span>
-                </span>
-            </div>
-
-            <div class="tests-summary-card">
-                <span class="tests-summary-icon">
-                    <i class="fas fa-play-circle"></i>
-                </span>
-                <span>
-                    <span class="tests-summary-number">{{ $notStartedTests }}</span>
-                    <span class="tests-summary-label">Not Started</span>
-                </span>
-            </div>
-        </div>
-
         <div class="tests-filter-bar">
             <a href="{{ request()->fullUrlWithQuery(['status_filter' => 'all']) }}"
                class="tests-filter-btn {{ $statusFilter === 'all' ? 'active' : '' }}">
@@ -1936,6 +1894,48 @@
                 </div>
             </div>
         @endforeach
+
+        <div class="tests-summary-grid">
+            <div class="tests-summary-card">
+                <span class="tests-summary-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </span>
+                <span>
+                    <span class="tests-summary-number">{{ $totalTests }}</span>
+                    <span class="tests-summary-label">Total Tests</span>
+                </span>
+            </div>
+
+            <div class="tests-summary-card">
+                <span class="tests-summary-icon">
+                    <i class="fas fa-check-circle"></i>
+                </span>
+                <span>
+                    <span class="tests-summary-number">{{ $completedTests }}</span>
+                    <span class="tests-summary-label">Completed</span>
+                </span>
+            </div>
+
+            <div class="tests-summary-card">
+                <span class="tests-summary-icon">
+                    <i class="fas fa-clock"></i>
+                </span>
+                <span>
+                    <span class="tests-summary-number">{{ $inProgressTests }}</span>
+                    <span class="tests-summary-label">In Progress</span>
+                </span>
+            </div>
+
+            <div class="tests-summary-card">
+                <span class="tests-summary-icon">
+                    <i class="fas fa-play-circle"></i>
+                </span>
+                <span>
+                    <span class="tests-summary-number">{{ $notStartedTests }}</span>
+                    <span class="tests-summary-label">Not Started</span>
+                </span>
+            </div>
+        </div>
     @else
         <div class="no-tests">
             <i class="fas fa-clipboard-list"></i>
