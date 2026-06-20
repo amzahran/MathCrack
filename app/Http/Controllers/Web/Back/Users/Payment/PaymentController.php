@@ -688,11 +688,12 @@ class PaymentController extends Controller
      */
     public function paymentFailed(Request $request)
     {
-        $invoiceId = $request->get('invoice_id');
+        $invoiceId = $this->normalizedGatewayValue($request->get('invoice_id'));
+        $paymentReference = $this->gatewayReference($request->all());
 
         $invoice = null;
 
-        if (!empty($invoiceId)) {
+        if ($invoiceId !== null && ctype_digit($invoiceId) && (int) $invoiceId > 0) {
             $invoice = Invoice::with(['student', 'lecture', 'course'])
                 ->where('user_id', auth()->id())
                 ->find($invoiceId);
@@ -704,7 +705,24 @@ class PaymentController extends Controller
             return $this->redirectToPaymentSuccess($invoice);
         }
 
-        $paymentReference = $this->gatewayReference($request->all());
+        if ($invoiceId === null && $paymentReference === null) {
+            $recentPaidInvoices = Invoice::with(['student', 'lecture', 'course'])
+                ->where('user_id', auth()->id())
+                ->where('status', 'paid')
+                ->where(function ($query) {
+                    $cutoff = now()->subMinutes(10);
+
+                    $query->where('created_at', '>=', $cutoff)
+                        ->orWhere('updated_at', '>=', $cutoff);
+                })
+                ->latest('updated_at')
+                ->limit(2)
+                ->get();
+
+            if ($recentPaidInvoices->count() === 1) {
+                return $this->redirectToPaymentSuccess($recentPaidInvoices->first());
+            }
+        }
 
         return view('themes/default/back.users.payment.failed', compact('invoice', 'paymentReference'));
     }
@@ -726,14 +744,29 @@ class PaymentController extends Controller
     private function gatewayReference(array $data): ?string
     {
         foreach (['payment_id', 'merchantOrderId', 'merchant_order_id', 'orderId', 'order_id', 'paymentId'] as $key) {
-            $value = trim((string) ($data[$key] ?? ''));
+            $value = $this->normalizedGatewayValue($data[$key] ?? null);
 
-            if ($value !== '') {
+            if ($value !== null) {
                 return $value;
             }
         }
 
         return null;
+    }
+
+    private function normalizedGatewayValue($value): ?string
+    {
+        if (!is_scalar($value)) {
+            return null;
+        }
+
+        $value = trim((string) $value);
+
+        if ($value === '' || in_array(strtolower($value), ['null', 'undefined'], true)) {
+            return null;
+        }
+
+        return $value;
     }
 
     private function redirectToPaymentSuccess(Invoice $invoice)
