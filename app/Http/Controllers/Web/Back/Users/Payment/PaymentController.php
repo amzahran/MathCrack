@@ -562,6 +562,8 @@ class PaymentController extends Controller
      */
     public function verify($payment, Request $request)
     {
+        $invoice = $this->resolveInvoiceFromGatewayReference($request);
+
         try {
             logger('Kashier payment verification started', [
                 'route_payment_parameter' => $payment,
@@ -576,12 +578,29 @@ class PaymentController extends Controller
             ]);
 
             if (!$kashierConfigured) {
-                return redirect()->route('dashboard.users.payment-failed')
+                if ($invoice?->status === 'paid') {
+                    return $this->redirectToPaymentSuccess($invoice);
+                }
+
+                return $this->redirectToPaymentFailed($invoice, $request)
                     ->with('error', 'Payment gateway is not available. Please contact support.');
             }
 
             $payment = new KashierPayment();
-            $response = $payment->verify($request);
+            $verificationRequest = $request->duplicate();
+            $callbackStatus = strtoupper(trim((string) $request->input('paymentStatus', '')));
+            $gatewayReference = $this->gatewayReference($request->all());
+
+            if (in_array($callbackStatus, ['SUCCESS', 'CAPTURED', 'PAID', 'APPROVED'], true)) {
+                // The package only recognizes SUCCESS, then confirms CAPTURED via Kashier's API.
+                $verificationRequest->merge(['paymentStatus' => 'SUCCESS']);
+            }
+
+            if (!$verificationRequest->filled('merchantOrderId') && $gatewayReference !== null) {
+                $verificationRequest->merge(['merchantOrderId' => $gatewayReference]);
+            }
+
+            $response = $payment->verify($verificationRequest);
 
             logger('Kashier payment verification response', [
                 'response' => $this->sanitizePaymentLogData($response),
@@ -591,7 +610,7 @@ class PaymentController extends Controller
             ]);
 
             // جلب الفاتورة من قاعدة البيانات باستخدام معرف الدفع
-            $invoice = Invoice::where('pid', $response['payment_id'])->first();
+            $invoice = $this->resolveInvoiceFromGatewayReference($request, $response) ?? $invoice;
 
             logger('Kashier payment verification invoice lookup', [
                 'payment_id' => $response['payment_id'] ?? null,
@@ -600,21 +619,28 @@ class PaymentController extends Controller
                 'invoice_status' => $invoice?->status,
             ]);
 
-            if ($response['success'] == 'true' && $invoice) {
+            $verified = filter_var($response['success'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+            // A signed webhook may finish before the browser returns from Kashier.
+            if ($invoice?->status === 'paid') {
+                return $this->redirectToPaymentSuccess($invoice);
+            }
+
+            if ($verified && $invoice) {
                 if ($invoice->status != 'paid') {
                     $invoice->status = 'paid';
                     $invoice->save();
                 }
 
-                return redirect()->route('dashboard.users.payment-success', ['invoice_id' => $invoice->id])
-                    ->with('success', __('l.payment_successful'));
+                return $this->redirectToPaymentSuccess($invoice);
             } else {
-                if ($response['success'] == 'true' && !$invoice) {
+                if ($verified && !$invoice) {
                     logger()->warning('Kashier verification succeeded without matching invoice', [
                         'user_id' => auth()->id(),
                         'returned_payment_id' => $response['payment_id'] ?? null,
                         'route_payment_parameter' => $payment,
                         'request_keys' => array_keys($request->all()),
+                        'request_data' => $this->sanitizePaymentLogData($request->all()),
                     ]);
                 }
 
@@ -623,12 +649,19 @@ class PaymentController extends Controller
                     $invoice->save();
                 }
 
-                return redirect()->route('dashboard.users.payment-failed', ['invoice_id' => $invoice->id ?? ''])
+                return $this->redirectToPaymentFailed($invoice, $request, $response)
                     ->with('error', __('l.payment_failed'));
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             logger('Payment Verification Error: ' . $e->getMessage());
-            return redirect()->route('dashboard.users.payment-failed')
+
+            $invoice = $this->resolveInvoiceFromGatewayReference($request) ?? $invoice;
+
+            if ($invoice?->status === 'paid') {
+                return $this->redirectToPaymentSuccess($invoice);
+            }
+
+            return $this->redirectToPaymentFailed($invoice, $request)
                 ->with('error', __('l.payment_failed'));
         }
     }
@@ -643,6 +676,10 @@ class PaymentController extends Controller
                          ->where('user_id', auth()->id())
                          ->findOrFail($invoiceId);
 
+        if ($invoice->status !== 'paid') {
+            return $this->redirectToPaymentFailed($invoice, $request);
+        }
+
         return view('themes/default/back.users.payment.success', compact('invoice'));
     }
 
@@ -650,19 +687,77 @@ class PaymentController extends Controller
      * صفحة فشل الدفع
      */
     public function paymentFailed(Request $request)
-{
-    $invoiceId = $request->get('invoice_id');
+    {
+        $invoiceId = $request->get('invoice_id');
 
-    $invoice = null;
+        $invoice = null;
 
-    if (!empty($invoiceId)) {
-        $invoice = Invoice::with(['student', 'lecture', 'course'])
-            ->where('user_id', auth()->id())
-            ->find($invoiceId);
+        if (!empty($invoiceId)) {
+            $invoice = Invoice::with(['student', 'lecture', 'course'])
+                ->where('user_id', auth()->id())
+                ->find($invoiceId);
+        }
+
+        $invoice ??= $this->resolveInvoiceFromGatewayReference($request);
+
+        if ($invoice?->status === 'paid') {
+            return $this->redirectToPaymentSuccess($invoice);
+        }
+
+        $paymentReference = $this->gatewayReference($request->all());
+
+        return view('themes/default/back.users.payment.failed', compact('invoice', 'paymentReference'));
     }
 
-    return view('themes/default/back.users.payment.failed', compact('invoice'));
-}
+    private function resolveInvoiceFromGatewayReference(Request $request, array $response = []): ?Invoice
+    {
+        $reference = $this->gatewayReference($response) ?? $this->gatewayReference($request->all());
+
+        if ($reference === null) {
+            return null;
+        }
+
+        return Invoice::with(['student', 'lecture', 'course'])
+            ->where('user_id', auth()->id())
+            ->where('pid', $reference)
+            ->first();
+    }
+
+    private function gatewayReference(array $data): ?string
+    {
+        foreach (['payment_id', 'merchantOrderId', 'merchant_order_id', 'orderId', 'order_id', 'paymentId'] as $key) {
+            $value = trim((string) ($data[$key] ?? ''));
+
+            if ($value !== '') {
+                return $value;
+            }
+        }
+
+        return null;
+    }
+
+    private function redirectToPaymentSuccess(Invoice $invoice)
+    {
+        return redirect()->route('dashboard.users.payment-success', ['invoice_id' => $invoice->id])
+            ->with('success', __('l.payment_successful'));
+    }
+
+    private function redirectToPaymentFailed(?Invoice $invoice, Request $request, array $response = [])
+    {
+        $parameters = [];
+
+        if ($invoice) {
+            $parameters['invoice_id'] = $invoice->id;
+        } else {
+            $reference = $this->gatewayReference($response) ?? $this->gatewayReference($request->all());
+
+            if ($reference !== null) {
+                $parameters['payment_id'] = $reference;
+            }
+        }
+
+        return redirect()->route('dashboard.users.payment-failed', $parameters);
+    }
 
     /**
      * صفحة إلغاء الدفع

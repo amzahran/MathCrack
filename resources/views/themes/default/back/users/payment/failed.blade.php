@@ -121,6 +121,17 @@
                         </div>
 
                         <!-- تفاصيل الخطأ -->
+                        @if(!$invoice)
+                            <div class="alert alert-warning" role="alert">
+                                We could not identify the invoice for this payment return.
+                                @if(!empty($paymentReference))
+                                    Payment reference: <strong>{{ $paymentReference }}</strong>.
+                                @endif
+                                Please contact support before trying the payment again.
+                            </div>
+                        @endif
+
+                        @if($invoice)
                         <div class="error-details">
                             <h6 class="mb-3">
                                 <i class="fas fa-exclamation-triangle me-2 text-warning"></i>@lang('l.transaction_details')
@@ -147,6 +158,7 @@
                                 <span class="badge bg-danger">@lang('l.failed')</span>
                             </div>
                         </div>
+                        @endif
 
                         <!-- أزرار العمل -->
                         <div class="action-buttons">
