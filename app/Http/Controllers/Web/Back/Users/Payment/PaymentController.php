@@ -170,6 +170,7 @@ class PaymentController extends Controller
 
             // إنشاء الفاتورة مع بيانات الدفع
             $invoice = $this->createInvoiceWithPayment($user, $lecture, $request->payment_type, $total, $response['payment_id'] ?? null);
+            $this->logKashierInvoiceCreated($invoice, $response, $sourceMethods);
 
             // توجيه المستخدم لصفحة الدفع
             return view('themes/default/back.users.payment.pay', ['link' => $response['html']]);
@@ -282,6 +283,7 @@ class PaymentController extends Controller
                 $description,
                 $response['payment_id'] ?? null
             );
+            $this->logKashierInvoiceCreated($invoice, $response, $sourceMethods);
 
             // توجيه المستخدم لصفحة الدفع
             return view('themes/default/back.users.payment.pay', ['link' => $response['html']]);
@@ -370,6 +372,7 @@ class PaymentController extends Controller
                 $total,
                 $response['payment_id'] ?? null
             );
+            $this->logKashierInvoiceCreated($invoice, $response, $sourceMethods);
 
             // توجيه المستخدم لصفحة الدفع
             return view('themes/default/back.users.payment.pay', ['link' => $response['html']]);
@@ -565,11 +568,7 @@ class PaymentController extends Controller
         $invoice = $this->resolveInvoiceFromGatewayReference($request);
 
         try {
-            logger('Kashier payment verification started', [
-                'route_payment_parameter' => $payment,
-                'request_keys' => array_keys($request->all()),
-                'request_data' => $this->sanitizePaymentLogData($request->all()),
-            ]);
+            logger('Kashier payment verification started', $this->safeKashierCallbackContext($request, $invoice));
 
             $kashierConfigured = $this->configureKashierGatewayFromDatabase();
 
@@ -579,7 +578,7 @@ class PaymentController extends Controller
 
             if (!$kashierConfigured) {
                 if ($invoice?->status === 'paid') {
-                    return $this->redirectToPaymentSuccess($invoice);
+                    return $this->redirectToPaymentSuccess($invoice, $request);
                 }
 
                 return $this->redirectToPaymentFailed($invoice, $request)
@@ -602,28 +601,18 @@ class PaymentController extends Controller
 
             $response = $payment->verify($verificationRequest);
 
-            logger('Kashier payment verification response', [
-                'response' => $this->sanitizePaymentLogData($response),
-                'success_value' => $response['success'] ?? null,
-                'success_type' => isset($response['success']) ? gettype($response['success']) : null,
-                'payment_id' => $response['payment_id'] ?? null,
-            ]);
+            logger('Kashier payment verification response', $this->safeKashierCallbackContext($request, $invoice, $response));
 
             // جلب الفاتورة من قاعدة البيانات باستخدام معرف الدفع
             $invoice = $this->resolveInvoiceFromGatewayReference($request, $response) ?? $invoice;
 
-            logger('Kashier payment verification invoice lookup', [
-                'payment_id' => $response['payment_id'] ?? null,
-                'invoice_found' => (bool) $invoice,
-                'invoice_id' => $invoice?->id,
-                'invoice_status' => $invoice?->status,
-            ]);
+            logger('Kashier payment verification invoice lookup', $this->safeKashierCallbackContext($request, $invoice, $response));
 
             $verified = filter_var($response['success'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
             // A signed webhook may finish before the browser returns from Kashier.
             if ($invoice?->status === 'paid') {
-                return $this->redirectToPaymentSuccess($invoice);
+                return $this->redirectToPaymentSuccess($invoice, $request, $response);
             }
 
             if ($verified && $invoice) {
@@ -632,16 +621,13 @@ class PaymentController extends Controller
                     $invoice->save();
                 }
 
-                return $this->redirectToPaymentSuccess($invoice);
+                return $this->redirectToPaymentSuccess($invoice, $request, $response);
             } else {
                 if ($verified && !$invoice) {
-                    logger()->warning('Kashier verification succeeded without matching invoice', [
-                        'user_id' => auth()->id(),
-                        'returned_payment_id' => $response['payment_id'] ?? null,
-                        'route_payment_parameter' => $payment,
-                        'request_keys' => array_keys($request->all()),
-                        'request_data' => $this->sanitizePaymentLogData($request->all()),
-                    ]);
+                    logger()->warning(
+                        'Kashier verification succeeded without matching invoice',
+                        $this->safeKashierCallbackContext($request, null, $response)
+                    );
                 }
 
                 if ($invoice && $invoice->status !== 'paid') {
@@ -658,7 +644,7 @@ class PaymentController extends Controller
             $invoice = $this->resolveInvoiceFromGatewayReference($request) ?? $invoice;
 
             if ($invoice?->status === 'paid') {
-                return $this->redirectToPaymentSuccess($invoice);
+                return $this->redirectToPaymentSuccess($invoice, $request);
             }
 
             return $this->redirectToPaymentFailed($invoice, $request)
@@ -702,7 +688,7 @@ class PaymentController extends Controller
         $invoice ??= $this->resolveInvoiceFromGatewayReference($request);
 
         if ($invoice?->status === 'paid') {
-            return $this->redirectToPaymentSuccess($invoice);
+            return $this->redirectToPaymentSuccess($invoice, $request);
         }
 
         if ($invoiceId === null && $paymentReference === null) {
@@ -720,11 +706,19 @@ class PaymentController extends Controller
                 ->get();
 
             if ($recentPaidInvoices->count() === 1) {
-                return $this->redirectToPaymentSuccess($recentPaidInvoices->first());
+                return $this->redirectToPaymentSuccess($recentPaidInvoices->first(), $request);
             }
+
+            logger()->warning('Kashier failed return could not be resolved uniquely', [
+                'user_id' => auth()->id(),
+                'recent_paid_invoice_count' => $recentPaidInvoices->count(),
+                'window_minutes' => 10,
+            ]);
         }
 
-        return view('themes/default/back.users.payment.failed', compact('invoice', 'paymentReference'));
+        $supportTimestamp = now();
+
+        return view('themes/default/back.users.payment.failed', compact('invoice', 'paymentReference', 'supportTimestamp'));
     }
 
     private function resolveInvoiceFromGatewayReference(Request $request, array $response = []): ?Invoice
@@ -769,9 +763,16 @@ class PaymentController extends Controller
         return $value;
     }
 
-    private function redirectToPaymentSuccess(Invoice $invoice)
+    private function redirectToPaymentSuccess(Invoice $invoice, ?Request $request = null, array $response = [])
     {
-        return redirect()->route('dashboard.users.payment-success', ['invoice_id' => $invoice->id])
+        $target = route('dashboard.users.payment-success', ['invoice_id' => $invoice->id]);
+
+        logger('Kashier payment redirect', array_merge(
+            $request ? $this->safeKashierCallbackContext($request, $invoice, $response) : $this->safeKashierInvoiceContext($invoice),
+            ['redirect_target' => $target]
+        ));
+
+        return redirect($target)
             ->with('success', __('l.payment_successful'));
     }
 
@@ -789,7 +790,14 @@ class PaymentController extends Controller
             }
         }
 
-        return redirect()->route('dashboard.users.payment-failed', $parameters);
+        $target = route('dashboard.users.payment-failed', $parameters);
+
+        logger()->warning('Kashier payment redirect', array_merge(
+            $this->safeKashierCallbackContext($request, $invoice, $response),
+            ['redirect_target' => $target]
+        ));
+
+        return redirect($target);
     }
 
     /**
@@ -800,37 +808,68 @@ class PaymentController extends Controller
         return view('themes/default/back.users.payment.cancelled');
     }
 
-    private function sanitizePaymentLogData(array $data): array
+    private function safeKashierCallbackContext(Request $request, ?Invoice $invoice = null, array $response = []): array
     {
-        $sensitivePatterns = [
-            'card',
-            'cvv',
-            'cvc',
-            'pan',
-            'token',
-            'secret',
-            'key',
-            'password',
-            'authorization',
-            'signature',
+        $requestData = $request->all();
+
+        return array_merge($this->safeKashierInvoiceContext($invoice), [
+            'merchant_order_id' => $this->gatewayReference($response) ?? $this->gatewayReference($requestData),
+            'gateway_payment_reference' => $this->firstScalarValue($response, ['transactionId', 'transaction_id', 'paymentId', 'payment_id'])
+                ?? $this->firstScalarValue($requestData, ['transactionId', 'transaction_id', 'paymentId', 'payment_id']),
+            'selected_payment_method' => $this->safePaymentMethodValue($requestData),
+            'callback_status' => $this->firstScalarValue($requestData, ['paymentStatus', 'status', 'transactionStatus']),
+            'verification_succeeded' => array_key_exists('success', $response)
+                ? filter_var($response['success'], FILTER_VALIDATE_BOOLEAN)
+                : null,
+        ]);
+    }
+
+    private function safeKashierInvoiceContext(?Invoice $invoice): array
+    {
+        return [
+            'invoice_id' => $invoice?->id,
+            'invoice_pid' => $invoice?->pid,
+            'invoice_status' => $invoice?->status,
         ];
+    }
 
-        foreach ($data as $key => $value) {
-            $normalizedKey = strtolower((string) $key);
-
-            foreach ($sensitivePatterns as $pattern) {
-                if (str_contains($normalizedKey, $pattern)) {
-                    $data[$key] = '[filtered]';
-                    continue 2;
-                }
+    private function firstScalarValue(array $data, array $keys): ?string
+    {
+        foreach ($keys as $key) {
+            if (!isset($data[$key]) || !is_scalar($data[$key])) {
+                continue;
             }
 
-            if (is_array($value)) {
-                $data[$key] = $this->sanitizePaymentLogData($value);
+            $value = trim((string) $data[$key]);
+
+            if ($value !== '') {
+                return mb_substr($value, 0, 150);
             }
         }
 
-        return $data;
+        return null;
+    }
+
+    private function safePaymentMethodValue(array $data): ?string
+    {
+        $value = $this->firstScalarValue($data, ['paymentMethod', 'payment_method', 'method', 'source', 'paymentSource']);
+
+        if ($value === null || !preg_match('/\A[a-zA-Z][a-zA-Z0-9_-]{0,49}\z/', $value)) {
+            return null;
+        }
+
+        return $value;
+    }
+
+    private function logKashierInvoiceCreated(Invoice $invoice, array $response, string $sourceMethods): void
+    {
+        logger('Kashier invoice created', array_merge($this->safeKashierInvoiceContext($invoice), [
+            'merchant_order_id' => $invoice->pid,
+            'gateway_payment_reference' => $this->gatewayReference($response),
+            'selected_payment_method' => null,
+            'allowed_payment_methods' => $sourceMethods,
+            'redirect_target' => route(config('nafezly-payments.VERIFY_ROUTE_NAME'), ['payment' => 'kashier']),
+        ]));
     }
 
     private function logKashierPaymentCreation(

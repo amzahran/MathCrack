@@ -411,6 +411,16 @@ class FrontController extends Controller
             ?? $data_obj['paymentId']
             ?? $data_obj['payment_id']
             ?? null;
+        $paymentMethod = $data_obj['paymentMethod']
+            ?? $data_obj['payment_method']
+            ?? $data_obj['method']
+            ?? $data_obj['source']
+            ?? $data_obj['paymentSource']
+            ?? null;
+        $loggedPaymentMethod = is_scalar($paymentMethod)
+            && preg_match('/\A[a-zA-Z][a-zA-Z0-9_-]{0,49}\z/', (string) $paymentMethod)
+                ? (string) $paymentMethod
+                : null;
 
         if ($kashierSignature !== '' && hash_equals($signature, $kashierSignature)) {
             $invoice = null;
@@ -436,11 +446,14 @@ class FrontController extends Controller
                 'amount' => $amount,
                 'currency' => $currency,
                 'transaction_id' => $transactionId,
+                'selected_payment_method' => $loggedPaymentMethod,
                 'invoice_found' => (bool) $invoice,
                 'invoice_id' => $invoice?->id,
+                'invoice_pid' => $invoice?->pid,
                 'old_invoice_status' => $oldInvoiceStatus,
                 'new_invoice_status' => $newInvoiceStatus,
                 'invoice_status' => $invoice?->status,
+                'received_at' => now()->toIso8601String(),
                 'request_keys' => array_keys($request->all()),
                 'data_keys' => array_keys($data_obj),
             ]);
@@ -464,6 +477,8 @@ class FrontController extends Controller
             'amount' => $amount,
             'currency' => $currency,
             'transaction_id' => $transactionId,
+            'selected_payment_method' => $loggedPaymentMethod,
+            'received_at' => now()->toIso8601String(),
             'request_keys' => array_keys($request->all()),
             'data_keys' => array_keys($data_obj),
         ]);

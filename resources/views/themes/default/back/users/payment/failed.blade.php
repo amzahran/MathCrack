@@ -124,9 +124,9 @@
                         @if(!$invoice)
                             <div class="alert alert-warning" role="alert">
                                 We could not identify the invoice for this payment return.
-                                @if(!empty($paymentReference))
-                                    Payment reference: <strong>{{ $paymentReference }}</strong>.
-                                @endif
+                                Invoice ID: <strong>not resolved</strong>.
+                                Payment reference: <strong>{{ $paymentReference ?: 'not provided' }}</strong>.
+                                Attempt time: <strong>{{ $supportTimestamp->format('Y-m-d H:i:s T') }}</strong>.
                                 Please contact support before trying the payment again.
                             </div>
                         @endif
