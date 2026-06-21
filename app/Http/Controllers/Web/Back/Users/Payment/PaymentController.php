@@ -14,6 +14,8 @@ use Nafezly\Payments\Classes\KashierPayment;
 
 class PaymentController extends Controller
 {
+    private const PENDING_KASHIER_INVOICE_MAX_AGE_MINUTES = 30;
+
     /**
      * معالجة طلب الدفع
      */
@@ -445,7 +447,10 @@ class PaymentController extends Controller
                 break;
         }
 
-        return Invoice::create($invoiceData);
+        $invoice = Invoice::create($invoiceData);
+        $this->rememberPendingKashierInvoice($invoice);
+
+        return $invoice;
     }
 
     /**
@@ -464,7 +469,10 @@ class PaymentController extends Controller
             'pid' => $paymentId,
         ];
 
-        return Invoice::create($invoiceData);
+        $invoice = Invoice::create($invoiceData);
+        $this->rememberPendingKashierInvoice($invoice);
+
+        return $invoice;
     }
 
     /**
@@ -483,7 +491,10 @@ class PaymentController extends Controller
             'pid' => $paymentId,
         ];
 
-        return Invoice::create($invoiceData);
+        $invoice = Invoice::create($invoiceData);
+        $this->rememberPendingKashierInvoice($invoice);
+
+        return $invoice;
     }
 
     /**
@@ -686,12 +697,13 @@ class PaymentController extends Controller
         }
 
         $invoice ??= $this->resolveInvoiceFromGatewayReference($request);
+        $invoice ??= $this->resolvePendingKashierInvoice($request);
 
         if ($invoice?->status === 'paid') {
             return $this->redirectToPaymentSuccess($invoice, $request);
         }
 
-        if ($invoiceId === null && $paymentReference === null) {
+        if ($invoice === null && $invoiceId === null && $paymentReference === null) {
             $recentPaidInvoices = Invoice::with(['student', 'lecture', 'course'])
                 ->where('user_id', auth()->id())
                 ->where('status', 'paid')
@@ -735,6 +747,41 @@ class PaymentController extends Controller
             ->first();
     }
 
+    private function rememberPendingKashierInvoice(Invoice $invoice): void
+    {
+        session()->put([
+            'pending_kashier_invoice_id' => $invoice->id,
+            'pending_kashier_invoice_pid' => $invoice->pid,
+        ]);
+    }
+
+    private function resolvePendingKashierInvoice(Request $request): ?Invoice
+    {
+        $invoiceId = $this->normalizedGatewayValue($request->session()->get('pending_kashier_invoice_id'));
+        $invoicePid = $this->normalizedGatewayValue($request->session()->get('pending_kashier_invoice_pid'));
+
+        if ($invoiceId === null || !ctype_digit($invoiceId) || (int) $invoiceId <= 0 || $invoicePid === null) {
+            return null;
+        }
+
+        return Invoice::with(['student', 'lecture', 'course'])
+            ->where('user_id', auth()->id())
+            ->where('pid', $invoicePid)
+            ->where('created_at', '>=', now()->subMinutes(self::PENDING_KASHIER_INVOICE_MAX_AGE_MINUTES))
+            ->find((int) $invoiceId);
+    }
+
+    private function clearPendingKashierInvoice(Invoice $invoice, ?Request $request = null): void
+    {
+        $session = $request?->session() ?? session();
+        $invoiceId = $this->normalizedGatewayValue($session->get('pending_kashier_invoice_id'));
+        $invoicePid = $this->normalizedGatewayValue($session->get('pending_kashier_invoice_pid'));
+
+        if ($invoiceId === (string) $invoice->id && $invoicePid === $this->normalizedGatewayValue($invoice->pid)) {
+            $session->forget(['pending_kashier_invoice_id', 'pending_kashier_invoice_pid']);
+        }
+    }
+
     private function gatewayReference(array $data): ?string
     {
         foreach (['payment_id', 'merchantOrderId', 'merchant_order_id', 'orderId', 'order_id', 'paymentId'] as $key) {
@@ -766,6 +813,8 @@ class PaymentController extends Controller
     private function redirectToPaymentSuccess(Invoice $invoice, ?Request $request = null, array $response = [])
     {
         $target = route('dashboard.users.payment-success', ['invoice_id' => $invoice->id]);
+
+        $this->clearPendingKashierInvoice($invoice, $request);
 
         logger('Kashier payment redirect', array_merge(
             $request ? $this->safeKashierCallbackContext($request, $invoice, $response) : $this->safeKashierInvoiceContext($invoice),
