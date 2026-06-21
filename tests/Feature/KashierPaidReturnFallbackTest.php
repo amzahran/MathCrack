@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 use Tests\TestCase;
 
+// Ensure isolated worktrees exercise the controller from their own checkout.
+require_once dirname(__DIR__, 2) . '/app/Http/Controllers/Web/Back/Users/Payment/PaymentController.php';
+
 class KashierPaidReturnFallbackTest extends TestCase
 {
     protected function setUp(): void
