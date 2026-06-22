@@ -1424,9 +1424,11 @@
         <div class="col-md-4">
             <label class="form-label">Level</label>
             <select id="levelSelect" name="level_id" class="form-select">
-                <option value="">All Levels</option>
+                @if($levels->count() > 1)
+                    <option value="" {{ $levelId ? '' : 'selected' }}>All Levels</option>
+                @endif
                 @foreach($levels as $lvl)
-                    <option value="{{ $lvl->id }}" {{ request('level_id') == $lvl->id ? 'selected' : '' }}>
+                    <option value="{{ $lvl->id }}" {{ (int) $levelId === (int) $lvl->id ? 'selected' : '' }}>
                         {{ $lvl->name }}
                     </option>
                 @endforeach
@@ -1438,7 +1440,7 @@
             <select id="courseSelect" name="course_id" class="form-select">
                 <option value="">All Courses</option>
                 @foreach($courses as $course)
-                    <option value="{{ $course->id }}" {{ request('course_id') == $course->id ? 'selected' : '' }}>
+                    <option value="{{ $course->id }}" {{ (int) $courseId === (int) $course->id ? 'selected' : '' }}>
                         {{ $course->name }}
                     </option>
                 @endforeach

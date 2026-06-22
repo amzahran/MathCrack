@@ -36,9 +36,13 @@ class TestsController extends Controller
     public function index(Request $request)
 {
     $user = auth()->user();
+    $allowedLevelIds = $this->allowedLevelIds($user);
 
-    $levelId  = $request->get('level_id');
-    $courseId = $request->get('course_id');
+    $requestedLevelId = $request->integer('level_id');
+    $levelId = $allowedLevelIds->contains($requestedLevelId)
+        ? $requestedLevelId
+        : ($allowedLevelIds->count() === 1 ? $allowedLevelIds->first() : null);
+    $courseId = $request->integer('course_id') ?: null;
     $track    = $request->get('track');
     $statusFilter = $request->get('status_filter', 'all');
 
@@ -46,22 +50,29 @@ class TestsController extends Controller
         $statusFilter = 'all';
     }
 
-    $levels = Level::orderBy('name')->get();
+    $levels = Level::whereIn('id', $allowedLevelIds)
+        ->orderBy('name')
+        ->get();
 
-    $courses = collect();
+    $courses = Course::whereIn('level_id', $allowedLevelIds)
+        ->whereHas('activeTests')
+        ->when($levelId, function ($query) use ($levelId) {
+            $query->where('level_id', $levelId);
+        })
+        ->when($track, function ($query) use ($track) {
+            $query->where('track_slug', $track);
+        })
+        ->orderBy('name')
+        ->get();
 
-    if ($levelId) {
-        $courses = Course::where('level_id', $levelId)
-            ->when($track, function ($query) use ($track) {
-                $query->where('track_slug', $track);
-            })
-            ->orderBy('name')
-            ->get();
+    if ($courseId && !$courses->contains('id', $courseId)) {
+        $courseId = null;
     }
 
     $coursesQuery = Course::with(['activeTests' => function ($q) {
             $q->orderBy('id');
         }])
+        ->whereIn('level_id', $allowedLevelIds)
         ->whereHas('activeTests')
         ->orderBy('id');
 
@@ -178,8 +189,13 @@ class TestsController extends Controller
 
     public function show($id)
     {
-        $test = Test::with(['course'])->findOrFail($id);
         $user = auth()->user();
+        $test = Test::with(['course'])
+            ->where('is_active', true)
+            ->whereHas('course', function ($query) use ($user) {
+                $query->whereIn('level_id', $this->allowedLevelIds($user));
+            })
+            ->findOrFail($id);
 
         $allAttempts = StudentTest::where('student_id', $user->id)
             ->where('test_id', $id)
@@ -654,10 +670,27 @@ $studentTest->updateCurrentScore();
 
     private function canUserAccessTest($user, $test)
     {
+        if (!$test->is_active) {
+            return false;
+        }
+
+        if (!$test->course || !$this->allowedLevelIds($user)->contains((int) $test->course->level_id)) {
+            return false;
+        }
+
         if ($test->price > 0) {
             return $user->canAccessTest($test->id);
         }
         return true;
+    }
+
+    private function allowedLevelIds($user)
+    {
+        return collect([$user?->level_id])
+            ->filter(fn ($levelId) => is_numeric($levelId) && (int) $levelId > 0)
+            ->map(fn ($levelId) => (int) $levelId)
+            ->unique()
+            ->values();
     }
 
    private function checkAttempts($user, $test)
