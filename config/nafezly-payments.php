@@ -25,14 +25,6 @@ return [
     'KASHIER_URL' => env('KASHIER_URL', "https://checkout.kashier.io"),
     'KASHIER_MODE' => env('KASHIER_MODE', "test"), //live or test
     'KASHIER_CURRENCY' => env('KASHIER_CURRENCY', "EGP"),
-    'KASHIER_PAYMENT_SESSIONS_URL' => env(
-        'KASHIER_PAYMENT_SESSIONS_URL',
-        env('KASHIER_MODE', 'test') === 'live'
-            ? 'https://api.kashier.io/v3/payment/sessions'
-            : 'https://test-api.kashier.io/v3/payment/sessions'
-    ),
-    'KASHIER_ALLOWED_METHODS' => env('KASHIER_ALLOWED_METHODS', 'card,wallet'),
-    'KASHIER_SESSION_TTL_MINUTES' => (int) env('KASHIER_SESSION_TTL_MINUTES', 30),
     'KASHIER_WEBHOOK_URL' => env('KASHIER_WEBHOOK_URL', config('app.url') . '/kashier-webhook'),
 
 
