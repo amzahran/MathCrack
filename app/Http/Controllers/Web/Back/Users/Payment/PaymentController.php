@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Web\Back\Users\Payment;
 
 use App\Http\Controllers\Controller;
+use App\Services\Payments\KashierPaymentSessionService;
 use App\Models\Lecture;
 use App\Models\Test;
 use App\Models\Invoice;
 use App\Models\Course;
 use App\Models\Live;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\PaymentGateway;
 use Nafezly\Payments\Classes\KashierPayment;
 
@@ -159,14 +161,13 @@ class PaymentController extends Controller
                 return $this->kashierGatewayUnavailableResponse();
             }
 
-            $sourceMethods = 'card,bank_installments,wallet,fawry';
+            $sourceMethods = (string) config('nafezly-payments.KASHIER_ALLOWED_METHODS');
             $this->logKashierPaymentCreation('before_pay', $request, $user, $amount, $gatewayPercentage, $gatewayFee, $total, $sourceMethods);
 
-            $payment = new KashierPayment();
-            $response = $payment
-                ->setAmount(round($total, 2))
-                ->setSource($sourceMethods)
-                ->pay();
+            $description = $request->payment_type === 'course'
+                ? 'Course payment: ' . $lecture->course->name
+                : 'Lecture payment: ' . $lecture->name;
+            $response = $this->createKashierPaymentSession($user, $total, $description);
 
             $this->logKashierPaymentCreation('after_pay', $request, $user, $amount, $gatewayPercentage, $gatewayFee, $total, $sourceMethods, $response);
 
@@ -175,7 +176,7 @@ class PaymentController extends Controller
             $this->logKashierInvoiceCreated($invoice, $response, $sourceMethods);
 
             // توجيه المستخدم لصفحة الدفع
-            return view('themes/default/back.users.payment.pay', ['link' => $response['html']]);
+            return $this->kashierSessionView($response);
 
         } catch (\Exception $e) {
             logger('Payment Error: ' . $e->getMessage());
@@ -264,14 +265,10 @@ class PaymentController extends Controller
                 return $this->kashierGatewayUnavailableResponse();
             }
 
-            $sourceMethods = 'card,bank_installments,wallet,fawry';
+            $sourceMethods = (string) config('nafezly-payments.KASHIER_ALLOWED_METHODS');
             $this->logKashierPaymentCreation('before_pay', $request, $user, $amount, $gatewayPercentage, $gatewayFee, $total, $sourceMethods);
 
-            $payment = new KashierPayment();
-            $response = $payment
-                ->setAmount(round($total, 2))
-                ->setSource($sourceMethods)
-                ->pay();
+            $response = $this->createKashierPaymentSession($user, $total, $description);
 
             $this->logKashierPaymentCreation('after_pay', $request, $user, $amount, $gatewayPercentage, $gatewayFee, $total, $sourceMethods, $response);
 
@@ -288,7 +285,7 @@ class PaymentController extends Controller
             $this->logKashierInvoiceCreated($invoice, $response, $sourceMethods);
 
             // توجيه المستخدم لصفحة الدفع
-            return view('themes/default/back.users.payment.pay', ['link' => $response['html']]);
+            return $this->kashierSessionView($response);
 
         } catch (\Exception $e) {
             logger('Test Payment Error: ' . $e->getMessage());
@@ -356,14 +353,10 @@ class PaymentController extends Controller
                 return $this->kashierGatewayUnavailableResponse();
             }
 
-            $sourceMethods = 'card,bank_installments,wallet,fawry';
+            $sourceMethods = (string) config('nafezly-payments.KASHIER_ALLOWED_METHODS');
             $this->logKashierPaymentCreation('before_pay', $request, $user, $amount, $gatewayPercentage, $gatewayFee, $total, $sourceMethods);
 
-            $payment = new KashierPayment();
-            $response = $payment
-                ->setAmount(round($total, 2))
-                ->setSource($sourceMethods)
-                ->pay();
+            $response = $this->createKashierPaymentSession($user, $total, 'Live payment: ' . $live->name);
 
             $this->logKashierPaymentCreation('after_pay', $request, $user, $amount, $gatewayPercentage, $gatewayFee, $total, $sourceMethods, $response);
 
@@ -377,7 +370,7 @@ class PaymentController extends Controller
             $this->logKashierInvoiceCreated($invoice, $response, $sourceMethods);
 
             // توجيه المستخدم لصفحة الدفع
-            return view('themes/default/back.users.payment.pay', ['link' => $response['html']]);
+            return $this->kashierSessionView($response);
 
         } catch (\Exception $e) {
             logger('Live Payment Error: ' . $e->getMessage());
@@ -947,7 +940,7 @@ class PaymentController extends Controller
             'live_id' => $request->input('live_id'),
             'user_id' => $user?->id,
             'returned_payment_id' => $response['payment_id'] ?? null,
-            'html_exists' => isset($response['html']) && $response['html'] !== '',
+            'session_url_exists' => isset($response['session_url']) && $response['session_url'] !== '',
             'source_methods' => $sourceMethods,
             'kashier_mode' => config('nafezly-payments.KASHIER_MODE'),
             'kashier_currency' => config('nafezly-payments.KASHIER_CURRENCY'),
@@ -972,6 +965,23 @@ class PaymentController extends Controller
         }
 
         return 'unknown';
+    }
+
+    private function createKashierPaymentSession($user, $amount, string $description): array
+    {
+        return app(KashierPaymentSessionService::class)->create(
+            (string) Str::uuid(),
+            round((float) $amount, 2),
+            $user,
+            $description
+        );
+    }
+
+    private function kashierSessionView(array $response)
+    {
+        return view('themes/default/back.users.payment.pay', [
+            'sessionUrl' => $response['session_url'],
+        ]);
     }
 
     private function configureKashierGatewayFromDatabase(): bool

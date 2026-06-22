@@ -85,7 +85,18 @@
                     <h4 class="mb-0">@lang('l.complete_payment')</h4>
                 </div>
                 <div class="payment-body">
-                    {!! $link !!}
+                    @if(isset($sessionUrl))
+                        <div class="payment-frame-container">
+                            <iframe
+                                src="{{ $sessionUrl }}"
+                                title="Kashier secure payment"
+                                allow="payment"
+                                referrerpolicy="strict-origin-when-cross-origin">
+                            </iframe>
+                        </div>
+                    @elseif(isset($link))
+                        {!! $link !!}
+                    @endif
                 </div>
             </div>
         </div>
