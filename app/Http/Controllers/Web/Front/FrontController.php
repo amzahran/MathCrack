@@ -382,9 +382,17 @@ class FrontController extends Controller
             }
         }
 
-        $paymentApiKey = $this->configureKashierGatewayFromDatabase()
-            ? config('nafezly-payments.KASHIER_IFRAME_KEY')
-            : '';
+        $paymentApiKey = '';
+        if ($this->configureKashierGatewayFromDatabase()) {
+            $sessionApiKey = trim((string) config('nafezly-payments.KASHIER_PAYMENT_SESSIONS_API_KEY'));
+            $usePaymentSessions = filter_var(
+                config('nafezly-payments.KASHIER_USE_PAYMENT_SESSIONS', false),
+                FILTER_VALIDATE_BOOLEAN
+            );
+            $paymentApiKey = $usePaymentSessions && $sessionApiKey !== ''
+                ? $sessionApiKey
+                : config('nafezly-payments.KASHIER_IFRAME_KEY');
+        }
         $queryString = http_build_query($data, "", '&', PHP_QUERY_RFC3986);
         $signature = hash_hmac('sha256', $queryString, (string) $paymentApiKey, false);
 
