@@ -999,6 +999,56 @@
                         </div>
                     </div>
 
+                    @if(($allAttempts->where('status', 'completed')->count() ?? 0) > 0)
+                        <div class="previous-attempts mt-4">
+                            <div class="attempts-header">
+                                <h5><i class="fas fa-history"></i> @lang('l.previous_attempts')</h5>
+                            </div>
+                            <div class="attempts-table-container">
+                                <table class="table table-hover attempts-table">
+                                    <thead>
+                                        <tr>
+                                            <th>@lang('l.attempt_number')</th>
+                                            <th>@lang('l.attempt_date')</th>
+                                            <th>@lang('l.attempt_score')</th>
+                                            <th>@lang('l.percentage')</th>
+                                            <th>@lang('l.actions')</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($allAttempts->where('status', 'completed')->sortByDesc('created_at') as $attempt)
+                                            @php
+                                                $score800 = $calcScaled800($calcRawEarnedForAttempt($attempt->id));
+                                                $percentage = round(($score800 / $maxScore) * 100, 1);
+                                                $badgeClass = $percentage >= 80 ? 'excellent' : ($percentage >= 60 ? 'good' : 'needs-improvement');
+                                            @endphp
+                                            <tr class="attempt-row">
+                                                <td><span class="attempt-number-badge">{{ $attempt->attempt_number }}</span></td>
+                                                <td>
+                                                    <div class="attempt-date">
+                                                        <div class="date">{{ $attempt->created_at->format('Y-m-d') }}</div>
+                                                        <small class="time">{{ $attempt->created_at->format('H:i') }}</small>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="score-display">
+                                                        <span class="score-value">{{ $score800 }}</span>
+                                                        <span class="score-total">/ {{ $maxScore }}</span>
+                                                    </div>
+                                                </td>
+                                                <td><span class="percentage-badge {{ $badgeClass }}">{{ $percentage }}%</span></td>
+                                                <td>
+                                                    <a class="btn btn-sm btn-outline-primary view-attempt-btn" href="{{ route('dashboard.users.tests.results', $test->id) }}?attempt_id={{ $attempt->id }}" title="@lang('l.view_details')">
+                                                        <i class="fas fa-eye me-1"></i> @lang('l.view_details')
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
