@@ -103,8 +103,7 @@ class StudentMockTestAttemptHistoryTest extends TestCase
 
         $response = $this->actingAs($student)->get("/dashboard/users/tests/{$otherTest->id}");
 
-        $response->assertRedirect(route('dashboard.users.tests.index'));
-        $response->assertSessionHas('error', 'You are not allowed to access this test');
+        $response->assertNotFound();
     }
 
     private function createSchema(): void
@@ -189,6 +188,17 @@ class StudentMockTestAttemptHistoryTest extends TestCase
             $table->timestamp('submitted_at')->nullable();
             $table->integer('time_spent_part1')->nullable();
             $table->integer('time_spent_part2')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('invoices', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->string('category')->nullable();
+            $table->string('type')->nullable();
+            $table->string('type_value')->nullable();
+            $table->unsignedBigInteger('course_id')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
 
